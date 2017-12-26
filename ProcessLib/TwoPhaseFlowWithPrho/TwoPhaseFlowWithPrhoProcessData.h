@@ -29,6 +29,9 @@ struct TwoPhaseFlowWithPrhoProcessData
     ParameterLib::Parameter<double> const& _diffusion_coeff_component_a;
     ParameterLib::Parameter<double> const& _temperature;
     std::unique_ptr<TwoPhaseFlowWithPrhoMaterialProperties> _material;
+
+    // mesh properties for output
+    MeshLib::PropertyVector<double>* mesh_prop_saturation = nullptr;
 };
 
 }  // namespace TwoPhaseFlowWithPrho

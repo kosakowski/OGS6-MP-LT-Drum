@@ -214,6 +214,16 @@ void TwoPhaseFlowWithPrhoLocalAssembler<
 
         }  // end of has gravity
     }
+    int n = n_integration_points;
+    //Eigen::VectorXd ele_saturation = Eigen::VectorXd::Zero(n);
+    double ele_saturation = 0;
+    for (auto const& ip : _saturation)
+    {
+        ele_saturation += ip;
+    }
+    ele_saturation /= static_cast<double>(n_integration_points);
+    auto const element_id = _element.getID();
+    (*_process_data.mesh_prop_saturation)[element_id] = ele_saturation;
     if (_process_data._has_mass_lumping)
     {
         for (unsigned row = 0; row < Mgp.cols(); row++)

@@ -62,6 +62,12 @@ void TwoPhaseFlowWithPrhoProcess::initializeConcreteProcess(
         makeExtrapolator(1, getExtrapolator(), _local_assemblers,
                          &TwoPhaseFlowWithPrhoLocalAssemblerInterface::
                              getIntPtNonWettingPressure));
+
+    auto mesh_prop_saturation = MeshLib::getOrCreateMeshProperty<double>(
+        const_cast<MeshLib::Mesh&>(mesh), "saturation_cell",
+        MeshLib::MeshItemType::Cell, 1);
+    mesh_prop_saturation->resize(mesh.getNumberOfElements() * 1);
+    _process_data.mesh_prop_saturation = mesh_prop_saturation;
 }
 
 void TwoPhaseFlowWithPrhoProcess::assembleConcreteProcess(
