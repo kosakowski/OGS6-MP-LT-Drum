@@ -54,6 +54,8 @@ struct IntegrationPointData final
     NodalMatrixType massOperator;
     NodalMatrixType diffusionOperator;
 
+    Eigen::Vector3d darcy_velocity;
+
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 };
 const unsigned NUM_NODAL_DOF = 2;

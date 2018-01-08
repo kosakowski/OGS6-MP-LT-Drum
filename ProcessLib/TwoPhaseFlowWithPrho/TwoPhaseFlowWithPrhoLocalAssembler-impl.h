@@ -200,6 +200,15 @@ void TwoPhaseFlowWithPrhoLocalAssembler<
         Klx.noalias() +=
             (rho_gas * lambda_gas * dPC_dSw * dSwdrho) * laplace_operator;
 
+        auto q_liquid = _ip_data[ip].darcy_velocity.head(GlobalDim);
+        //auto pl_nodal_values = const_cast<Eigen::VectorXd&>(local_x).segment(0,
+            //ShapeFunction::NPOINTS);
+        auto const pl_nodal_values = Eigen::Map<const NodalVectorType>(
+            &local_x[0], ShapeFunction::NPOINTS);
+        auto const& gravity_vec = _process_data._specific_body_force;
+        q_liquid.noalias() = -lambda_wet * (sm.dNdx * pl_nodal_values
+            +rho_gas*gravity_vec);
+
         if (_process_data._has_gravity)
         {
             auto const& b = _process_data._specific_body_force;
@@ -221,9 +230,17 @@ void TwoPhaseFlowWithPrhoLocalAssembler<
     {
         ele_saturation += ip;
     }
+    Eigen::Vector3d ele_velocity = Eigen::Vector3d::Zero();
+    for (auto const& ip_data : _ip_data)
+    {
+        ele_velocity += ip_data.darcy_velocity;
+    }
     ele_saturation /= static_cast<double>(n_integration_points);
     auto const element_id = _element.getID();
     (*_process_data.mesh_prop_saturation)[element_id] = ele_saturation;
+    for (unsigned i = 0; i < 3; i++)
+        (*_process_data.mesh_prop_liquid_velocity)[element_id * 3 + i] =
+        ele_velocity[i];
     if (_process_data._has_mass_lumping)
     {
         for (unsigned row = 0; row < Mgp.cols(); row++)

@@ -32,6 +32,9 @@ struct TwoPhaseFlowWithPrhoProcessData
 
     // mesh properties for output
     MeshLib::PropertyVector<double>* mesh_prop_saturation = nullptr;
+    MeshLib::PropertyVector<double>* mesh_prop_liquid_velocity = nullptr;
+    MeshLib::PropertyVector<double>* mesh_prop_gas_velocity = nullptr;
+
 };
 
 }  // namespace TwoPhaseFlowWithPrho

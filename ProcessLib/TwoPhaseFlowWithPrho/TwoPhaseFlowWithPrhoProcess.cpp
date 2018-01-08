@@ -68,6 +68,13 @@ void TwoPhaseFlowWithPrhoProcess::initializeConcreteProcess(
         MeshLib::MeshItemType::Cell, 1);
     mesh_prop_saturation->resize(mesh.getNumberOfElements() * 1);
     _process_data.mesh_prop_saturation = mesh_prop_saturation;
+
+    auto mesh_prop_liquid_velocity = MeshLib::getOrCreateMeshProperty<double>(
+        const_cast<MeshLib::Mesh&>(mesh), "liquid_velocity_cell",
+        MeshLib::MeshItemType::Cell, 3);
+    mesh_prop_liquid_velocity->resize(mesh.getNumberOfElements() * 3);
+    _process_data.mesh_prop_liquid_velocity = mesh_prop_liquid_velocity;
+
 }
 
 void TwoPhaseFlowWithPrhoProcess::assembleConcreteProcess(
