@@ -82,6 +82,18 @@ const double Air = 0.02897;  ///< kg \per{mol}
  * - Source: https://pubchem.ncbi.nlm.nih.gov/compound/Hydrogen
  */
 const double H2 = 0.002016;  ///< kg \per{mol}
+
+/**
+* Methane.
+*
+* - Source: https://pubchem.ncbi.nlm.nih.gov/compound/Methane
+*/
+const double CH4 = 0.01604;  ///< kg \per{mol}
+/*
+*Carbon dioxide
+* - Source https://pubchem.ncbi.nlm.nih.gov/compound/280
+*/
+const double CO2 = 0.04399;
 }  // namespace MolarMass
 
 /**
