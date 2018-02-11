@@ -1230,6 +1230,18 @@ namespace ProcessLib
                 (*_process_data.mesh_prop_gas_water_vapor_vel)[element_id * GlobalDim + i] =
                     ele_h2o_vapor_gas_velocity[i];
             }
+            (*_process_data.mesh_prop_overall_liquid_vel)[element_id * 3 + 2] =
+                0.0;
+            (*_process_data.mesh_prop_overall_gas_vel)[element_id * 3 + 2] =
+                0.0;
+            (*_process_data.mesh_prop_gas_co2_vel)[element_id * 3 + 2] =
+                0.0;
+            (*_process_data.mesh_prop_gas_hydrogen_vel)[element_id * 3 + 2] =
+                0.0;
+            (*_process_data.mesh_prop_gas_methane_vel)[element_id * 3 + 2] =
+                0.0;
+            (*_process_data.mesh_prop_gas_water_vapor_vel)[element_id * 3 + 2] =
+                0.0;
             if (_process_data._has_mass_lumping)
             {
                 auto Mhpg =
