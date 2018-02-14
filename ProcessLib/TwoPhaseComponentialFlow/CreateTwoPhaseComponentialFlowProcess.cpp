@@ -10,8 +10,8 @@
 #include <cassert>
 #include "BaseLib/Functional.h"
 #include "MeshLib/MeshGenerators/MeshGenerator.h"
+#include "ProcessLib/Output/CreateSecondaryVariables.h"
 #include "ProcessLib/Parameter/ConstantParameter.h"
-#include "ProcessLib/Utils/ParseSecondaryVariables.h"
 #include "ProcessLib/Utils/ProcessUtils.h"
 
 #include "CreateTwoPhaseComponentialFlowMaterialProperties.h"
@@ -63,7 +63,7 @@ namespace ProcessLib
             NumLib::NamedFunctionCaller named_function_caller(
             { "TwoPhaseFlow_pressure" });
 
-            ProcessLib::parseSecondaryVariables(config, secondary_variables,
+            ProcessLib::createSecondaryVariables(config, secondary_variables,
                 named_function_caller);
             // Specific body force
             std::vector<double> const b =
