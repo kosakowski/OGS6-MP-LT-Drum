@@ -101,6 +101,8 @@ namespace ProcessLib
             MeshLib::PropertyVector<double>* mesh_prop_pHvalue = nullptr;
             MeshLib::PropertyVector<double>* mesh_prop_co2_cumulate_consume = nullptr;
             MeshLib::PropertyVector<double>* mesh_prop_sio2_cumulate_consume = nullptr;
+            MeshLib::PropertyVector<double>* mesh_prop_mol_frac_h2o_vapor = nullptr;
+            MeshLib::PropertyVector<double>* mesh_prop_mol_frac_n2 = nullptr;
 
             //mesh properties for velocity output
             MeshLib::PropertyVector<double>*  mesh_prop_overall_liquid_vel = nullptr;

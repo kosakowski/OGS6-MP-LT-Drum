@@ -347,6 +347,22 @@ namespace ProcessLib
             mesh_prop_gas_h2o_vapor_vel
                 ->resize(mesh.getNumberOfElements() * mesh.getDimension());
             _process_data.mesh_prop_gas_water_vapor_vel = mesh_prop_gas_h2o_vapor_vel;
+
+            auto mesh_prop_mol_fraction_h2o_vaor
+                = MeshLib::getOrCreateMeshProperty<double>(
+                    const_cast<MeshLib::Mesh&>(mesh), "molar_fraction_h2o_vapor_cell",
+                    MeshLib::MeshItemType::Cell, 1);
+            mesh_prop_mol_fraction_h2o_vaor->resize(mesh.getNumberOfElements() * 1);
+            _process_data.mesh_prop_mol_frac_h2o_vapor = mesh_prop_mol_fraction_h2o_vaor;
+
+            auto mesh_prop_mol_fraction_n2
+                = MeshLib::getOrCreateMeshProperty<double>(
+                    const_cast<MeshLib::Mesh&>(mesh), "molar_fraction_n2_cell",
+                    MeshLib::MeshItemType::Cell, 1);
+            mesh_prop_mol_fraction_n2->resize(mesh.getNumberOfElements() * 1);
+            _process_data.mesh_prop_mol_frac_n2 = mesh_prop_mol_fraction_n2;
+
+
         }
 
         void TwoPhaseComponentialFlowProcess::assembleConcreteProcess(const double t,

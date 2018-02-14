@@ -1199,6 +1199,24 @@ namespace ProcessLib
             ele_sio2_cumulate_consume/= static_cast<double>(n);
             (*_process_data.mesh_prop_sio2_cumulate_consume)[element_id]
                 = ele_sio2_cumulate_consume;
+
+            double ele_mol_frac_h2o_vapor = 0;
+            for (auto const& ip : _mol_fraction_nonwet_vapor)
+            {
+                ele_mol_frac_h2o_vapor += ip;
+            }
+            ele_mol_frac_h2o_vapor /= static_cast<double>(n);
+            (*_process_data.mesh_prop_mol_frac_h2o_vapor)[element_id]
+                = ele_mol_frac_h2o_vapor;
+
+            double ele_mol_frac_n2_air = 0.0;
+            for (auto const& ip : _mol_fraction_nonwet_air)
+            {
+                ele_mol_frac_n2_air += ip;
+            }
+            ele_mol_frac_n2_air /= static_cast<double>(n);
+            (*_process_data.mesh_prop_mol_frac_n2)[element_id]
+                = ele_mol_frac_n2_air;
             // store the velocity value on each cell
             //Eigen::Vector3d ele_liquid_velocity = Eigen::Vector3d::Zero();
             Eigen::VectorXd ele_liquid_velocity = Eigen::VectorXd::Zero(GlobalDim);
