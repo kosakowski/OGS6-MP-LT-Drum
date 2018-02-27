@@ -914,8 +914,8 @@ namespace ProcessLib
             double Q_steel_waste_matrix = 5.903876 * 4 / 3;  // generate H2
             const double Q_steel_inner_surface = 0.0093 * 4 / 3;  // generate H2
 
-            const double para_slow = 401.55;//51.8/0.129
-            const double para_fast = 191.47286;//24.7kg/0,129
+            const double para_slow = 51.8/0.178;//51.8/0.129
+            const double para_fast = 24.7/0.178;//24.7kg/0,129
             const double k_d_cellulose = 1.89e-3;//rate consts for cellulose degradation
             const double k_d_polystyrene = 6.51e-5;//rate consts for polystyrene degradation
             const double m0_cellulose = 0.035;

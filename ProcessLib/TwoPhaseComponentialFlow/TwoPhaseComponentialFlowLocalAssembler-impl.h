@@ -192,8 +192,12 @@ namespace ProcessLib
 
                 _pressure_wetting[ip] = pg_int_pt - PC_int_pt;
                 const double dt = _process_data._dt;
-                if (atm_flag&&t > 40)
-                    X3_int_pt = 1e-7;
+                if (atm_flag&&t > 40&& t<50)
+                    X3_int_pt = 1e-4;
+                else if(atm_flag && t>50 && t<60)
+                    X3_int_pt = 1e-5;
+                else if (atm_flag && t>60)
+                    X3_int_pt = 1e-6;
                 auto const& wp = _integration_method.getWeightedPoint(ip);
                 double integration_factor =
                     sm.integralMeasure * sm.detJ * wp.getWeight();
@@ -1235,17 +1239,17 @@ namespace ProcessLib
                 ele_h2o_vapor_gas_velocity += cache_mat_gas_water_vapor_vel.col(ip);
             }
             for (unsigned i = 0; i < GlobalDim; i++) {
-                (*_process_data.mesh_prop_overall_liquid_vel)[element_id * GlobalDim + i] =
+                (*_process_data.mesh_prop_overall_liquid_vel)[element_id * 3 + i] =
                     ele_liquid_velocity[i];
-                (*_process_data.mesh_prop_overall_gas_vel)[element_id * GlobalDim + i] =
+                (*_process_data.mesh_prop_overall_gas_vel)[element_id * 3 + i] =
                     ele_gas_velocity[i];
-                (*_process_data.mesh_prop_gas_co2_vel)[element_id * GlobalDim + i] =
+                (*_process_data.mesh_prop_gas_co2_vel)[element_id * 3 + i] =
                     ele_co2_gas_velocity[i];
-                (*_process_data.mesh_prop_gas_hydrogen_vel)[element_id * GlobalDim + i] =
+                (*_process_data.mesh_prop_gas_hydrogen_vel)[element_id * 3 + i] =
                     ele_h2_gas_velocity[i];
-                (*_process_data.mesh_prop_gas_methane_vel)[element_id * GlobalDim + i] =
+                (*_process_data.mesh_prop_gas_methane_vel)[element_id * 3 + i] =
                     ele_CH4_gas_velocity[i];
-                (*_process_data.mesh_prop_gas_water_vapor_vel)[element_id * GlobalDim + i] =
+                (*_process_data.mesh_prop_gas_water_vapor_vel)[element_id * 3 + i] =
                     ele_h2o_vapor_gas_velocity[i];
             }
             (*_process_data.mesh_prop_overall_liquid_vel)[element_id * 3 + 2] =
