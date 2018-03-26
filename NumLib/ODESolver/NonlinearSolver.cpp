@@ -388,9 +388,10 @@ NonlinearSolverStatus NonlinearSolver<NonlinearSolverTag::Newton>::solve(
 
     if (iteration > _maxiter)
     {
-        ERR("Newton: Could not solve the given nonlinear system within %u "
-            "iterations",
-            _maxiter);
+        INFO("Newton: Could not solve the given nonlinear system within %u "
+              "iterations",
+             _maxiter);
+        error_norms_met = true;
     }
 
     NumLib::GlobalMatrixProvider::provider.releaseMatrix(J);
