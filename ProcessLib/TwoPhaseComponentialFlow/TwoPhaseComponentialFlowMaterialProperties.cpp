@@ -179,13 +179,13 @@ namespace ProcessLib
         {
             const double saturation =
                 _capillary_pressure_models[material_id]->getSaturation(pc);
-            if (material_id == 0 && pc>=1.1597e+6)
+            if (material_id == 0 && pc>=1.1597e+6 && pc < 5.3728e+06)
             {
                 return -(pc - 5.3728e+06) / 1.0533e+7;
             }
-            else if (material_id == 0 && pc > 5.3728e+06)
+            else if (material_id == 0 && pc >= 5.3728e+06)
             {
-                return 1;
+                return 0;
             }
             return saturation;
         }
