@@ -386,7 +386,7 @@ namespace ProcessLib
                 {
                     //bazant_power = pow((1 + pow((7.5 - 7.5*rel_humidity), 4)), -1);
                     bazant_power= 5 * rel_humidity - 4;
-                    if (sw<0.2)
+                    if (Sw<0.2)
                         bazant_power = 0;
                     if (bazant_power<0.0)
                         bazant_power = 0;
