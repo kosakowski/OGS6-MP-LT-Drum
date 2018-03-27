@@ -433,6 +433,10 @@ namespace ProcessLib
                     // calculate the total amount of co2 in this element(gp), which should
                     // be consumed at this time step
                     bazant_power = 5 * rel_humidity - 4;//for the inner part 
+                    if (Sw<0.2)
+                        bazant_power = 0;
+                    if (bazant_power<0.0)
+                        bazant_power = 0;
                     rho_mol_total_co2_waste = _ip_data[ip].porosity_prev_waste *
                         (rho_mol_nonwet * X3_int_pt * (1 - Sw) +
                             rho_mol_wet * X_L_co2_gp * Sw);
