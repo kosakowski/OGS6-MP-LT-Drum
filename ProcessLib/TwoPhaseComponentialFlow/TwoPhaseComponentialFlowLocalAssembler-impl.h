@@ -373,7 +373,8 @@ namespace ProcessLib
 
                 //saturation dependent chemical reactivity
                 //double const rel_humidity = std::exp(-PC_int_pt*0.018 / rho_mass_wet / 8.314 / temperature);
-                double rel_humidity = std::exp(-PC_int_pt*0.018 / rho_mass_wet / 8.314 / temperature);
+                double pc_origion = _process_data._material->getCapillaryPressure(material_id, t, pos, pg_int_pt, temperature, Sw);
+                double rel_humidity = std::exp(-pc_origion*0.018 / rho_mass_wet / 8.314 / temperature);
                 //rel_humidity = pg_int_pt*x_nonwet_h2o / P_sat_gp;
                 if (atm_flag)
                     rel_humidity = 0.8;
@@ -383,7 +384,12 @@ namespace ProcessLib
                 if (_process_data._material->getMaterialID(pos.getElementID().get()) ==
                     0)//backfill
                 {
-                    bazant_power = pow((1 + pow((7.5 - 7.5*rel_humidity), 4)), -1);
+                    //bazant_power = pow((1 + pow((7.5 - 7.5*rel_humidity), 4)), -1);
+                    bazant_power= 5 * rel_humidity - 4;
+                    if (sw<0.2)
+                        bazant_power = 0;
+                    if (bazant_power<0.0)
+                        bazant_power = 0;
                     // should be only valid for material 0
                     porosity = porosity2;  // use look-up table value
                                            // calculate the current ammount of co2

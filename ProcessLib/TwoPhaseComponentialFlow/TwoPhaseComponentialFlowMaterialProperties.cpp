@@ -179,6 +179,14 @@ namespace ProcessLib
         {
             const double saturation =
                 _capillary_pressure_models[material_id]->getSaturation(pc);
+            if (material_id == 0 && pc>=1.1597e+6)
+            {
+                return -(pc - 5.3728e+06) / 1.0533e+7;
+            }
+            else if (material_id == 0 && pc > 5.3728e+06)
+            {
+                return 1;
+            }
             return saturation;
         }
 
@@ -189,6 +197,14 @@ namespace ProcessLib
             const double dpcdsw =
                 _capillary_pressure_models[material_id]->getdPcdS(saturation);//
             const double dswdpc = 1 / dpcdsw;
+            if (material_id == 0 && saturation <=0.4)
+            {
+                return -1 / 1.0533e+7;
+            }
+            else if (material_id == 0 && saturation<0)
+            {
+                return 0;
+            }
             return dswdpc;
         }
 
