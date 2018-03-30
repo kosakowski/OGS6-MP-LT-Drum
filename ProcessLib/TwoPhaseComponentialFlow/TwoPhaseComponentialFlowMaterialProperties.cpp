@@ -187,6 +187,11 @@ namespace ProcessLib
             {
                 return 0;
             }
+            if (material_id == 1 && pc >= 7.9994e+5 && pc < 1.7601e+7) {
+                return -(pc - 1.7601e+7) / 8.0006e+7;
+            }
+            else if (material_id == 1 && pc >= 1.7601e+7)
+                return 0;
             return saturation;
         }
 
@@ -205,6 +210,16 @@ namespace ProcessLib
             {
                 return 0;
             }
+
+            if (material_id == 1 && saturation <= 0.21)
+            {
+                return -1 / 8.0006e+7;
+            }
+            else if (material_id == 1 && saturation<0)
+            {
+                return 0;
+            }
+            
             return dswdpc;
         }
 
