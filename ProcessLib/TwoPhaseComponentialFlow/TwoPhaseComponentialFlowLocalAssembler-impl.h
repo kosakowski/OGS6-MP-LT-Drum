@@ -93,9 +93,11 @@ namespace ProcessLib
             auto rx0 = (*nodes[0])[0];
             auto rx1 = (*nodes[1])[0];
             auto rx2 = (*nodes[2])[0];
+            auto rx3 = (*nodes[3])[0];
             auto ry0 = (*nodes[0])[1];
             auto ry1 = (*nodes[1])[1];
             auto ry2 = (*nodes[2])[1];
+            auto ry3 = (*nodes[3])[1];
 
             const int material_id =
                 _process_data._material->getMaterialID(pos.getElementID().get());
@@ -162,13 +164,27 @@ namespace ProcessLib
             Eigen::VectorXd F_vec_coeff = Eigen::VectorXd::Zero(NUM_NODAL_DOF);
 
             accelerate_flag = false;
-            int gp_carb_neutral_count = 0;
+            int gp_carb_neutral_count = 3;
             bool atm_flag = false;
             double deriv_flag = 1;
+            int accelerate_factor = 1.5;
             if (_process_data._material->getMaterialID(pos.getElementID().get()) >=
                 2)//backfill
             {
                 atm_flag = true;
+            }
+            if (pos.getElementID().get() == 148 || pos.getElementID().get() == 149 ||
+                pos.getElementID().get() == 152 || pos.getElementID().get() == 153 ||
+                pos.getElementID().get() == 160 || pos.getElementID().get() == 161 ||
+                pos.getElementID().get() == 186 || pos.getElementID().get() == 189 ||
+                pos.getElementID().get() == 190 || pos.getElementID().get() == 191 ||
+                pos.getElementID().get() == 246 || pos.getElementID().get() == 236)
+            {
+                accelerate_factor = 2.5;
+            }
+            if (t > 65)
+            {
+                accelerate_factor = 2;
             }
             for (unsigned ip = 0; ip < n_integration_points; ip++)
             {
@@ -385,11 +401,12 @@ namespace ProcessLib
                     0)//backfill
                 {
                     //bazant_power = pow((1 + pow((7.5 - 7.5*rel_humidity), 4)), -1);
-                    bazant_power= 5 * rel_humidity - 4;
-                    if (Sw<0.2)
-                        bazant_power = 0;
-                    if (bazant_power<0.0)
-                        bazant_power = 0;
+                    bazant_power = (rel_humidity - 0.6) / (1 - 0.6);
+                    //bazant_power= 5 * rel_humidity - 4;
+                    if (rel_humidity<0.6 )
+                        bazant_power = 1e-7;
+                    if (bazant_power<0.0|| Sw<0.2)
+                        bazant_power = 1e-7;
                     // should be only valid for material 0
                     porosity = porosity2;  // use look-up table value
                                            // calculate the current ammount of co2
@@ -432,25 +449,24 @@ namespace ProcessLib
                     // calculate the current ammount of co2
                     // calculate the total amount of co2 in this element(gp), which should
                     // be consumed at this time step
-                    bazant_power = 5 * rel_humidity - 4;//for the inner part 
-                    if (Sw<0.2)
-                        bazant_power = 0;
-                    if (bazant_power<0.0)
-                        bazant_power = 0;
+                    bazant_power = (rel_humidity - 0.6) / (1 - 0.6);
+                    //bazant_power = 5 * rel_humidity - 4;//for the inner part 
+                    if (rel_humidity<0.6)
+                        bazant_power = 1e-7;
+                    if (bazant_power<0.0|| Sw<0.1)
+                        bazant_power = 1e-7;
                     rho_mol_total_co2_waste = _ip_data[ip].porosity_prev_waste *
                         (rho_mol_nonwet * X3_int_pt * (1 - Sw) +
                             rho_mol_wet * X_L_co2_gp * Sw);
                     porosity = porosity3;
                     double const pH = piecewiselinear_interpolation(
                         _ip_data[ip].rho_mol_co2_cumul_total_prev_waste, _pH_at_supp_pnt_waste);
-                    if (pH < 10.5)
+                    if (pH < 10.5 )
                         accelerate_flag = true;
                     _pH_value[ip] = pH;
                 }
                 if (bazant_power > 1)
                     bazant_power = 1;
-                else if (bazant_power <= 0)
-                    bazant_power = 1e-6;
                 _reactivity_bazant_power[ip] = bazant_power;
                 //consumed CO2 for current step
                 _co2_consumed_current_step[ip] = rho_mol_co2_kinetic_rate_backfill*dt;
@@ -557,7 +573,6 @@ namespace ProcessLib
                             .noalias() += localMass_tmp;
                     }
                 }
-
                 double const k_rel_G =
                     _process_data._material->getNonwetRelativePermeability(
                         t, pos, pg_int_pt, temperature, Sw);
@@ -772,9 +787,8 @@ namespace ProcessLib
                     }
                 }  // end of hasGravityEffect
                    // load the source term
-                if (Sw > 0.20 && dt > 0)
+                if (Sw > -1e-6 && dt > 0)
                 {
-                    // specify the steel corrosion rate for the waste matrix
                     Q_steel_waste_matrix = 5.903876 * 4 / 3;
                     // instead of reading curve, now use analytical formular
                     double Q_organic_fast_co2_ini =
@@ -816,7 +830,7 @@ namespace ProcessLib
                         rho_mol_co2_cumul_total_waste =
                             _ip_data[ip].rho_mol_co2_cumul_total_prev_waste;// +rho_mol_total_co2_waste;
 
-                        F_vec_coeff(1) += (Q_organic_slow_co2 * 31 / 19);
+                        F_vec_coeff(1) += (Q_organic_slow_co2 * 5/3);
 
                         F_vec_coeff(2) += Q_organic_slow_co2;
                         //store the secondary variable
@@ -828,8 +842,10 @@ namespace ProcessLib
                         co2_degradation_rate += Q_organic_fast_co2;
 
                         //F_vec_coeff(2) -= (rho_mol_total_co2_waste / dt);//consumption of carbonation
-
-                        F_vec_coeff(4) += (Q_organic_slow_co2 * 12 / 19) +
+                        //F_vec_coeff(4) += Q_steel_waste_matrix;// switch off the water consumption
+                        /*F_vec_coeff(4) += (Q_organic_slow_co2 * 8 / 3) +
+                            (Q_organic_fast_co2 * 6 / 3);*/
+                        F_vec_coeff(4) += (Q_organic_slow_co2 * 2 / 3) +
                             (Q_organic_fast_co2 * 5 / 3);
                         //F_vec_coeff(4) +=
                         //(fluid_volume_rate_waste) -(rho_mol_total_co2_waste / dt);
@@ -844,7 +860,7 @@ namespace ProcessLib
                         _rho_mol_co2_cumulated_prev[ip] = rho_mol_co2_cumul_total_waste;
                         //store 
                         _h2o_consumed_rate[ip]
-                            = -Q_steel_waste_matrix - Q_organic_slow_co2 - Q_organic_fast_co2 * 2 / 3;
+                            = -Q_steel_waste_matrix - Q_organic_slow_co2* 2 - Q_organic_fast_co2 / 3 ;
                     }
                     else if (_process_data._material->getMaterialID(
                         pos.getElementID().get()) == 0)//backfill, cement and concrete
@@ -879,13 +895,14 @@ namespace ProcessLib
                         // update the current cumulated co2 consumption
                         rho_mol_co2_cumul_total_backfill =
                             _ip_data[ip].rho_mol_co2_cumul_total_prev_backfill +
-                            (rho_mol_co2_kinetic_rate_backfill*dt);// *2 * 3.1415926*_interpolateGaussNode_coord[0];
+                            (rho_mol_co2_kinetic_rate_backfill*dt*accelerate_factor);// *2 * 3.1415926*_interpolateGaussNode_coord[0];
                                                                    // co2 consumption
                         F_vec_coeff(2) -= rho_mol_co2_kinetic_rate_backfill;
                         //(rho_mol_total_co2_backfill / dt);
                         // water source/sink term
-                        F_vec_coeff(4) +=
+                        F_vec_coeff(4) += 
                             (fluid_volume_rate)-rho_mol_co2_kinetic_rate_backfill;
+                         //-rho_mol_co2_kinetic_rate_backfill;//switch off the water consumption
                         // update the amount of dissolved sio2
                         rho_mol_sio2_wet_backfill =
                             _ip_data[ip].rho_mol_sio2_prev_backfill -
@@ -930,14 +947,24 @@ namespace ProcessLib
                //apply the neumann boundary condition on the line element
                //first search the nodes
                //axissymmetric
-
+            double ele_bazant_power = 0;
+            for (auto const& ip : _reactivity_bazant_power)
+            {
+                ele_bazant_power += ip;
+            }
+            ele_bazant_power /= static_cast<double>(n_integration_points);
+            if (ele_bazant_power > 1)
+                ele_bazant_power = 1;
+            else if (ele_bazant_power < 0)
+                ele_bazant_power = 0;
             if (rx0 > 0.303 - eps  && rx1 > 0.303 - eps)
             {
                 //indicates edge 0-1 located on the boundary
                 length = std::sqrt(std::pow(rx0 - rx1, 2) + std::pow(ry0 - ry1, 2));
-                neumann_vec[2] = 0;
+                neumann_vec[2] = 0.0;
+                neumann_vec[3] = 0.0;
                 radial_sym_fac = 2 * 3.1415926*rx0;
-                neumn_h2 = 0.003733333*radial_sym_fac;
+                neumn_h2 = 0.003733333*radial_sym_fac*ele_bazant_power;
                 if (accelerate_flag) {
                     if (gp_carb_neutral_count <= 2) {
                         if (ry0 > ry1)
@@ -967,8 +994,9 @@ namespace ProcessLib
             {
                 length = std::sqrt(std::pow(rx1 - rx2, 2) + std::pow(ry1 - ry2, 2));
                 neumann_vec[0] = 0.0;
+                neumann_vec[3] = 0.0;
                 radial_sym_fac = 2 * 3.1415926*rx1;
-                neumn_h2 = 0.003733333* radial_sym_fac;
+                neumn_h2 = 0.003733333* radial_sym_fac*ele_bazant_power;
                 if (accelerate_flag) {
                     if (gp_carb_neutral_count <= 2) {
                         if (ry1 > ry2)
@@ -999,7 +1027,7 @@ namespace ProcessLib
                 length = std::sqrt(std::pow(rx0 - rx2, 2) + std::pow(ry0 - ry2, 2));
                 neumann_vec[1] = 0.0;
                 radial_sym_fac = 2 * 3.1415926*rx2;
-                neumn_h2 = 0.003733333* radial_sym_fac;
+                neumn_h2 = 0.003733333* radial_sym_fac*ele_bazant_power;
                 if (accelerate_flag) {
                     if (gp_carb_neutral_count <= 2) {
                         if (ry0 > ry2)
@@ -1025,7 +1053,102 @@ namespace ProcessLib
                 localNeumann_tmp = neumann_vec*length / 2;
                 _neumann_vec_output = neumann_vec / radial_sym_fac;
             }
-
+            else if (rx3 > 0.303 - eps && rx0 > 0.303 - eps)
+            {
+                length = std::sqrt(std::pow(rx0 - rx3, 2) + std::pow(ry0 - ry3, 2));
+                neumann_vec[1] = 0.0;
+                neumann_vec[2] = 0.0;
+                radial_sym_fac = 2 * 3.1415926*rx2;
+                neumn_h2 = 0.003733333* radial_sym_fac*ele_bazant_power;
+                if (accelerate_flag) {
+                    if (gp_carb_neutral_count <= 2) {
+                        if (ry0 > ry3)
+                        {
+                            neumann_vec[0] = 100 * neumn_h2;
+                            neumann_vec[3] = neumn_h2;
+                        }
+                        else
+                        {
+                            neumann_vec[0] = neumn_h2;
+                            neumann_vec[3] = 100 * neumn_h2;
+                        }
+                    }
+                    else {
+                        neumann_vec[0] = 100 * neumn_h2;
+                        neumann_vec[3] = 100 * neumn_h2;
+                    }
+                }
+                else {
+                    neumann_vec[0] = neumn_h2;
+                    neumann_vec[3] = neumn_h2;
+                }
+                localNeumann_tmp = neumann_vec * length / 2;
+                _neumann_vec_output = neumann_vec / radial_sym_fac;
+            }
+            else if (rx3 > 0.303 - eps && rx1 > 0.303 - eps)
+            {
+                length = std::sqrt(std::pow(rx1 - rx3, 2) + std::pow(ry1 - ry3, 2));
+                neumann_vec[0] = 0.0;
+                neumann_vec[2] = 0.0;
+                radial_sym_fac = 2 * 3.1415926*rx1;
+                neumn_h2 = 0.003733333* radial_sym_fac*ele_bazant_power;
+                if (accelerate_flag) {
+                    if (gp_carb_neutral_count <= 2) {
+                        if (ry1 > ry3)
+                        {
+                            neumann_vec[1] = 100 * neumn_h2;
+                            neumann_vec[3] = neumn_h2;
+                        }
+                        else
+                        {
+                            neumann_vec[1] = neumn_h2;
+                            neumann_vec[3] = 100 * neumn_h2;
+                        }
+                    }
+                    else {
+                        neumann_vec[1] = 100 * neumn_h2;
+                        neumann_vec[3] = 100 * neumn_h2;
+                    }
+                }
+                else {
+                    neumann_vec[1] = neumn_h2;
+                    neumann_vec[3] = neumn_h2;
+                }
+                localNeumann_tmp = neumann_vec * length / 2;
+                _neumann_vec_output = neumann_vec / radial_sym_fac;
+            }
+            else if (rx3 > 0.303 - eps && rx2 > 0.303 - eps)
+            {
+                length = std::sqrt(std::pow(rx2 - rx3, 2) + std::pow(ry2 - ry3, 2));
+                neumann_vec[0] = 0.0;
+                neumann_vec[1] = 0.0;
+                radial_sym_fac = 2 * 3.1415926*rx2;
+                neumn_h2 = 0.003733333* radial_sym_fac*ele_bazant_power;
+                if (accelerate_flag) {
+                    if (gp_carb_neutral_count <= 2) {
+                        if (ry2 > ry3)
+                        {
+                            neumann_vec[2] = 100 * neumn_h2;
+                            neumann_vec[3] = neumn_h2;
+                        }
+                        else
+                        {
+                            neumann_vec[2] = neumn_h2;
+                            neumann_vec[3] = 100 * neumn_h2;
+                        }
+                    }
+                    else {
+                        neumann_vec[2] = 100 * neumn_h2;
+                        neumann_vec[3] = 100 * neumn_h2;
+                    }
+                }
+                else {
+                    neumann_vec[2] = neumn_h2;
+                    neumann_vec[3] = neumn_h2;
+                }
+                localNeumann_tmp = neumann_vec * length / 2;
+                _neumann_vec_output = neumann_vec / radial_sym_fac;
+            }
             // for the second Neumann boundary condition
             if (std::abs(rx0 - 0.245)<0.0025 + eps && std::abs(rx1 - 0.245)<0.0025 + eps &&
                 ry1<0.795 + eps && ry1>0.088 - eps && ry0<0.795 + eps && ry0>0.088 - eps)
@@ -1034,7 +1157,7 @@ namespace ProcessLib
                 length = std::sqrt(std::pow(rx0 - rx1, 2) + std::pow(ry0 - ry1, 2));
                 neumann_vec[2] = 0;
                 radial_sym_fac = 2 * 3.1415926*rx0;
-                neumn_h2 = 0.0124*radial_sym_fac;
+                neumn_h2 = 0.0124*radial_sym_fac*ele_bazant_power;
                 if (accelerate_flag) {
                     if (gp_carb_neutral_count <= 2) {
                         if (ry0 > ry1)
@@ -1066,7 +1189,7 @@ namespace ProcessLib
                 length = std::sqrt(std::pow(rx1 - rx2, 2) + std::pow(ry1 - ry2, 2));
                 neumann_vec[0] = 0.0;
                 radial_sym_fac = 2 * 3.14159*rx1;
-                neumn_h2 = 0.0124* radial_sym_fac;
+                neumn_h2 = 0.0124* radial_sym_fac*ele_bazant_power;
                 if (accelerate_flag) {
                     if (gp_carb_neutral_count <= 2) {
                         if (ry1 > ry2)
@@ -1098,7 +1221,7 @@ namespace ProcessLib
                 length = std::sqrt(std::pow(rx0 - rx2, 2) + std::pow(ry0 - ry2, 2));
                 neumann_vec[1] = 0.0;
                 radial_sym_fac = 2 * 3.1415926*rx2;
-                neumn_h2 = 0.0124* radial_sym_fac;
+                neumn_h2 = 0.0124* radial_sym_fac*ele_bazant_power;
                 if (accelerate_flag) {
                     if (gp_carb_neutral_count <= 2) {
                         if (ry0 > ry2)
@@ -1124,6 +1247,188 @@ namespace ProcessLib
                 localNeumann_tmp = neumann_vec*length / 2;
                 _neumann_vec_output = neumann_vec / radial_sym_fac;
             }
+            else if (std::abs(rx0 - 0.245)<0.0025 + eps && std::abs(rx3 - 0.245)<0.0025 + eps &&
+                ry0<0.795 + eps && ry3>0.088 - eps && ry0<0.795 + eps && ry3>0.088 - eps)
+            {
+                length = std::sqrt(std::pow(rx0 - rx3, 2) + std::pow(ry0 - ry3, 2));
+                neumann_vec[1] = 0.0;
+                neumann_vec[2] = 0.0;
+                radial_sym_fac = 2 * 3.1415926*rx3;
+                neumn_h2 = 0.0124* radial_sym_fac*ele_bazant_power;
+                if (accelerate_flag) {
+                    if (gp_carb_neutral_count <= 2) {
+                        if (ry0 > ry3)
+                        {
+                            neumann_vec[0] = 100 * neumn_h2;
+                            neumann_vec[3] = neumn_h2;
+                        }
+                        else
+                        {
+                            neumann_vec[0] = neumn_h2;
+                            neumann_vec[3] = 100 * neumn_h2;
+                        }
+                    }
+                    else {
+                        neumann_vec[0] = 100 * neumn_h2;
+                        neumann_vec[3] = 100 * neumn_h2;
+                    }
+                }
+                else {
+                    neumann_vec[0] = neumn_h2;
+                    neumann_vec[3] = neumn_h2;
+                }
+                localNeumann_tmp = neumann_vec * length / 2;
+                _neumann_vec_output = neumann_vec / radial_sym_fac;
+            }
+            else if (std::abs(rx2 - 0.245)<0.0025 + eps && std::abs(rx3 - 0.245)<0.0025 + eps &&
+                ry2<0.795 + eps && ry3>0.088 - eps && ry2<0.795 + eps && ry3>0.088 - eps)
+            {
+                length = std::sqrt(std::pow(rx2 - rx3, 2) + std::pow(ry2 - ry3, 2));
+                neumann_vec[0] = 0.0;
+                neumann_vec[1] = 0.0;
+                radial_sym_fac = 2 * 3.1415926*rx2;
+                neumn_h2 = 0.0124* radial_sym_fac*ele_bazant_power;
+                if (accelerate_flag) {
+                    if (gp_carb_neutral_count <= 2) {
+                        if (ry2 > ry3)
+                        {
+                            neumann_vec[2] = 100 * neumn_h2;
+                            neumann_vec[3] = neumn_h2;
+                        }
+                        else
+                        {
+                            neumann_vec[2] = neumn_h2;
+                            neumann_vec[3] = 100 * neumn_h2;
+                        }
+                    }
+                    else {
+                        neumann_vec[2] = 100 * neumn_h2;
+                        neumann_vec[3] = 100 * neumn_h2;
+                    }
+                }
+                else {
+                    neumann_vec[2] = neumn_h2;
+                    neumann_vec[3] = neumn_h2;
+                }
+                localNeumann_tmp = neumann_vec * length / 2;
+                _neumann_vec_output = neumann_vec / radial_sym_fac;
+            }
+            else if (std::abs(rx1 - 0.245)<0.0025 + eps && std::abs(rx3 - 0.245)<0.0025 + eps &&
+                ry1<0.795 + eps && ry3>0.088 - eps && ry1<0.795 + eps && ry3>0.088 - eps)
+            {
+                length = std::sqrt(std::pow(rx1 - rx3, 2) + std::pow(ry1 - ry3, 2));
+                neumann_vec[0] = 0.0;
+                neumann_vec[2] = 0.0;
+                radial_sym_fac = 2 * 3.1415926*rx1;
+                neumn_h2 = 0.0124* radial_sym_fac*ele_bazant_power;
+                if (accelerate_flag) {
+                    if (gp_carb_neutral_count <= 2) {
+                        if (ry1 > ry3)
+                        {
+                            neumann_vec[1] = 100 * neumn_h2;
+                            neumann_vec[3] = neumn_h2;
+                        }
+                        else
+                        {
+                            neumann_vec[1] = neumn_h2;
+                            neumann_vec[3] = 100 * neumn_h2;
+                        }
+                    }
+                    else {
+                        neumann_vec[1] = 100 * neumn_h2;
+                        neumann_vec[3] = 100 * neumn_h2;
+                    }
+                }
+                else {
+                    neumann_vec[1] = neumn_h2;
+                    neumann_vec[3] = neumn_h2;
+                }
+                localNeumann_tmp = neumann_vec * length / 2;
+                _neumann_vec_output = neumann_vec / radial_sym_fac;
+            }
+
+            // for the third boundary condition
+            if (std::abs(rx0 - 0.24)<0.0025 + eps && std::abs(rx1 - 0.24)<0.0025 + eps &&
+                ry1<0.795 + eps && ry1>0.088 - eps && ry0<0.795 + eps && ry0>0.088 - eps)
+            {
+                //indicates edge 0-1 located on the boundary
+                length = std::sqrt(std::pow(rx0 - rx1, 2) + std::pow(ry0 - ry1, 2));
+                neumann_vec[2] = 0;
+                neumann_vec[3] = 0;
+                radial_sym_fac = 2 * 3.1415926*rx0;
+                neumn_h2 = 1.244*ele_bazant_power;
+                neumann_vec[0] = neumn_h2;
+                neumann_vec[1] = neumn_h2;
+                localNeumann_tmp = neumann_vec * length / 2;
+                _neumann_vec_output = neumann_vec / radial_sym_fac;
+            }
+            else if (std::abs(rx1 - 0.24)<0.0025 + eps && std::abs(rx2 - 0.24)<0.0025 + eps &&
+                ry1<0.795 + eps && ry1>0.088 - eps && ry2<0.795 + eps && ry2>0.088 - eps)
+            {
+                length = std::sqrt(std::pow(rx1 - rx2, 2) + std::pow(ry1 - ry2, 2));
+                neumann_vec[0] = 0.0;
+                neumann_vec[3] = 0;
+                radial_sym_fac = 2 * 3.14159*rx1;
+                neumn_h2 = 1.244* ele_bazant_power;
+                neumann_vec[1] = neumn_h2;
+                neumann_vec[2] = neumn_h2;
+                localNeumann_tmp = neumann_vec * length / 2;
+                _neumann_vec_output = neumann_vec / radial_sym_fac;
+            }
+            else if (std::abs(rx2 - 0.24)<0.0025 + eps && std::abs(rx0 - 0.24)<0.0025 + eps &&
+                ry2<0.795 + eps && ry2>0.088 - eps && ry0<0.795 + eps && ry0>0.088 - eps)
+            {
+                length = std::sqrt(std::pow(rx0 - rx2, 2) + std::pow(ry0 - ry2, 2));
+                neumann_vec[1] = 0.0;
+                neumann_vec[3] = 0;
+                radial_sym_fac = 2 * 3.1415926*rx2;
+                neumn_h2 = 1.244* ele_bazant_power;
+                neumann_vec[0] = neumn_h2;
+                neumann_vec[2] = neumn_h2;
+                localNeumann_tmp = neumann_vec * length / 2;
+                _neumann_vec_output = neumann_vec / radial_sym_fac;
+            }
+            else if (std::abs(rx0 - 0.24)<0.0025 + eps && std::abs(rx3 - 0.24)<0.0025 + eps &&
+                ry0<0.795 + eps && ry3>0.088 - eps && ry0<0.795 + eps && ry3>0.088 - eps)
+            {
+                length = std::sqrt(std::pow(rx0 - rx3, 2) + std::pow(ry0 - ry3, 2));
+                neumann_vec[1] = 0.0;
+                neumann_vec[2] = 0.0;
+                radial_sym_fac = 2 * 3.1415926*rx0;
+                neumn_h2 = 1.244* ele_bazant_power;
+                neumann_vec[0] = neumn_h2;
+                neumann_vec[3] = neumn_h2;
+                localNeumann_tmp = neumann_vec * length / 2;
+                _neumann_vec_output = neumann_vec / radial_sym_fac;
+            }
+            else if (std::abs(rx2 - 0.24)<0.0025 + eps && std::abs(rx3 - 0.24)<0.0025 + eps &&
+                ry2<0.795 + eps && ry3>0.088 - eps && ry2<0.795 + eps && ry3>0.088 - eps)
+            {
+                length = std::sqrt(std::pow(rx2 - rx3, 2) + std::pow(ry2 - ry3, 2));
+                neumann_vec[0] = 0.0;
+                neumann_vec[1] = 0.0;
+                radial_sym_fac = 2 * 3.1415926*rx2;
+                neumn_h2 = 1.244* ele_bazant_power;
+                neumann_vec[2] = neumn_h2;
+                neumann_vec[3] = neumn_h2;
+                localNeumann_tmp = neumann_vec * length / 2;
+                _neumann_vec_output = neumann_vec / radial_sym_fac;
+            }
+            else if (std::abs(rx1 - 0.24)<0.0025 + eps && std::abs(rx3 - 0.24)<0.0025 + eps &&
+                ry1<0.795 + eps && ry3>0.088 - eps && ry1<0.795 + eps && ry3>0.088 - eps)
+            {
+                length = std::sqrt(std::pow(rx1 - rx3, 2) + std::pow(ry1 - ry3, 2));
+                neumann_vec[0] = 0.0;
+                neumann_vec[2] = 0.0;
+                radial_sym_fac = 2 * 3.1415926*rx1;
+                neumn_h2 = 1.244* ele_bazant_power;
+                
+                neumann_vec[1] = neumn_h2;
+                neumann_vec[3] = neumn_h2;
+
+                localNeumann_tmp = neumann_vec * length / 2;
+                _neumann_vec_output = neumann_vec / radial_sym_fac;
+            }
             local_b.block(n_nodes * 0, 0, n_nodes, 1).noalias() += localNeumann_tmp;
             //output secondary variable
             for (unsigned ip = 0; ip < n_integration_points; ip++)
@@ -1142,6 +1447,7 @@ namespace ProcessLib
                 _gas_h2_boundary_generation_rate[ip] = h2_flux;
                 _gas_h2_overall_generation_rate[ip] =
                     _gas_h2_boundary_generation_rate[ip] + _gas_h2_generation_rate[ip];
+                _h2o_consumed_rate[ip] -= _gas_h2_boundary_generation_rate[ip];
             }
 
             int n = n_integration_points;
@@ -1171,13 +1477,13 @@ namespace ProcessLib
             ele_pH /= static_cast<double>(n_integration_points);
             (*_process_data.mesh_prop_pHvalue)[element_id] = ele_pH;
 
-            double ele_bazant_power = 0;
+            double ele_bazant_power_2 = 0;
             for (auto const& ip : _reactivity_bazant_power)
             {
-                ele_bazant_power += ip;
+                ele_bazant_power_2 += ip;
             }
-            ele_bazant_power /= static_cast<double>(n);
-            (*_process_data.mesh_prop_bazant_power)[element_id] = ele_bazant_power;
+            ele_bazant_power_2 /= static_cast<double>(n);
+            (*_process_data.mesh_prop_bazant_power)[element_id] = ele_bazant_power_2;
 
             double ele_mol_density_gas = 0;
             for (auto const& ip : _rho_mol_gas_phase)

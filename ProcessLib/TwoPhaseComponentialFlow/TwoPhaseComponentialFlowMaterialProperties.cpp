@@ -179,18 +179,42 @@ namespace ProcessLib
         {
             const double saturation =
                 _capillary_pressure_models[material_id]->getSaturation(pc);
-            if (material_id == 0 && pc>=1.1597e+6 && pc < 5.3728e+06)
+            if (material_id == 0 && pc>=1.1597e+6 && pc < 5.3728e+06)//old test
             {
                 return -(pc - 5.3728e+06) / 1.0533e+7;
             }
+            /*if (material_id == 0 && pc >= 1.5969e+7 && pc < 9.6125e+7)
+            {
+                return -(pc - 9.6125e+7) / 3.2063e+8;
+            }*/
+            /*if (material_id == 0 && pc >= 4.0237e+6 && pc < 2.555e+7)//the current evaluation
+            {
+                return -(pc - 2.555e+7) / 7.1756e+7;
+            }*/
             else if (material_id == 0 && pc >= 5.3728e+06)
             {
                 return 0;
             }
-            if (material_id == 1 && pc >= 7.9994e+5 && pc < 1.7601e+7) {
+            /*if (material_id == 1 && pc >= 7.9994e+5 && pc < 1.7601e+7) {
                 return -(pc - 1.7601e+7) / 8.0006e+7;
+            }*/
+            //correspond to water saturation =0.23
+            /*if (material_id == 1 && pc >= 4.74021e+6 && pc < 2.2351e+7) {
+
+            return -(pc - 2.2351e+7) / 1.7601e+8;
+
+            }*/
+            /*if (material_id == 1 && pc >= 2.6933e+5 && pc < 1.0807e+6) {// the current version
+
+                return -(pc - 1.0807e+6) / 4.0568e+6;
+
+            }*/
+            if (material_id == 1 && pc >= 9.9499e+4 && pc < 4.5126e+5) {// correspond to s=0.28
+
+                return -(pc - 4.5126e+5) / 1.2563e+6;
+
             }
-            else if (material_id == 1 && pc >= 1.7601e+7)
+            else if (material_id == 1 && pc >= 4.5126e+5)
                 return 0;
             return saturation;
         }
@@ -202,7 +226,7 @@ namespace ProcessLib
             const double dpcdsw =
                 _capillary_pressure_models[material_id]->getdPcdS(saturation);//
             const double dswdpc = 1 / dpcdsw;
-            if (material_id == 0 && saturation <=0.4)
+            if (material_id == 0 && saturation <=0.4)//0.4 for the 
             {
                 return -1 / 1.0533e+7;
             }
@@ -211,9 +235,9 @@ namespace ProcessLib
                 return 0;
             }
 
-            if (material_id == 1 && saturation <= 0.21)
+            if (material_id == 1 && saturation <= 0.28)//0.28
             {
-                return -1 / 8.0006e+7;
+                return -1 / 1.2563e+6;
             }
             else if (material_id == 1 && saturation<0)
             {

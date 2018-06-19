@@ -911,8 +911,9 @@ namespace ProcessLib
             const double Hen_L_co2 = 0.163e+9;  // Henry constant in [Pa]
             const double rho_l_std = 1000.0;
             const double& R = MaterialLib::PhysicalConstant::IdealGasConstant;
-            double Q_steel_waste_matrix = 5.903876 * 4 / 3;  // generate H2
+            double Q_steel_waste_matrix = 0.0;// 5.903876 * 4 / 3;  // generate H2
             const double Q_steel_inner_surface = 0.0093 * 4 / 3;  // generate H2
+
 
             const double para_slow = 51.8/0.178;//51.8/0.129
             const double para_fast = 24.7/0.178;//24.7kg/0,129
@@ -924,17 +925,12 @@ namespace ProcessLib
             double neumn_h2 = 0.003733333;// multiply 2*pi*r to represent the radial symmetric
             const double eps = 1e-5;
             bool accelerate_flag = false;
-            double radial_sym_fac = 0.0;
+            double radial_sym_fac = 1.0;
             double length = 0.0;
         private:
             const double get_P_sat(double T)
             {
-                double P_sat(0.0);
-                double T_0 = 373.15;
-                double P_0 = 101325.0;
-                double h_wg = 2258000.0;
-                const double molar_mass_water = 0.018016;
-                return P_0 * exp(((1 / T_0) - (1 / T)) * molar_mass_water * h_wg / R);
+                return 101325.0 * exp(((1 / 373.15) - (1 / T)) * 0.018016 * 2258000.0 / R);
             }
             const double get_x_nonwet_air_gp(double PG, double X1, double X2, double X3,
                 double P_sat, double kelvin_term)
