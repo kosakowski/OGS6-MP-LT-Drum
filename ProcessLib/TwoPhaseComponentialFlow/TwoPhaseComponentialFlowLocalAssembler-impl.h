@@ -167,7 +167,7 @@ namespace ProcessLib
             int gp_carb_neutral_count = 3;
             bool atm_flag = false;
             double deriv_flag = 1;
-            int accelerate_factor = 1.5;
+            double accelerate_factor = 1.5;
             if (_process_data._material->getMaterialID(pos.getElementID().get()) >=
                 2)//backfill
             {
@@ -459,8 +459,8 @@ namespace ProcessLib
                         (rho_mol_nonwet * X3_int_pt * (1 - Sw) +
                             rho_mol_wet * X_L_co2_gp * Sw);
                     porosity = porosity3;
-                    double const pH = piecewiselinear_interpolation(
-                        _ip_data[ip].rho_mol_co2_cumul_total_prev_waste, _pH_at_supp_pnt_waste);
+                    double const pH = 10.0653;// piecewiselinear_interpolation(
+                        //_ip_data[ip].rho_mol_co2_cumul_total_prev_waste, _pH_at_supp_pnt_waste);
                     if (pH < 10.5 )
                         accelerate_flag = true;
                     _pH_value[ip] = pH;
@@ -787,6 +787,11 @@ namespace ProcessLib
                     }
                 }  // end of hasGravityEffect
                    // load the source term
+                double porosity_test = bi_interpolation(
+                    94.8,
+                    1459,
+                    _porosity_at_supp_pnts_backfill);  // porosity update
+                                                       //store the secondary variable
                 if (Sw > -1e-6 && dt > 0)
                 {
                     Q_steel_waste_matrix = 5.903876 * 4 / 3;
@@ -807,11 +812,11 @@ namespace ProcessLib
                         pos.getElementID().get()) == 1)//waste matrix
                     {
                         //calculate the fluid volume change
-                        double& fluid_volume_waste = _ip_data[ip].fluid_volume_waste;
-                        fluid_volume_waste = piecewiselinear_interpolation(
-                            _ip_data[ip].rho_mol_co2_cumul_total_prev_waste, _fluid_volume_suppt_pnt_waste);
-                        double const fluid_volume_rate_waste =
-                            (fluid_volume_waste - _ip_data[ip].fluid_volume_prev_waste) / dt;
+                        //double& fluid_volume_waste = _ip_data[ip].fluid_volume_waste;
+                        //fluid_volume_waste = piecewiselinear_interpolation(
+                            //_ip_data[ip].rho_mol_co2_cumul_total_prev_waste, _fluid_volume_suppt_pnt_waste);
+                        //double const fluid_volume_rate_waste =
+                            //(fluid_volume_waste - _ip_data[ip].fluid_volume_prev_waste) / dt;
                         // steel corrosion rate multiply reactivity
                         Q_steel_waste_matrix *= bazant_power;
                         F_vec_coeff(0) += Q_steel_waste_matrix;
@@ -853,9 +858,9 @@ namespace ProcessLib
                         //= previous porosity + porosity change
                         double const poro = _process_data._material->getPorosity(
                             material_id, t, pos, pg_int_pt, temperature, 0);//initial porosity
-                        porosity3 = poro + piecewiselinear_interpolation(
-                            _ip_data[ip].rho_mol_co2_cumul_total_prev_waste,
-                            _porosity_change_at_supp_pnt_waste);
+                        porosity3 = poro;// +piecewiselinear_interpolation(
+                            //_ip_data[ip].rho_mol_co2_cumul_total_prev_waste,
+                            //_porosity_change_at_supp_pnt_waste);
                         _porosity_value[ip] = porosity3;
                         _rho_mol_co2_cumulated_prev[ip] = rho_mol_co2_cumul_total_waste;
                         //store 

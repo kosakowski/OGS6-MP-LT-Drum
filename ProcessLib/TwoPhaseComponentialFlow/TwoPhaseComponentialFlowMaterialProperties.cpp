@@ -209,13 +209,14 @@ namespace ProcessLib
                 return -(pc - 1.0807e+6) / 4.0568e+6;
 
             }*/
-            if (material_id == 1 && pc >= 9.9499e+4 && pc < 4.5126e+5) {// correspond to s=0.28
+            /*if (material_id == 1 && pc >= 9.9499e+4 && pc < 4.5126e+5) {// correspond to s=0.28
 
                 return -(pc - 4.5126e+5) / 1.2563e+6;
 
             }
             else if (material_id == 1 && pc >= 4.5126e+5)
                 return 0;
+                */
             return saturation;
         }
 
@@ -234,7 +235,7 @@ namespace ProcessLib
             {
                 return 0;
             }
-
+            /*
             if (material_id == 1 && saturation <= 0.28)//0.28
             {
                 return -1 / 1.2563e+6;
@@ -243,7 +244,7 @@ namespace ProcessLib
             {
                 return 0;
             }
-            
+            */
             return dswdpc;
         }
 
