@@ -167,7 +167,7 @@ namespace ProcessLib
             int gp_carb_neutral_count = 3;
             bool atm_flag = false;
             double deriv_flag = 1;
-            double accelerate_factor = 1.5;
+            double accelerate_factor = 1;
             if (_process_data._material->getMaterialID(pos.getElementID().get()) >=
                 2)//backfill
             {
@@ -180,11 +180,11 @@ namespace ProcessLib
                 pos.getElementID().get() == 190 || pos.getElementID().get() == 191 ||
                 pos.getElementID().get() == 246 || pos.getElementID().get() == 236)
             {
-                accelerate_factor = 2.5;
+                accelerate_factor = 1;
             }
             if (t > 65)
             {
-                accelerate_factor = 2;
+                accelerate_factor = 1;
             }
             for (unsigned ip = 0; ip < n_integration_points; ip++)
             {
@@ -969,23 +969,23 @@ namespace ProcessLib
                 neumann_vec[2] = 0.0;
                 neumann_vec[3] = 0.0;
                 radial_sym_fac = 2 * 3.1415926*rx0;
-                neumn_h2 = 0.003733333*radial_sym_fac*ele_bazant_power;
+                neumn_h2 = 0.003733333*ele_bazant_power;
                 if (accelerate_flag) {
                     if (gp_carb_neutral_count <= 2) {
                         if (ry0 > ry1)
                         {
-                            neumann_vec[0] = 100 * neumn_h2;
+                            neumann_vec[0] = 1000 * neumn_h2;
                             neumann_vec[1] = neumn_h2;
                         }
                         else
                         {
                             neumann_vec[0] = neumn_h2;
-                            neumann_vec[1] = 100 * neumn_h2;
+                            neumann_vec[1] = 1000 * neumn_h2;
                         }
                     }
                     else {
-                        neumann_vec[0] = 100 * neumn_h2;
-                        neumann_vec[1] = 100 * neumn_h2;
+                        neumann_vec[0] = 1000 * neumn_h2;
+                        neumann_vec[1] = 1000 * neumn_h2;
                     }
                 }
                 else {
@@ -1001,23 +1001,23 @@ namespace ProcessLib
                 neumann_vec[0] = 0.0;
                 neumann_vec[3] = 0.0;
                 radial_sym_fac = 2 * 3.1415926*rx1;
-                neumn_h2 = 0.003733333* radial_sym_fac*ele_bazant_power;
+                neumn_h2 = 0.003733333*ele_bazant_power;
                 if (accelerate_flag) {
                     if (gp_carb_neutral_count <= 2) {
                         if (ry1 > ry2)
                         {
-                            neumann_vec[1] = 100 * neumn_h2;
+                            neumann_vec[1] = 1000 * neumn_h2;
                             neumann_vec[2] = neumn_h2;
                         }
                         else
                         {
                             neumann_vec[1] = neumn_h2;
-                            neumann_vec[2] = 100 * neumn_h2;
+                            neumann_vec[2] = 1000 * neumn_h2;
                         }
                     }
                     else {
-                        neumann_vec[1] = 100 * neumn_h2;
-                        neumann_vec[2] = 100 * neumn_h2;
+                        neumann_vec[1] = 1000 * neumn_h2;
+                        neumann_vec[2] = 1000 * neumn_h2;
                     }
                 }
                 else {
@@ -1032,23 +1032,23 @@ namespace ProcessLib
                 length = std::sqrt(std::pow(rx0 - rx2, 2) + std::pow(ry0 - ry2, 2));
                 neumann_vec[1] = 0.0;
                 radial_sym_fac = 2 * 3.1415926*rx2;
-                neumn_h2 = 0.003733333* radial_sym_fac*ele_bazant_power;
+                neumn_h2 = 0.003733333*ele_bazant_power;
                 if (accelerate_flag) {
                     if (gp_carb_neutral_count <= 2) {
                         if (ry0 > ry2)
                         {
-                            neumann_vec[0] = 100 * neumn_h2;
+                            neumann_vec[0] = 1000 * neumn_h2;
                             neumann_vec[2] = neumn_h2;
                         }
                         else
                         {
                             neumann_vec[0] = neumn_h2;
-                            neumann_vec[2] = 100 * neumn_h2;
+                            neumann_vec[2] = 1000 * neumn_h2;
                         }
                     }
                     else {
-                        neumann_vec[0] = 100 * neumn_h2;
-                        neumann_vec[2] = 100 * neumn_h2;
+                        neumann_vec[0] = 1000 * neumn_h2;
+                        neumann_vec[2] = 1000 * neumn_h2;
                     }
                 }
                 else {
@@ -1064,23 +1064,23 @@ namespace ProcessLib
                 neumann_vec[1] = 0.0;
                 neumann_vec[2] = 0.0;
                 radial_sym_fac = 2 * 3.1415926*rx2;
-                neumn_h2 = 0.003733333* radial_sym_fac*ele_bazant_power;
+                neumn_h2 = 0.003733333*ele_bazant_power;
                 if (accelerate_flag) {
                     if (gp_carb_neutral_count <= 2) {
                         if (ry0 > ry3)
                         {
-                            neumann_vec[0] = 100 * neumn_h2;
+                            neumann_vec[0] = 1000 * neumn_h2;
                             neumann_vec[3] = neumn_h2;
                         }
                         else
                         {
                             neumann_vec[0] = neumn_h2;
-                            neumann_vec[3] = 100 * neumn_h2;
+                            neumann_vec[3] = 1000 * neumn_h2;
                         }
                     }
                     else {
-                        neumann_vec[0] = 100 * neumn_h2;
-                        neumann_vec[3] = 100 * neumn_h2;
+                        neumann_vec[0] = 1000 * neumn_h2;
+                        neumann_vec[3] = 1000 * neumn_h2;
                     }
                 }
                 else {
@@ -1096,23 +1096,23 @@ namespace ProcessLib
                 neumann_vec[0] = 0.0;
                 neumann_vec[2] = 0.0;
                 radial_sym_fac = 2 * 3.1415926*rx1;
-                neumn_h2 = 0.003733333* radial_sym_fac*ele_bazant_power;
+                neumn_h2 = 0.003733333*ele_bazant_power;
                 if (accelerate_flag) {
                     if (gp_carb_neutral_count <= 2) {
                         if (ry1 > ry3)
                         {
-                            neumann_vec[1] = 100 * neumn_h2;
+                            neumann_vec[1] = 1000 * neumn_h2;
                             neumann_vec[3] = neumn_h2;
                         }
                         else
                         {
                             neumann_vec[1] = neumn_h2;
-                            neumann_vec[3] = 100 * neumn_h2;
+                            neumann_vec[3] = 1000 * neumn_h2;
                         }
                     }
                     else {
-                        neumann_vec[1] = 100 * neumn_h2;
-                        neumann_vec[3] = 100 * neumn_h2;
+                        neumann_vec[1] = 1000 * neumn_h2;
+                        neumann_vec[3] = 1000 * neumn_h2;
                     }
                 }
                 else {
@@ -1128,23 +1128,23 @@ namespace ProcessLib
                 neumann_vec[0] = 0.0;
                 neumann_vec[1] = 0.0;
                 radial_sym_fac = 2 * 3.1415926*rx2;
-                neumn_h2 = 0.003733333* radial_sym_fac*ele_bazant_power;
+                neumn_h2 = 0.003733333*ele_bazant_power;
                 if (accelerate_flag) {
                     if (gp_carb_neutral_count <= 2) {
                         if (ry2 > ry3)
                         {
-                            neumann_vec[2] = 100 * neumn_h2;
+                            neumann_vec[2] = 1000 * neumn_h2;
                             neumann_vec[3] = neumn_h2;
                         }
                         else
                         {
                             neumann_vec[2] = neumn_h2;
-                            neumann_vec[3] = 100 * neumn_h2;
+                            neumann_vec[3] = 1000 * neumn_h2;
                         }
                     }
                     else {
-                        neumann_vec[2] = 100 * neumn_h2;
-                        neumann_vec[3] = 100 * neumn_h2;
+                        neumann_vec[2] = 1000 * neumn_h2;
+                        neumann_vec[3] = 1000 * neumn_h2;
                     }
                 }
                 else {
@@ -1162,23 +1162,23 @@ namespace ProcessLib
                 length = std::sqrt(std::pow(rx0 - rx1, 2) + std::pow(ry0 - ry1, 2));
                 neumann_vec[2] = 0;
                 radial_sym_fac = 2 * 3.1415926*rx0;
-                neumn_h2 = 0.0124*radial_sym_fac*ele_bazant_power;
+                neumn_h2 = 0.0124*ele_bazant_power;
                 if (accelerate_flag) {
                     if (gp_carb_neutral_count <= 2) {
                         if (ry0 > ry1)
                         {
-                            neumann_vec[0] = 100 * neumn_h2;
+                            neumann_vec[0] = 1000 * neumn_h2;
                             neumann_vec[1] = neumn_h2;
                         }
                         else
                         {
                             neumann_vec[0] = neumn_h2;
-                            neumann_vec[1] = 100 * neumn_h2;
+                            neumann_vec[1] = 1000 * neumn_h2;
                         }
                     }
                     else {
-                        neumann_vec[0] = 100 * neumn_h2;
-                        neumann_vec[1] = 100 * neumn_h2;
+                        neumann_vec[0] = 1000 * neumn_h2;
+                        neumann_vec[1] = 1000 * neumn_h2;
                     }
                 }
                 else {
@@ -1194,23 +1194,23 @@ namespace ProcessLib
                 length = std::sqrt(std::pow(rx1 - rx2, 2) + std::pow(ry1 - ry2, 2));
                 neumann_vec[0] = 0.0;
                 radial_sym_fac = 2 * 3.14159*rx1;
-                neumn_h2 = 0.0124* radial_sym_fac*ele_bazant_power;
+                neumn_h2 = 0.0124*ele_bazant_power;
                 if (accelerate_flag) {
                     if (gp_carb_neutral_count <= 2) {
                         if (ry1 > ry2)
                         {
-                            neumann_vec[1] = 100 * neumn_h2;
+                            neumann_vec[1] = 1000 * neumn_h2;
                             neumann_vec[2] = neumn_h2;
                         }
                         else
                         {
                             neumann_vec[1] = neumn_h2;
-                            neumann_vec[2] = 100 * neumn_h2;
+                            neumann_vec[2] = 1000 * neumn_h2;
                         }
                     }
                     else {
-                        neumann_vec[1] = 100 * neumn_h2;
-                        neumann_vec[2] = 100 * neumn_h2;
+                        neumann_vec[1] = 1000 * neumn_h2;
+                        neumann_vec[2] = 1000 * neumn_h2;
                     }
                 }
                 else {
@@ -1226,23 +1226,23 @@ namespace ProcessLib
                 length = std::sqrt(std::pow(rx0 - rx2, 2) + std::pow(ry0 - ry2, 2));
                 neumann_vec[1] = 0.0;
                 radial_sym_fac = 2 * 3.1415926*rx2;
-                neumn_h2 = 0.0124* radial_sym_fac*ele_bazant_power;
+                neumn_h2 = 0.0124*ele_bazant_power;
                 if (accelerate_flag) {
                     if (gp_carb_neutral_count <= 2) {
                         if (ry0 > ry2)
                         {
-                            neumann_vec[0] = 100 * neumn_h2;
+                            neumann_vec[0] = 1000 * neumn_h2;
                             neumann_vec[2] = neumn_h2;
                         }
                         else
                         {
                             neumann_vec[0] = neumn_h2;
-                            neumann_vec[2] = 100 * neumn_h2;
+                            neumann_vec[2] = 1000 * neumn_h2;
                         }
                     }
                     else {
-                        neumann_vec[0] = 100 * neumn_h2;
-                        neumann_vec[2] = 100 * neumn_h2;
+                        neumann_vec[0] = 1000 * neumn_h2;
+                        neumann_vec[2] = 1000 * neumn_h2;
                     }
                 }
                 else {
@@ -1259,23 +1259,23 @@ namespace ProcessLib
                 neumann_vec[1] = 0.0;
                 neumann_vec[2] = 0.0;
                 radial_sym_fac = 2 * 3.1415926*rx3;
-                neumn_h2 = 0.0124* radial_sym_fac*ele_bazant_power;
+                neumn_h2 = 0.0124*ele_bazant_power;
                 if (accelerate_flag) {
                     if (gp_carb_neutral_count <= 2) {
                         if (ry0 > ry3)
                         {
-                            neumann_vec[0] = 100 * neumn_h2;
+                            neumann_vec[0] = 1000 * neumn_h2;
                             neumann_vec[3] = neumn_h2;
                         }
                         else
                         {
                             neumann_vec[0] = neumn_h2;
-                            neumann_vec[3] = 100 * neumn_h2;
+                            neumann_vec[3] = 1000 * neumn_h2;
                         }
                     }
                     else {
-                        neumann_vec[0] = 100 * neumn_h2;
-                        neumann_vec[3] = 100 * neumn_h2;
+                        neumann_vec[0] = 1000 * neumn_h2;
+                        neumann_vec[3] = 1000 * neumn_h2;
                     }
                 }
                 else {
@@ -1292,23 +1292,23 @@ namespace ProcessLib
                 neumann_vec[0] = 0.0;
                 neumann_vec[1] = 0.0;
                 radial_sym_fac = 2 * 3.1415926*rx2;
-                neumn_h2 = 0.0124* radial_sym_fac*ele_bazant_power;
+                neumn_h2 = 0.0124*ele_bazant_power;
                 if (accelerate_flag) {
                     if (gp_carb_neutral_count <= 2) {
                         if (ry2 > ry3)
                         {
-                            neumann_vec[2] = 100 * neumn_h2;
+                            neumann_vec[2] = 1000 * neumn_h2;
                             neumann_vec[3] = neumn_h2;
                         }
                         else
                         {
                             neumann_vec[2] = neumn_h2;
-                            neumann_vec[3] = 100 * neumn_h2;
+                            neumann_vec[3] = 1000 * neumn_h2;
                         }
                     }
                     else {
-                        neumann_vec[2] = 100 * neumn_h2;
-                        neumann_vec[3] = 100 * neumn_h2;
+                        neumann_vec[2] = 1000 * neumn_h2;
+                        neumann_vec[3] = 1000 * neumn_h2;
                     }
                 }
                 else {
@@ -1325,23 +1325,23 @@ namespace ProcessLib
                 neumann_vec[0] = 0.0;
                 neumann_vec[2] = 0.0;
                 radial_sym_fac = 2 * 3.1415926*rx1;
-                neumn_h2 = 0.0124* radial_sym_fac*ele_bazant_power;
+                neumn_h2 = 0.0124*ele_bazant_power;
                 if (accelerate_flag) {
                     if (gp_carb_neutral_count <= 2) {
                         if (ry1 > ry3)
                         {
-                            neumann_vec[1] = 100 * neumn_h2;
+                            neumann_vec[1] = 1000 * neumn_h2;
                             neumann_vec[3] = neumn_h2;
                         }
                         else
                         {
                             neumann_vec[1] = neumn_h2;
-                            neumann_vec[3] = 100 * neumn_h2;
+                            neumann_vec[3] = 1000 * neumn_h2;
                         }
                     }
                     else {
-                        neumann_vec[1] = 100 * neumn_h2;
-                        neumann_vec[3] = 100 * neumn_h2;
+                        neumann_vec[1] = 1000 * neumn_h2;
+                        neumann_vec[3] = 1000 * neumn_h2;
                     }
                 }
                 else {
