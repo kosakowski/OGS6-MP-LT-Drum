@@ -179,10 +179,10 @@ namespace ProcessLib
         {
             const double saturation =
                 _capillary_pressure_models[material_id]->getSaturation(pc);
-            /*if (material_id == 0 && pc>=1.1597e+6 && pc < 5.3728e+06)//old test
+            if (material_id == 0 && pc>=1.1597e+6 && pc < 5.3728e+06)//old test
             {
                 return -(pc - 5.3728e+06) / 1.0533e+7;
-            }*/
+            }
             /*if (material_id == 0 && pc >= 1.5969e+7 && pc < 9.6125e+7)
             {
                 return -(pc - 9.6125e+7) / 3.2063e+8;
@@ -191,10 +191,10 @@ namespace ProcessLib
             {
                 return -(pc - 2.555e+7) / 7.1756e+7;
             }*/
-            /*else if (material_id == 0 && pc >= 5.3728e+06)
+            else if (material_id == 0 && pc >= 5.3728e+06)
             {
                 return 0;
-            }*/
+            }
             /*if (material_id == 1 && pc >= 7.9994e+5 && pc < 1.7601e+7) {
                 return -(pc - 1.7601e+7) / 8.0006e+7;
             }*/
@@ -227,14 +227,14 @@ namespace ProcessLib
             const double dpcdsw =
                 _capillary_pressure_models[material_id]->getdPcdS(saturation);//
             const double dswdpc = 1 / dpcdsw;
-            /*if (material_id == 0 && saturation <=0.4)//0.4 for the 
+            if (material_id == 0 && saturation <=0.4)//0.4 for the 
             {
                 return -1 / 1.0533e+7;
             }
             else if (material_id == 0 && saturation<0)
             {
                 return 0;
-            }*/
+            }
             /*
             if (material_id == 1 && saturation <= 0.28)//0.28
             {
