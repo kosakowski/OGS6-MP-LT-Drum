@@ -180,7 +180,7 @@ namespace ProcessLib
                 pos.getElementID().get() == 190 || pos.getElementID().get() == 191 ||
                 pos.getElementID().get() == 246 || pos.getElementID().get() == 236)
             {
-                accelerate_factor = 1;
+                accelerate_factor = 2.0;
             }
             if (t > 65)
             {
