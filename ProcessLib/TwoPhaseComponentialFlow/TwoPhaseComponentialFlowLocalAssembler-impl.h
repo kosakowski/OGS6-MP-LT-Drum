@@ -794,7 +794,12 @@ namespace ProcessLib
                                                        //store the secondary variable
                 if (Sw > -1e-6 && dt > 0)
                 {
-                    Q_steel_waste_matrix = 5.903876 * 4 / 3;
+                    Q_steel_waste_matrix = (9.3682 / 0.13061) * 0.28 * (4.0/3.0) ; // surface area steel in waste / volume waste * reaction rate *4/3 = hydrogen production in mol/(m^3 a)
+                                                                              //  Steel in waste is assumed to corrode fast, therefore we can fix rates for H2 here
+                                                                              // fortunately water consumption has the same rate as H2 production
+                    // here we need for waste matrix the gas production per volume!
+                    // surface area of steel [m^2]/ volume of waste compartment [m^3] * gas production [mol / (m^2 * a)]
+
                     // instead of reading curve, now use analytical formular
                     double Q_organic_fast_co2_ini =
                         m0_cellulose*(std::exp(-k_d_cellulose*t));  //this is decay of total mass with time normalized by volume of innter tube
@@ -819,7 +824,7 @@ namespace ProcessLib
                         //double const fluid_volume_rate_waste =
                             //(fluid_volume_waste - _ip_data[ip].fluid_volume_prev_waste) / dt;
                         // steel corrosion rate multiply reactivity
-                        Q_steel_waste_matrix *= bazant_power;
+                        Q_steel_waste_matrix *= bazant_power; // multiply with chemical reactivity
                         F_vec_coeff(0) += Q_steel_waste_matrix;  //this is for H2 source/sink
                         //store the gas h2 generation rate
                         _gas_h2_generation_rate[ip] = Q_steel_waste_matrix;
@@ -852,7 +857,7 @@ namespace ProcessLib
                         /*F_vec_coeff(4) += (Q_organic_slow_co2 * 8 / 3) +
                             (Q_organic_fast_co2 * 6 / 3);*/
                         F_vec_coeff(4) += (Q_organic_slow_co2 * 2 / 3) +
-                            (Q_organic_fast_co2 * 5 / 3);   //KG 44: this adds what together? ...I am not completely sure: water + CO2 + CH4 (+ H2) ?
+                            (Q_organic_fast_co2 * 5 / 3);   //KG 44: this adds mol amounts of water and gases water + CO2 + CH4 +H2  ..for H2: water and H2 cancels out!
                             // for cellulose: Q_organic_fast_co2 3/3 + Q_organic_fast_co2 3/3 - 1/3 water = 5/3
                             // for polystyrene: Q_organic_slow_co2 3/3+ Q_organic_slow_co2 5/3 -6/3 = 2/3
                         //F_vec_coeff(4) +=
