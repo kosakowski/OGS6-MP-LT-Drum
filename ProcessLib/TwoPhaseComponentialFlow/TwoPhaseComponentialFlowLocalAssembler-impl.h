@@ -421,7 +421,7 @@ namespace ProcessLib
                         (rho_mol_co2_consume_rate_backfill < 0) ? 0.0 : rho_mol_co2_consume_rate_backfill;
                     if (rho_mol_co2_consume_rate_backfill < 0.0)
                         rho_mol_co2_consume_rate_backfill = 0.0;
-                    //double const dcarb_rate= 
+                    //double const dcarb_rate=
                     //interpolated_kinetic_rate.getValue(rho_mol_co2_cumul_total_backfill*100 / rho_co2_max_consume);
                     //double const dcarb_rate_analytic
                     //= 0.04*(94.32 - rho_mol_co2_cumul_total_backfill*100 / rho_co2_max_consume);
@@ -450,7 +450,7 @@ namespace ProcessLib
                     // calculate the total amount of co2 in this element(gp), which should
                     // be consumed at this time step
                     bazant_power = (rel_humidity - 0.6) / (1 - 0.6);
-                    //bazant_power = 5 * rel_humidity - 4;//for the inner part 
+                    //bazant_power = 5 * rel_humidity - 4;//for the inner part
                     if (rel_humidity<0.6)
                         bazant_power = 1e-7;
                     if (bazant_power<0.0|| Sw<0.1)
@@ -797,10 +797,11 @@ namespace ProcessLib
                     Q_steel_waste_matrix = 5.903876 * 4 / 3;
                     // instead of reading curve, now use analytical formular
                     double Q_organic_fast_co2_ini =
-                        m0_cellulose*(std::exp(-k_d_cellulose*t));
+                        m0_cellulose*(std::exp(-k_d_cellulose*t));  //this is decay of total mass with time normalized by volume of innter tube
                     // read from curvesinterpolated_Q_fast.getValue(0)
                     double Q_organic_slow_co2_ini =
-                        m0_polystyrene*(std::exp(-k_d_polystyrene*t));  // read from curves
+                        m0_polystyrene*(std::exp(-k_d_polystyrene*t));  // //this is decay of total mass with time normalized by volume of innter tube
+
                                                                         //interpolated_Q_slow.getValue(0)*
                                                                         /*Eigen::VectorXd F_vec_coeff = Eigen::VectorXd::Zero(NUM_NODAL_DOF);
                                                                         double Q_organic_slow_co2_ini =
@@ -819,12 +820,12 @@ namespace ProcessLib
                             //(fluid_volume_waste - _ip_data[ip].fluid_volume_prev_waste) / dt;
                         // steel corrosion rate multiply reactivity
                         Q_steel_waste_matrix *= bazant_power;
-                        F_vec_coeff(0) += Q_steel_waste_matrix;
+                        F_vec_coeff(0) += Q_steel_waste_matrix;  //this is for H2 source/sink
                         //store the gas h2 generation rate
                         _gas_h2_generation_rate[ip] = Q_steel_waste_matrix;
                         const double Q_organic_slow_co2 =
-                            Q_organic_slow_co2_ini * para_slow*bazant_power;
-
+                            Q_organic_slow_co2_ini * para_slow*bazant_power; // gas generation rate for CO2 (only) after accounting
+                                                                             //for reduction in chemical reactivity due to saturation (bazant_power)
                         const double Q_organic_fast_co2 =
                             Q_organic_fast_co2_ini * para_fast*bazant_power;
 
@@ -835,15 +836,15 @@ namespace ProcessLib
                         rho_mol_co2_cumul_total_waste =
                             _ip_data[ip].rho_mol_co2_cumul_total_prev_waste;// +rho_mol_total_co2_waste;
 
-                        F_vec_coeff(1) += (Q_organic_slow_co2 * 5/3);
+                        F_vec_coeff(1) += (Q_organic_slow_co2 * 5/3);  //this is for CH4
 
-                        F_vec_coeff(2) += Q_organic_slow_co2;
+                        F_vec_coeff(2) += Q_organic_slow_co2;      //this is for CO2
                         //store the secondary variable
-                        co2_degradation_rate += Q_organic_slow_co2;
+                        co2_degradation_rate += Q_organic_slow_co2;   //adding for degradation (inside the inner pipe it is in current implementation zero)
 
-                        F_vec_coeff(1) += Q_organic_fast_co2;
+                        F_vec_coeff(1) += Q_organic_fast_co2;  //this is for CH4
 
-                        F_vec_coeff(2) += Q_organic_fast_co2;
+                        F_vec_coeff(2) += Q_organic_fast_co2;  // this is for CO2
                         co2_degradation_rate += Q_organic_fast_co2;
 
                         //F_vec_coeff(2) -= (rho_mol_total_co2_waste / dt);//consumption of carbonation
@@ -851,7 +852,9 @@ namespace ProcessLib
                         /*F_vec_coeff(4) += (Q_organic_slow_co2 * 8 / 3) +
                             (Q_organic_fast_co2 * 6 / 3);*/
                         F_vec_coeff(4) += (Q_organic_slow_co2 * 2 / 3) +
-                            (Q_organic_fast_co2 * 5 / 3);
+                            (Q_organic_fast_co2 * 5 / 3);   //KG 44: this adds what together? ...I am not completely sure: water + CO2 + CH4 (+ H2) ?
+                            // for cellulose: Q_organic_fast_co2 3/3 + Q_organic_fast_co2 3/3 - 1/3 water = 5/3
+                            // for polystyrene: Q_organic_slow_co2 3/3+ Q_organic_slow_co2 5/3 -6/3 = 2/3
                         //F_vec_coeff(4) +=
                         //(fluid_volume_rate_waste) -(rho_mol_total_co2_waste / dt);
                         //update the porosity
@@ -863,7 +866,7 @@ namespace ProcessLib
                             //_porosity_change_at_supp_pnt_waste);
                         _porosity_value[ip] = porosity3;
                         _rho_mol_co2_cumulated_prev[ip] = rho_mol_co2_cumul_total_waste;
-                        //store 
+                        //store
                         _h2o_consumed_rate[ip]
                             = -Q_steel_waste_matrix - Q_organic_slow_co2* 2 - Q_organic_fast_co2 / 3 ;
                     }
@@ -905,7 +908,7 @@ namespace ProcessLib
                         F_vec_coeff(2) -= rho_mol_co2_kinetic_rate_backfill;
                         //(rho_mol_total_co2_backfill / dt);
                         // water source/sink term
-                        F_vec_coeff(4) += 
+                        F_vec_coeff(4) +=
                             (fluid_volume_rate)-rho_mol_co2_kinetic_rate_backfill;
                          //-rho_mol_co2_kinetic_rate_backfill;//switch off the water consumption
                         // update the amount of dissolved sio2
@@ -928,7 +931,7 @@ namespace ProcessLib
                         //store the h2o consumption/release rate due to asr&carbonation
                         _h2o_consumed_rate[ip] = fluid_volume_rate;
                     }
-                    //store the source term for each component 
+                    //store the source term for each component
                     // thanks to the facts that the source terms are all for gas phase
                     //gas_h2_generation_rate = F_vec_coeff(0);
                     _gas_ch4_generation_rate[ip] = F_vec_coeff(1);
@@ -1427,7 +1430,7 @@ namespace ProcessLib
                 neumann_vec[2] = 0.0;
                 radial_sym_fac = 2 * 3.1415926*rx1;
                 neumn_h2 = 1.244* ele_bazant_power;
-                
+
                 neumann_vec[1] = neumn_h2;
                 neumann_vec[3] = neumn_h2;
 
@@ -1504,7 +1507,7 @@ namespace ProcessLib
                 ele_mol_density_liquid += ip;
             }
             ele_mol_density_liquid /= static_cast<double>(n);
-            (*_process_data.mesh_prop_mol_density_liquid)[element_id] 
+            (*_process_data.mesh_prop_mol_density_liquid)[element_id]
                 = ele_mol_density_liquid;
 
             double ele_co2_cumulate_consume = 0;

@@ -1126,21 +1126,21 @@ namespace ProcessLib
 
         private:
             const double Hen_L_h = 7.26e+9;     // Henry constant in [Pa]
-            const double Hen_L_c = 4.13e+9;     // Henry constant in [Pa]
+            const double Hen_L_c = 4.13e+9;     // Henry constant in [Pa] kg44: I guess this is for CH4 methane
             const double Hen_L_air = 9.077e+9;  // Henry constant in [Pa]
             const double Hen_L_co2 = 0.163e+9;  // Henry constant in [Pa]
             const double rho_l_std = 1000.0;
             const double& R = MaterialLib::PhysicalConstant::IdealGasConstant;
-            double Q_steel_waste_matrix = 0.0;// 5.903876 * 4 / 3;  // generate H2
-            const double Q_steel_inner_surface = 0.0093 * 4 / 3;  // generate H2
+            double Q_steel_waste_matrix = 0.0;// 5.903876 * 4 / 3;  // generate H2 -> value assigned in TwoPhaseComponentialFlowLocalAssembler.h
+            const double Q_steel_inner_surface = 0.0093 * 4 / 3;  // generate H2 -> never used?
 
 
-            const double para_slow = 51.8/0.178;//51.8/0.129
-            const double para_fast = 24.7/0.178;//24.7kg/0,129
-            const double k_d_cellulose = 1.89e-3;//rate consts for cellulose degradation
-            const double k_d_polystyrene = 6.51e-5;//rate consts for polystyrene degradation
-            const double m0_cellulose = 0.035;
-            const double m0_polystyrene = 0.0019;
+            const double m0_polystyrene = 51.8/0.130615;//kg44 21Nov2018 corrected to volume of inner tube
+            const double m0_cellulose = 24.7/0.130615;//mass/volume volume: 0.707 x 0.2425^2 x pi [m^3]
+            const double k_d_cellulose = 1.89e-3;//rate consts for cellulose degradation [1/a]
+            const double k_d_polystyrene = 6.51e-5;//rate consts for polystyrene degradation [1/a]
+            const double para_fast = 0.035; // gas generation rate for CO2 (only), same rate for CH4  [mol/(kg a)]
+            const double para_slow = 0.0019; // gas generation rate for CO2 (only), rate for CH4 is 5/3 para_slow [mol/(kg a)]
             //for neumann condition on the outer drum
             double neumn_h2 = 0.003733333;// multiply 2*pi*r to represent the radial symmetric
             const double eps = 1e-5;
