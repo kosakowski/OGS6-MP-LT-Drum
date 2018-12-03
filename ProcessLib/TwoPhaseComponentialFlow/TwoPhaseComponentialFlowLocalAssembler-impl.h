@@ -1442,6 +1442,88 @@ namespace ProcessLib
                 localNeumann_tmp = neumann_vec * radial_sym_fac* length / 2;
                 _neumann_vec_output = neumann_vec;
             }
+
+            //for the bottom boundary condition
+            if (std::abs(ry0)<0.0 + eps && std::abs(ry1)<0.00 + eps )
+            {
+                //indicates edge 0-1 located on the boundary
+                length = std::sqrt(std::pow(rx0 - rx1, 2) + std::pow(ry0 - ry1, 2));
+                neumann_vec[2] = 0;
+                neumann_vec[3] = 0;
+                radial_sym_fac = 2 * 3.1415926*rx0;
+                neumn_h2 = 0.003733333*ele_bazant_power;
+                neumann_vec[0] = neumn_h2;
+                neumann_vec[1] = neumn_h2;
+                localNeumann_tmp = neumann_vec * radial_sym_fac* length / 2;
+                _neumann_vec_output = neumann_vec;
+            }
+            else if (std::abs(ry1)<0.00 + eps && std::abs(ry2)<0.00 + eps)
+            {
+                //indicates edge 1-2 located on the boundary
+                length = std::sqrt(std::pow(rx1 - rx2, 2) + std::pow(ry1 - ry2, 2));
+                neumann_vec[0] = 0.0;
+                neumann_vec[3] = 0;
+                radial_sym_fac = 2 * 3.14159*rx1;
+                neumn_h2 = 0.003733333* ele_bazant_power;
+                neumann_vec[1] = neumn_h2;
+                neumann_vec[2] = neumn_h2;
+                localNeumann_tmp = neumann_vec * radial_sym_fac* length / 2;
+                _neumann_vec_output = neumann_vec;
+            }
+            else if (std::abs(ry2)<0.00 + eps && std::abs(ry0 - 0.24)<0.00 + eps)
+            {
+                //indicates edge 2-0 located on the boundary
+                length = std::sqrt(std::pow(rx0 - rx2, 2) + std::pow(ry0 - ry2, 2));
+                neumann_vec[1] = 0.0;
+                neumann_vec[3] = 0;
+                radial_sym_fac = 2 * 3.1415926*rx2;
+                neumn_h2 = 0.003733333* ele_bazant_power;
+                neumann_vec[0] = neumn_h2;
+                neumann_vec[2] = neumn_h2;
+                localNeumann_tmp = neumann_vec * radial_sym_fac* length / 2;
+                _neumann_vec_output = neumann_vec;
+            }
+            else if (std::abs(ry0 )<0.00 + eps && std::abs(ry3)<0.00 + eps)
+            {
+                //indicates edge 0-3 located on the boundary
+                length = std::sqrt(std::pow(rx0 - rx3, 2) + std::pow(ry0 - ry3, 2));
+                neumann_vec[1] = 0.0;
+                neumann_vec[2] = 0.0;
+                radial_sym_fac = 2 * 3.1415926*rx0;
+                neumn_h2 = 0.003733333* ele_bazant_power;
+                neumann_vec[0] = neumn_h2;
+                neumann_vec[3] = neumn_h2;
+                localNeumann_tmp = neumann_vec * radial_sym_fac* length / 2;
+                _neumann_vec_output = neumann_vec;
+            }
+            else if (std::abs(ry2)<0.00 + eps && std::abs(ry3)<0.00 + eps)
+            {
+                //indicates edge 2-3 located on the boundary
+                length = std::sqrt(std::pow(rx2 - rx3, 2) + std::pow(ry2 - ry3, 2));
+                neumann_vec[0] = 0.0;
+                neumann_vec[1] = 0.0;
+                radial_sym_fac = 2 * 3.1415926*rx2;
+                neumn_h2 = 0.003733333* ele_bazant_power;
+                neumann_vec[2] = neumn_h2;
+                neumann_vec[3] = neumn_h2;
+                localNeumann_tmp = neumann_vec * radial_sym_fac* length / 2;
+                _neumann_vec_output = neumann_vec;
+            }
+            else if (std::abs(ry1)<0.00 + eps && std::abs(ry3)<0.00 + eps)
+            {
+                //indicates edge 1-3 located on the boundary
+                length = std::sqrt(std::pow(rx1 - rx3, 2) + std::pow(ry1 - ry3, 2));
+                neumann_vec[0] = 0.0;
+                neumann_vec[2] = 0.0;
+                radial_sym_fac = 2 * 3.1415926*rx1;
+                neumn_h2 = 0.003733333* ele_bazant_power;
+
+                neumann_vec[1] = neumn_h2;
+                neumann_vec[3] = neumn_h2;
+
+                localNeumann_tmp = neumann_vec * radial_sym_fac* length / 2;
+                _neumann_vec_output = neumann_vec;
+            }
             local_b.block(n_nodes * 0, 0, n_nodes, 1).noalias() += localNeumann_tmp;
             //output secondary variable
             for (unsigned ip = 0; ip < n_integration_points; ip++)
