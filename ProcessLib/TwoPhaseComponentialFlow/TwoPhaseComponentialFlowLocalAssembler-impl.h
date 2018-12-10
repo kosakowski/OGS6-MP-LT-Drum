@@ -800,12 +800,13 @@ namespace ProcessLib
                     // here we need for waste matrix the gas production per volume!
                     // surface area of steel [m^2]/ volume of waste compartment [m^3] * gas production [mol / (m^2 * a)]
 
-                    // instead of reading curve, now use analytical formular
-                    double Q_organic_fast_co2_ini =
-                        m0_cellulose*(std::exp(-k_d_cellulose*t));  //this is decay of total mass with time normalized by volume of innter tube
+                    // instead of reading curve, now use analytical formula
+                    double M_organic_fast_co2_ini = m0_cellulose; // amount from which gas is produced
+                        m0_cellulose=m0_cellulose-m0_cellulose*k_d_cellulose*dt*bazant_power;  //updated amount for next time step assuming fixed degradation
+
                     // read from curvesinterpolated_Q_fast.getValue(0)
-                    double Q_organic_slow_co2_ini =
-                        m0_polystyrene*(std::exp(-k_d_polystyrene*t));  // //this is decay of total mass with time normalized by volume of innter tube
+                    double M_organic_slow_co2_ini = m0_polystyrene; // amount from which gas is produced
+                        m0_polystyrene = m0_polystyrene-m0_polystyrene*k_d_polystyrene*dt*bazant_power;  //updated amount for next time step assuming fixed degradation
 
                                                                         //interpolated_Q_slow.getValue(0)*
                                                                         /*Eigen::VectorXd F_vec_coeff = Eigen::VectorXd::Zero(NUM_NODAL_DOF);
@@ -829,10 +830,10 @@ namespace ProcessLib
                         //store the gas h2 generation rate
                         _gas_h2_generation_rate[ip] = Q_steel_waste_matrix;
                         const double Q_organic_slow_co2 =
-                            Q_organic_slow_co2_ini * para_slow*bazant_power; // gas generation rate for CO2 (only) after accounting
+                            M_organic_slow_co2_ini * para_slow*bazant_power; // gas generation rate for CO2 (only) after accounting
                                                                              //for reduction in chemical reactivity due to saturation (bazant_power)
                         const double Q_organic_fast_co2 =
-                            Q_organic_fast_co2_ini * para_fast*bazant_power;
+                            M_organic_fast_co2_ini * para_fast*bazant_power;
 
                         if (_ip_data[ip].rho_mol_co2_cumul_total_prev_waste >=
                             400)  // means carbonation stops, no more co2 will be consumed
