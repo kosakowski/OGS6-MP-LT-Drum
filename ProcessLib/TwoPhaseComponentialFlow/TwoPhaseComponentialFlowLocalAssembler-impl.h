@@ -797,17 +797,6 @@ namespace ProcessLib
                     Q_steel_waste_matrix = (9.3682 / 0.13061) * 0.28 * (4.0/3.0) ; // surface area steel in waste / volume waste * reaction rate *4/3 = hydrogen production in mol/(m^3 a)
                                                                               //  Steel in waste is assumed to corrode fast, therefore we can fix rates for H2 here
                                                                               // fortunately water consumption has the same rate as H2 production
-                    // here we need for waste matrix the gas production per volume!
-                    // surface area of steel [m^2]/ volume of waste compartment [m^3] * gas production [mol / (m^2 * a)]
-
-                    // instead of reading curve, now use analytical formula
-                    double M_organic_fast_co2_ini = m0_cellulose; // amount from which gas is produced
-                        m0_cellulose=m0_cellulose-m0_cellulose*k_d_cellulose*dt*bazant_power;  //updated amount for next time step assuming fixed degradation
-
-                    // read from curvesinterpolated_Q_fast.getValue(0)
-                    double M_organic_slow_co2_ini = m0_polystyrene; // amount from which gas is produced
-                        m0_polystyrene = m0_polystyrene-m0_polystyrene*k_d_polystyrene*dt*bazant_power;  //updated amount for next time step assuming fixed degradation
-
                                                                         //interpolated_Q_slow.getValue(0)*
                                                                         /*Eigen::VectorXd F_vec_coeff = Eigen::VectorXd::Zero(NUM_NODAL_DOF);
                                                                         double Q_organic_slow_co2_ini =
@@ -818,6 +807,22 @@ namespace ProcessLib
                     if (_process_data._material->getMaterialID(
                         pos.getElementID().get()) == 1)//waste matrix
                     {
+
+                                            // here we need for waste matrix the gas production per volume!
+                    // surface area of steel [m^2]/ volume of waste compartment [m^3] * gas production [mol / (m^2 * a)]
+
+                       // instead of reading curve, now use analytical formula
+                        // quick hack to set start_conditions
+                       double M_organic_fast_co2_ini = _amount_organic_waste_cellulose[ip]; // amount from which gas is produced
+                       if ((t < 0.001) &&  (M_organic_fast_co2_ini < m0_cellulose)) M_organic_fast_co2_ini = m0_cellulose;
+                       double dummy = M_organic_fast_co2_ini - M_organic_fast_co2_ini*k_d_cellulose*dt*bazant_power;  //updated amount for next time step assuming fixed degradation
+                       _amount_organic_waste_cellulose[ip]=dummy;
+                       // read from curvesinterpolated_Q_fast.getValue(0)
+                       double M_organic_slow_co2_ini = _amount_organic_waste_polystyrene[ip]; // amount from which gas is produced
+                       if ((t < 0.001) &&  (M_organic_slow_co2_ini < m0_polystyrene)) M_organic_slow_co2_ini = m0_cellulose;
+                       dummy = M_organic_slow_co2_ini - M_organic_slow_co2_ini*k_d_polystyrene*dt*bazant_power;  //updated amount for next time step assuming fixed degradation
+                       _amount_organic_waste_polystyrene[ip]=dummy;
+
                         //calculate the fluid volume change
                         //double& fluid_volume_waste = _ip_data[ip].fluid_volume_waste;
                         //fluid_volume_waste = piecewiselinear_interpolation(

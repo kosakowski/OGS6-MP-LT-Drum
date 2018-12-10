@@ -102,6 +102,17 @@ namespace ProcessLib
                     &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtRhoMolCo2CumulTotalPrev));
 
             _secondary_variables.addSecondaryVariable(
+                "mole_amount_organic_waste_cellulose",
+                makeExtrapolator(1, getExtrapolator(), _local_assemblers,
+                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtMolAmountWasteCell));
+
+            _secondary_variables.addSecondaryVariable(
+                "mole_amount_organic_waste_polystyrene",
+                makeExtrapolator(1, getExtrapolator(), _local_assemblers,
+                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtMolAmountWastePoly));
+
+
+            _secondary_variables.addSecondaryVariable(
                 "sio2_cumulated_prev",
                 makeExtrapolator(1, getExtrapolator(), _local_assemblers,
                     &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtMolRhoSiO2CumulPrev));
@@ -286,7 +297,7 @@ namespace ProcessLib
             mesh_prop_mol_density_liquid->resize(mesh.getNumberOfElements() * 1);
             _process_data.mesh_prop_mol_density_liquid = mesh_prop_mol_density_liquid;
 
-            auto mesh_prop_co2_cumulate_consume 
+            auto mesh_prop_co2_cumulate_consume
                 = MeshLib::getOrCreateMeshProperty<double>(
                 const_cast<MeshLib::Mesh&>(mesh), "consume_co2_cumulate_cell",
                 MeshLib::MeshItemType::Cell, 1);
@@ -300,7 +311,7 @@ namespace ProcessLib
             mesh_prop_sio2_cumulate_consume->resize(mesh.getNumberOfElements() * 1);
             _process_data.mesh_prop_sio2_cumulate_consume = mesh_prop_sio2_cumulate_consume;
 
-            auto mesh_prop_total_liquid_vel 
+            auto mesh_prop_total_liquid_vel
                 = MeshLib::getOrCreateMeshProperty<double>(
                 const_cast<MeshLib::Mesh&>(mesh), "liquid_velocity_cell",
                 MeshLib::MeshItemType::Cell, 3);
@@ -387,7 +398,7 @@ namespace ProcessLib
         {
             DBUG("AssembleWithJacobian TwoPhaseFlowWithPrhoProcess.");
 
-            
+
             std::vector<std::reference_wrapper<NumLib::LocalToGlobalIndexMap>>
                 dof_table = { std::ref(*_local_to_global_index_map) };
             // Call global assembler for each local assembly item.

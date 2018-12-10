@@ -367,6 +367,18 @@ namespace ProcessLib
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
+            virtual std::vector<double> const& getIntPtMolAmountWastePoly(
+                const double /*t*/,
+                GlobalVector const& /*current_solution*/,
+                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<double>& /*cache*/) const = 0;
+
+            virtual std::vector<double> const& getIntPtMolAmountWasteCell(
+                const double /*t*/,
+                GlobalVector const& /*current_solution*/,
+                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<double>& /*cache*/) const = 0;
+
             virtual std::vector<double> const& getIntPtMolRhoSiO2CumulPrev(
                 const double /*t*/,
                 GlobalVector const& /*current_solution*/,
@@ -384,7 +396,6 @@ namespace ProcessLib
                 GlobalVector const& /*current_solution*/,
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
-
 
             virtual std::vector<double> const& getIntPtTotalVelocityGasX(
                 const double /*t*/,
@@ -568,6 +579,10 @@ namespace ProcessLib
                     std::vector<double>(_integration_method.getNumberOfPoints())),
                 _mol_fraction_nonwet_air(
                     std::vector<double>(_integration_method.getNumberOfPoints())),
+                _amount_organic_waste_polystyrene(
+                    std::vector<double>(_integration_method.getNumberOfPoints())),
+                _amount_organic_waste_cellulose(
+                    std::vector<double>(_integration_method.getNumberOfPoints())),
                 _co2_concentration(
                     std::vector<double>(_integration_method.getNumberOfPoints())),
                 _rho_mol_co2_cumulated_prev(
@@ -749,6 +764,31 @@ namespace ProcessLib
                 assert(_rho_mol_co2_cumulated_prev.size() > 0);
                 return _rho_mol_co2_cumulated_prev;
             }
+            /*
+            * used to store mole amount per volume of organics in waste
+            */
+            std::vector<double> const& getIntPtMolAmountWasteCell(
+                const double /*t*/,
+                GlobalVector const& /*current_solution*/,
+                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<double>& /*cache*/) const override
+            {
+                assert(_amount_organic_waste_cellulose.size() > 0);
+                return _amount_organic_waste_cellulose;
+            }
+            /*
+            * used to store mole amount per volume of organics in waste
+            */
+            std::vector<double> const& getIntPtMolAmountWastePoly(
+                const double /*t*/,
+                GlobalVector const& /*current_solution*/,
+                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<double>& /*cache*/) const override
+            {
+                assert(_amount_organic_waste_polystyrene.size() > 0);
+                return _amount_organic_waste_polystyrene;
+            }
+
 
             /*
             * used to store previous time step value of cumulative dissoved sio2 (unit mol/m3)
@@ -1078,6 +1118,8 @@ namespace ProcessLib
             std::vector<double> _mol_fraction_nonwet_vapor;
             std::vector<double> _mol_fraction_nonwet_air;
             std::vector<double> _co2_concentration;
+            std::vector<double> _amount_organic_waste_cellulose;
+            std::vector<double> _amount_organic_waste_polystyrene;
             std::vector<double> _rho_mol_co2_cumulated_prev;
             std::vector<double> _rho_mol_sio2_cumulated_prev;
             std::vector<double> _rho_mol_gas_phase;
