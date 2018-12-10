@@ -819,7 +819,7 @@ namespace ProcessLib
                        _amount_organic_waste_cellulose[ip]=dummy;
                        // read from curvesinterpolated_Q_fast.getValue(0)
                        double M_organic_slow_co2_ini = _amount_organic_waste_polystyrene[ip]; // amount from which gas is produced
-                       if ((t < 0.001) &&  (M_organic_slow_co2_ini < m0_polystyrene)) M_organic_slow_co2_ini = m0_cellulose;
+                       if ((t < 0.001) &&  (M_organic_slow_co2_ini < m0_polystyrene)) M_organic_slow_co2_ini = m0_polystyrene;
                        dummy = M_organic_slow_co2_ini - M_organic_slow_co2_ini*k_d_polystyrene*dt*bazant_power;  //updated amount for next time step assuming fixed degradation
                        _amount_organic_waste_polystyrene[ip]=dummy;
 
