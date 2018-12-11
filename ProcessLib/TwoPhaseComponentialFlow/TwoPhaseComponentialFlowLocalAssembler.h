@@ -270,7 +270,11 @@ namespace ProcessLib
                 pressure_pre(751115.103768),
                 pressure_cur(751115.103768),
                 mol_frac_h2_pre(0.00001),
-                mol_frac_h2_cur(0.00001)
+                mol_frac_h2_cur(0.00001),
+                amount_organic_waste_cellulose(191.0),
+                amount_organic_waste_prev_cellulose(191.0),
+                amount_organic_waste_polystyrene(400.0),
+                amount_organic_waste_prev_polystyrene(400.0)
 
 
             {
@@ -295,12 +299,19 @@ namespace ProcessLib
             double pressure_cur;
             double mol_frac_h2_pre;
             double mol_frac_h2_cur;
+            double amount_organic_waste_cellulose;
+            double amount_organic_waste_prev_cellulose;
+            double amount_organic_waste_polystyrene;
+            double amount_organic_waste_prev_polystyrene;
+
             NodalMatrixType massOperator;
             NodalMatrixType diffusionOperator;
 
             void pushBackState()
             {
                 rho_mol_sio2_prev_backfill = rho_mol_sio2_backfill;
+                amount_organic_waste_prev_cellulose = amount_organic_waste_cellulose;
+                amount_organic_waste_prev_polystyrene = amount_organic_waste_polystyrene;
                 porosity_prev_backfill = porosity_backfill;
                 rho_mol_co2_cumul_total_prev_backfill =
                     rho_mol_co2_cumul_total_backfill;

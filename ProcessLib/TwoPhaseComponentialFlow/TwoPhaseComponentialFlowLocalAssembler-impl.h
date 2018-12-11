@@ -387,6 +387,7 @@ namespace ProcessLib
                 double& rho_mol_co2_cumul_total_waste = _ip_data[ip].rho_mol_co2_cumul_total_waste;
                 double rho_mol_total_co2_waste = 0.;
 
+
                 //saturation dependent chemical reactivity
                 //double const rel_humidity = std::exp(-PC_int_pt*0.018 / rho_mass_wet / 8.314 / temperature);
                 double pc_origion = _process_data._material->getCapillaryPressure(material_id, t, pos, pg_int_pt, temperature, Sw);
@@ -813,21 +814,21 @@ namespace ProcessLib
 
                        // instead of reading curve, now use analytical formula
                         // quick hack to set start_conditions
-                       double M_organic_fast_co2_ini = _amount_organic_waste_cellulose[ip]; // amount from which gas is produced
-                       if ((t < 0.001) &&  (M_organic_fast_co2_ini < m0_cellulose)) M_organic_fast_co2_ini = m0_cellulose;
-                       double dummy = M_organic_fast_co2_ini - M_organic_fast_co2_ini*k_d_cellulose*dt*bazant_power;  //updated amount for next time step assuming fixed degradation
-                       _amount_organic_waste_cellulose[ip]=dummy;
+                       double& M_organic_fast_co2_ini = _ip_data[ip].amount_organic_waste_prev_cellulose; // amount from which gas is produced
+                       // if ((t < 0.001) &&  (M_organic_fast_co2_ini < m0_cellulose)) M_organic_fast_co2_ini = m0_cellulose;
+                       double dummy = (M_organic_fast_co2_ini*k_d_cellulose*bazant_power);  //updated amount for next time step assuming fixed degradation
+                       _amount_organic_waste_cellulose[ip] = M_organic_fast_co2_ini - (dummy * dt);
                        // read from curvesinterpolated_Q_fast.getValue(0)
-                       double M_organic_slow_co2_ini = _amount_organic_waste_polystyrene[ip]; // amount from which gas is produced
-                       if ((t < 0.001) &&  (M_organic_slow_co2_ini < m0_polystyrene)) M_organic_slow_co2_ini = m0_polystyrene;
-                       dummy = M_organic_slow_co2_ini - M_organic_slow_co2_ini*k_d_polystyrene*dt*bazant_power;  //updated amount for next time step assuming fixed degradation
-                       _amount_organic_waste_polystyrene[ip]=dummy;
+                       double& M_organic_slow_co2_ini = _ip_data[ip].amount_organic_waste_prev_polystyrene; // amount from which gas is produced
+                       // if ((t < 0.001) &&  (M_organic_slow_co2_ini < m0_polystyrene)) M_organic_slow_co2_ini = m0_polystyrene;
+                       dummy = M_organic_slow_co2_ini*k_d_polystyrene*bazant_power;  //updated amount for next time step assuming fixed degradation
+                       _amount_organic_waste_polystyrene[ip] = M_organic_slow_co2_ini - (dummy * dt);
 
                         //calculate the fluid volume change
                         //double& fluid_volume_waste = _ip_data[ip].fluid_volume_waste;
                         //fluid_volume_waste = piecewiselinear_interpolation(
                             //_ip_data[ip].rho_mol_co2_cumul_total_prev_waste, _fluid_volume_suppt_pnt_waste);
-                        //double const fluid_volume_rate_waste =
+                        //double const fluid_volume_rate_waste _ip_data[ip].=
                             //(fluid_volume_waste - _ip_data[ip].fluid_volume_prev_waste) / dt;
                         // steel corrosion rate multiply reactivity
                         Q_steel_waste_matrix *= bazant_power; // multiply with chemical reactivity
