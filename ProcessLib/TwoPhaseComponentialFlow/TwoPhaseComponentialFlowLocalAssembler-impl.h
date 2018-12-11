@@ -386,6 +386,10 @@ namespace ProcessLib
                 double& porosity3 = _ip_data[ip].porosity_waste;
                 double& rho_mol_co2_cumul_total_waste = _ip_data[ip].rho_mol_co2_cumul_total_waste;
                 double rho_mol_total_co2_waste = 0.;
+//                double M_organic_fast_co2_ini =  _amount_organic_waste_cellulose[ip]; // amount from which gas is produced
+//                double M_organic_slow_co2_ini =  _amount_organic_waste_polystyrene[ip]; // amount from which gas is produced
+                double& M_organic_fast_co2_ini = _ip_data[ip].amount_organic_waste_prev_cellulose; // amount from which gas is produced
+                double& M_organic_slow_co2_ini = _ip_data[ip].amount_organic_waste_prev_polystyrene; // amount from which gas is produced
 
 
                 //saturation dependent chemical reactivity
@@ -814,15 +818,18 @@ namespace ProcessLib
 
                        // instead of reading curve, now use analytical formula
                         // quick hack to set start_conditions
-                       double& M_organic_fast_co2_ini = _ip_data[ip].amount_organic_waste_prev_cellulose; // amount from which gas is produced
-                       // if ((t < 0.001) &&  (M_organic_fast_co2_ini < m0_cellulose)) M_organic_fast_co2_ini = m0_cellulose;
+//                       double& M_organic_fast_co2_ini = _ip_data[ip].amount_organic_waste_prev_cellulose; // amount from which gas is produced
+
+                       if ((t < 0.00002) &&  (M_organic_fast_co2_ini < m0_cellulose)) M_organic_fast_co2_ini = m0_cellulose;
                        double dummy = (M_organic_fast_co2_ini*k_d_cellulose*bazant_power);  //updated amount for next time step assuming fixed degradation
                        _amount_organic_waste_cellulose[ip] = M_organic_fast_co2_ini - (dummy * dt);
+                       _ip_data[ip].amount_organic_waste_cellulose=_amount_organic_waste_cellulose[ip];
                        // read from curvesinterpolated_Q_fast.getValue(0)
-                       double& M_organic_slow_co2_ini = _ip_data[ip].amount_organic_waste_prev_polystyrene; // amount from which gas is produced
-                       // if ((t < 0.001) &&  (M_organic_slow_co2_ini < m0_polystyrene)) M_organic_slow_co2_ini = m0_polystyrene;
+  //                   double& M_organic_slow_co2_ini = _ip_data[ip].amount_organic_waste_prev_polystyrene; // amount from which gas is produced
+                       if ((t < 0.00002) &&  (M_organic_slow_co2_ini < m0_polystyrene)) M_organic_slow_co2_ini = m0_polystyrene;
                        dummy = M_organic_slow_co2_ini*k_d_polystyrene*bazant_power;  //updated amount for next time step assuming fixed degradation
                        _amount_organic_waste_polystyrene[ip] = M_organic_slow_co2_ini - (dummy * dt);
+                       _ip_data[ip].amount_organic_waste_polystyrene=_amount_organic_waste_polystyrene[ip];
 
                         //calculate the fluid volume change
                         //double& fluid_volume_waste = _ip_data[ip].fluid_volume_waste;
