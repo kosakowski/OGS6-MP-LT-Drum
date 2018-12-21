@@ -1200,6 +1200,7 @@ namespace ProcessLib
             bool accelerate_flag = false;
             double radial_sym_fac = 1.0;
             double length = 0.0;
+            double area =0.0;
         private:
             const double get_P_sat(double T)
             {
