@@ -463,7 +463,7 @@ namespace ProcessLib
                     //bazant_power = 5 * rel_humidity - 4;//for the inner part
                     if (rel_humidity<0.6)
                         bazant_power = 1e-7;
-                    if (bazant_power<0.0|| Sw<0.1)
+                    if (bazant_power<0.0|| Sw<0.2)
                         bazant_power = 1e-7;
                     rho_mol_total_co2_waste = _ip_data[ip].porosity_prev_waste *
                         (rho_mol_nonwet * X3_int_pt * (1 - Sw) +
@@ -928,6 +928,7 @@ namespace ProcessLib
                         if (_ip_data[ip].rho_mol_co2_cumul_total_prev_backfill >=
                             7500)  // means carbonation stops, no more co2 will be consumed
                             rho_mol_co2_kinetic_rate_backfill = 0.0;
+                        // change of volume due to look-up table Units are m3/a
                         double const fluid_volume_rate =
                             (fluid_volume_backfill - _ip_data[ip].fluid_volume_prev_backfill) / dt;
 
@@ -940,7 +941,7 @@ namespace ProcessLib
                         //(rho_mol_total_co2_backfill / dt);
                         // water source/sink term
                         F_vec_coeff(4) +=
-                            (fluid_volume_rate)-rho_mol_co2_kinetic_rate_backfill;
+                            (fluid_volume_rate*rho_mol_wet)-rho_mol_co2_kinetic_rate_backfill;
                          //-rho_mol_co2_kinetic_rate_backfill;//switch off the water consumption
                         // update the amount of dissolved sio2
                         rho_mol_sio2_wet_backfill =
@@ -957,7 +958,20 @@ namespace ProcessLib
                         // fluid_flux [m^3/a] = (porosity_value_old[ip]-porosity_value_new[ip])*saturation_value[i] / dt
                         // positive values (porosity gets smaller): we add the lost water during next time step as source term
                         // negative values (porosity gets bigger): we remove the added water during next time step as sink term
-                        F_vec_coeff(4) += (_porosity_value[ip] -porosity2)*_saturation[ip]/dt;
+                        // volume change should be multiplied with molar density to get mol/m3/a
+                        F_vec_coeff(4) += (_porosity_value[ip] -porosity2)*_saturation[ip]/dt*rho_mol_wet;
+                        // do a similar correction for the gases
+                        // add the whole gas phase (includes all components and humidity)
+                        F_vec_coeff(4) += (_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet;
+                        // now add source/sinks for the gases: add volumes multiplied with molar density and with mol fraction
+                        // first CH4
+                        F_vec_coeff(1) += (_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet* X2_int_pt;
+                        // now CO2
+                        F_vec_coeff(2) += (_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet* X3_int_pt;
+                        // N2
+                        F_vec_coeff(3) += (_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet*x_nonwet_air;
+                        // then hydrogen
+                        F_vec_coeff(0) += (_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet* X1_int_pt;
 
                         //store the secondary variable porosity
                         _porosity_value[ip] = porosity2;
@@ -968,7 +982,7 @@ namespace ProcessLib
                         //store the gas h2 generation rate
                         _gas_h2_generation_rate[ip] = F_vec_coeff(0);
                         //store the h2o consumption/release rate due to asr&carbonation
-                        _h2o_consumed_rate[ip] = fluid_volume_rate;
+                        _h2o_consumed_rate[ip] = fluid_volume_rate*rho_mol_wet;
                     }
                     //store the source term for each component
                     // thanks to the facts that the source terms are all for gas phase
