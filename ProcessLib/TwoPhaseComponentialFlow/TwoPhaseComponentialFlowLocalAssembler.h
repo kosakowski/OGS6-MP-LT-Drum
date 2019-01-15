@@ -258,9 +258,9 @@ namespace ProcessLib
                 porosity_prev_backfill(0.095228012),
                 rho_mol_co2_cumul_total_backfill(0.0),
                 rho_mol_co2_cumul_total_prev_backfill(0.0),
-                fluid_volume_backfill(95.22765
+                fluid_volume_backfill(0.09522765
                 ),
-                fluid_volume_prev_backfill(95.22765),
+                fluid_volume_prev_backfill(0.09522765),
                 porosity_waste(0.2),
                 porosity_prev_waste(0.2),
                 rho_mol_co2_cumul_total_waste(0.0),
