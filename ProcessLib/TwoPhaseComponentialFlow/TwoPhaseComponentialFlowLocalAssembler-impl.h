@@ -941,7 +941,7 @@ namespace ProcessLib
                         //(rho_mol_total_co2_backfill / dt);
                         // water source/sink term
                         F_vec_coeff(4) +=
-                            (fluid_volume_rate*rho_mol_wet)-rho_mol_co2_kinetic_rate_backfill;
+                            (fluid_volume_rate*rho_mol_wet*_element.getContent() / 4)-rho_mol_co2_kinetic_rate_backfill;//
                          //-rho_mol_co2_kinetic_rate_backfill;//switch off the water consumption
                         // update the amount of dissolved sio2
                         rho_mol_sio2_wet_backfill =
@@ -959,19 +959,25 @@ namespace ProcessLib
                         // positive values (porosity gets smaller): we add the lost water during next time step as source term
                         // negative values (porosity gets bigger): we remove the added water during next time step as sink term
                         // volume change should be multiplied with molar density to get mol/m3/a
-                        F_vec_coeff(4) += (_porosity_value[ip] -porosity2)*_saturation[ip]/dt*rho_mol_wet;
+                        F_vec_coeff(4) += _element.getContent() / 4
+                            *(_porosity_value[ip] -porosity2)*_saturation[ip]/dt*rho_mol_wet;
                         // do a similar correction for the gases
                         // add the whole gas phase (includes all components and humidity)
-                        F_vec_coeff(4) += (_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet;
+                        F_vec_coeff(4) += _element.getContent() / 4
+                            *(_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet;
                         // now add source/sinks for the gases: add volumes multiplied with molar density and with mol fraction
                         // first CH4
-                        F_vec_coeff(1) += (_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet* X2_int_pt;
+                        F_vec_coeff(1) += _element.getContent() / 4
+                            *(_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet* X2_int_pt;
                         // now CO2
-                        F_vec_coeff(2) += (_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet* X3_int_pt;
+                        F_vec_coeff(2) += _element.getContent() / 4
+                            *(_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet* X3_int_pt;
                         // N2
-                        F_vec_coeff(3) += (_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet*x_nonwet_air;
+                        F_vec_coeff(3) += _element.getContent() / 4
+                            *(_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet*x_nonwet_air;
                         // then hydrogen
-                        F_vec_coeff(0) += (_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet* X1_int_pt;
+                        F_vec_coeff(0) += _element.getContent() / 4
+                            *(_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet* X1_int_pt;
 
                         //store the secondary variable porosity
                         _porosity_value[ip] = porosity2;
@@ -982,7 +988,9 @@ namespace ProcessLib
                         //store the gas h2 generation rate
                         _gas_h2_generation_rate[ip] = F_vec_coeff(0);
                         //store the h2o consumption/release rate due to asr&carbonation
-                        _h2o_consumed_rate[ip] = fluid_volume_rate*rho_mol_wet;
+                        _h2o_consumed_rate[ip] = fluid_volume_rate*rho_mol_wet*_element.getContent() / 4
+                            + _element.getContent() / 4
+                            * (_porosity_value[ip] - porosity2)*_saturation[ip] / dt * rho_mol_wet;
                     }
                     //store the source term for each component
                     // thanks to the facts that the source terms are all for gas phase
