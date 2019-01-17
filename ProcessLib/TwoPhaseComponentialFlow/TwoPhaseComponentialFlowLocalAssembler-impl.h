@@ -940,8 +940,8 @@ namespace ProcessLib
                         F_vec_coeff(2) -= rho_mol_co2_kinetic_rate_backfill;
                         //(rho_mol_total_co2_backfill / dt);
                         // water source/sink term
-                        F_vec_coeff(4) +=
-                            (fluid_volume_rate*rho_mol_wet*_element.getContent() / 4)-rho_mol_co2_kinetic_rate_backfill;//
+                        F_vec_coeff(4) +=(fluid_volume_rate*rho_mol_wet*_element.getContent() / 4)
+                            -rho_mol_co2_kinetic_rate_backfill;//
                          //-rho_mol_co2_kinetic_rate_backfill;//switch off the water consumption
                         // update the amount of dissolved sio2
                         rho_mol_sio2_wet_backfill =
@@ -988,7 +988,8 @@ namespace ProcessLib
                         //store the gas h2 generation rate
                         _gas_h2_generation_rate[ip] = F_vec_coeff(0);
                         //store the h2o consumption/release rate due to asr&carbonation
-                        _h2o_consumed_rate[ip] = fluid_volume_rate*rho_mol_wet*_element.getContent() / 4
+                        _h2o_consumed_rate[ip] = 
+                            fluid_volume_rate*rho_mol_wet*_element.getContent() / 4
                             + _element.getContent() / 4
                             * (_porosity_value[ip] - porosity2)*_saturation[ip] / dt * rho_mol_wet;
                     }
@@ -1583,7 +1584,7 @@ namespace ProcessLib
                 _neumann_vec_output = neumann_vec * radial_sym_fac * length / 2/ node_volume_radial;
             }
             local_b.block(n_nodes * 0, 0, n_nodes, 1).noalias() += localNeumann_tmp; // This is for hydrogen-> which is created
-            local_b.block(n_nodes * 4, 0, n_nodes, 1).noalias() -= localNeumann_tmp; // This is for water-> which is consumed
+            //local_b.block(n_nodes * 4, 0, n_nodes, 1).noalias() -= localNeumann_tmp; // This is for water-> which is consumed
 
             //output secondary variable
             for (unsigned ip = 0; ip < n_integration_points; ip++)
@@ -1602,7 +1603,7 @@ namespace ProcessLib
                 _gas_h2_boundary_generation_rate[ip] = h2_flux; //KG: This is the flux across a surface (boundary)/ divided by element volume
                 _gas_h2_overall_generation_rate[ip] =
                     _gas_h2_boundary_generation_rate[ip] + _gas_h2_generation_rate[ip];
-                _h2o_consumed_rate[ip] -= _gas_h2_boundary_generation_rate[ip]; // this is only for output, or...where in the model the water sink term for boundary fluxes is set?
+                _h2o_consumed_rate[ip] -=_gas_h2_boundary_generation_rate[ip]; // this is only for output, or...where in the model the water sink term for boundary fluxes is set?
             }
 
             int n = n_integration_points;
