@@ -185,7 +185,7 @@ namespace ProcessLib
                 pos.getElementID().get() == 190 || pos.getElementID().get() == 191 ||
                 pos.getElementID().get() == 246 || pos.getElementID().get() == 236)
             {
-                accelerate_factor = 2.0;
+                accelerate_factor = 1.0;
             }
             if (t > 65)
             {
@@ -263,6 +263,8 @@ namespace ProcessLib
                 _mol_fraction_nonwet_air[ip] = x_nonwet_air;
                 double const x_wet_air = pg_int_pt * x_nonwet_air / Hen_L_air;
                 double const x_wet_h2o = 1 - X_L_co2_gp - X_L_c_gp - X_L_h_gp - x_wet_air;
+                /*store the molar fraction of water in liquid phase*/
+                _x_wetting_water[ip] = x_wet_h2o;
                 //pg_int_pt * x_nonwet_h2o * kelvin_term / P_sat_gp;
                 /*double const rho_gas =
                 _process_data._material->getGasDensity(pg_int_pt, temperature);*/
@@ -844,9 +846,9 @@ namespace ProcessLib
                             //(fluid_volume_waste - _ip_data[ip].fluid_volume_prev_waste) / dt;
                         // steel corrosion rate multiply reactivity
                         Q_steel_waste_matrix *= bazant_power; // multiply with chemical reactivity
-                        F_vec_coeff(0) += Q_steel_waste_matrix;  //this is for H2 source/sink
+                        //F_vec_coeff(0) += Q_steel_waste_matrix;  //this is for H2 source/sink
                         //store the gas h2 generation rate
-                        _gas_h2_generation_rate[ip] = Q_steel_waste_matrix;
+                        //_gas_h2_generation_rate[ip] = Q_steel_waste_matrix;
                         const double Q_organic_slow_co2 =
                             M_organic_slow_co2_ini * para_slow*bazant_power; // gas generation rate for CO2 (only) after accounting
                                                                              //for reduction in chemical reactivity due to saturation (bazant_power)
@@ -898,12 +900,18 @@ namespace ProcessLib
 
                         _rho_mol_co2_cumulated_prev[ip] = rho_mol_co2_cumul_total_waste;
                         //store
-                        _h2o_consumed_rate[ip]
-                            = -Q_steel_waste_matrix - Q_organic_slow_co2* 2 - Q_organic_fast_co2 / 3 ;
+                        _h2o_consumed_rate[ip] = -Q_organic_slow_co2 * 2 - Q_organic_fast_co2 / 3;
+                            //= -Q_steel_waste_matrix ;
                     }
                     else if (_process_data._material->getMaterialID(
                         pos.getElementID().get()) == 0)//backfill, cement and concrete
                     {
+                        porosity2 = bi_interpolation(
+                            _ip_data[ip].rho_mol_sio2_prev_backfill,
+                            _ip_data[ip].rho_mol_co2_cumul_total_prev_backfill,
+                            _porosity_at_supp_pnts_backfill);  // porosity update
+                        _porosity_value[ip] = porosity2;
+                        /*
                         double& fluid_volume_backfill = _ip_data[ip].fluid_volume_backfill;
                         fluid_volume_backfill = bi_interpolation(
                             _ip_data[ip].rho_mol_sio2_prev_backfill,
@@ -992,6 +1000,7 @@ namespace ProcessLib
                             fluid_volume_rate*rho_mol_wet*_element.getContent() / 4
                             + _element.getContent() / 4
                             * (_porosity_value[ip] - porosity2)*_saturation[ip] / dt * rho_mol_wet;
+                            */
                     }
                     //store the source term for each component
                     // thanks to the facts that the source terms are all for gas phase
@@ -1583,7 +1592,7 @@ namespace ProcessLib
                 localNeumann_tmp = neumann_vec * radial_sym_fac * length / 2;
                 _neumann_vec_output = neumann_vec * radial_sym_fac * length / 2/ node_volume_radial;
             }
-            local_b.block(n_nodes * 0, 0, n_nodes, 1).noalias() += localNeumann_tmp; // This is for hydrogen-> which is created
+            //local_b.block(n_nodes * 0, 0, n_nodes, 1).noalias() += localNeumann_tmp; // This is for hydrogen-> which is created
             //local_b.block(n_nodes * 4, 0, n_nodes, 1).noalias() -= localNeumann_tmp; // This is for water-> which is consumed
 
             //output secondary variable
@@ -1600,10 +1609,10 @@ namespace ProcessLib
 
                 NumLib::shapeFunctionInterpolate(_neumann_vector_output, sm.N, h2_flux, h2_flux2,
                     h2_flux3, h2_flux4, h2_flux5);
-                _gas_h2_boundary_generation_rate[ip] = h2_flux; //KG: This is the flux across a surface (boundary)/ divided by element volume
-                _gas_h2_overall_generation_rate[ip] =
-                    _gas_h2_boundary_generation_rate[ip] + _gas_h2_generation_rate[ip];
-                _h2o_consumed_rate[ip] -=_gas_h2_boundary_generation_rate[ip]; // this is only for output, or...where in the model the water sink term for boundary fluxes is set?
+                //_gas_h2_boundary_generation_rate[ip] = h2_flux; //KG: This is the flux across a surface (boundary)/ divided by element volume
+                //_gas_h2_overall_generation_rate[ip] =
+                //    _gas_h2_boundary_generation_rate[ip] + _gas_h2_generation_rate[ip];
+                //_h2o_consumed_rate[ip] -=_gas_h2_boundary_generation_rate[ip]; // this is only for output, or...where in the model the water sink term for boundary fluxes is set?
             }
 
             int n = n_integration_points;

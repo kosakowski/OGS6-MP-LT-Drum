@@ -545,6 +545,12 @@ namespace ProcessLib
                 GlobalVector const& /*current_solution*/,
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
+
+            virtual std::vector<double> const& getIntPtmolfracwaterinliquid(
+                const double /*t*/,
+                GlobalVector const& /*current_solution*/,
+                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<double>& /*cache*/) const = 0;
         };
 
         template <typename ShapeFunction, typename IntegrationMethod,
@@ -645,6 +651,8 @@ namespace ProcessLib
                 _rel_humidity(
                     std::vector<double>(_integration_method.getNumberOfPoints())),
                 _reactivity_bazant_power(
+                    std::vector<double>(_integration_method.getNumberOfPoints())),
+                _x_wetting_water(
                     std::vector<double>(_integration_method.getNumberOfPoints()))
             {
                 unsigned const n_integration_points =
@@ -1079,6 +1087,7 @@ namespace ProcessLib
                 assert(_reactivity_bazant_power.size() > 0);
                 return _reactivity_bazant_power;
             }
+            /*used to store the water consumption rate*/
             std::vector<double> const& getIntPtWaterConsumpRate(
                 const double /*t*/,
                 GlobalVector const& /*current_solution*/,
@@ -1088,6 +1097,19 @@ namespace ProcessLib
                 assert(_h2o_consumed_rate.size() > 0);
                 return _h2o_consumed_rate;
             }
+
+            /*used to store the molar fraction of water in liquid phase */
+            std::vector<double> const& getIntPtmolfracwaterinliquid(
+                const double /*t*/,
+                GlobalVector const& /*current_solution*/,
+                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<double>& /*cache*/) const override
+            {
+                assert(_x_wetting_water.size() > 0);
+                return _x_wetting_water;
+            }
+
+
 
 
             template <typename Shp>
@@ -1144,6 +1166,7 @@ namespace ProcessLib
             std::vector<double> _gas_co2_degradation_rate;
             std::vector<double> _co2_consumed_current_step;
             std::vector<double> _h2o_consumed_rate;
+            std::vector<double> _x_wetting_water;
 
             std::vector<double> _rel_humidity;
 

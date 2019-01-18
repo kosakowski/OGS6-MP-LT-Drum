@@ -260,6 +260,11 @@ namespace ProcessLib
                 "water_consumption_rate",
                 makeExtrapolator(1, getExtrapolator(), _local_assemblers,
                     &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtWaterConsumpRate));
+
+            _secondary_variables.addSecondaryVariable(
+                "molar_fraction_water_in_liquid_phase",
+                makeExtrapolator(1, getExtrapolator(), _local_assemblers,
+                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtmolfracwaterinliquid));
             //secondary variable on each cell
             auto mesh_prop_saturation = MeshLib::getOrCreateMeshProperty<double>(
                 const_cast<MeshLib::Mesh&>(mesh), "saturation_cell",
