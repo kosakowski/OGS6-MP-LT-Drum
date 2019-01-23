@@ -185,7 +185,7 @@ namespace ProcessLib
                 pos.getElementID().get() == 190 || pos.getElementID().get() == 191 ||
                 pos.getElementID().get() == 246 || pos.getElementID().get() == 236)
             {
-                accelerate_factor = 1.0;
+                accelerate_factor = 2.0;
             }
             if (t > 65)
             {
@@ -1021,6 +1021,8 @@ namespace ProcessLib
 
                         //store the gas h2 generation rate
                         //_gas_h2_generation_rate[ip] = F_vec_coeff(0);
+                        double test=
+                            (_ip_data[ip].porosity_prev_backfill - porosity2)*(1 - _saturation[ip]) / dt * rho_mol_nonwet* X1_int_pt;
                         _gas_h2_generation_rate[ip] =
                             (_ip_data[ip].porosity_prev_backfill - porosity2)*(1 - _saturation[ip]) / dt * rho_mol_nonwet* X1_int_pt;
                     }
@@ -1095,7 +1097,7 @@ namespace ProcessLib
                     neumann_vec[1] = neumn_h2;
                 }
                 localNeumann_tmp = neumann_vec* radial_sym_fac* length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2 / node_volume_radial;
+                _neumann_vec_output = neumann_vec * length / 2 / node_volume_radial;//* radial_sym_fac
             }
             else if (abs(rx1- 0.303) <eps  && abs(rx2 - 0.303) <eps)
             {
@@ -1127,7 +1129,7 @@ namespace ProcessLib
                     neumann_vec[2] = neumn_h2;
                 }
                 localNeumann_tmp = neumann_vec * radial_sym_fac * length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec * length / 2/ node_volume_radial;//* radial_sym_fac
             }
             else if (abs(rx2 - 0.303) < eps && abs(rx0 - 0.303) < eps)
             {
@@ -1159,7 +1161,7 @@ namespace ProcessLib
                     neumann_vec[2] = neumn_h2;
                 }
                 localNeumann_tmp = neumann_vec* radial_sym_fac*length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec * length / 2/ node_volume_radial;//* radial_sym_fac
             }
             else if (abs(rx3 - 0.303) < eps && abs(rx0 - 0.303) < eps)
             {
@@ -1191,7 +1193,7 @@ namespace ProcessLib
                     neumann_vec[3] = neumn_h2;
                 }
                 localNeumann_tmp = neumann_vec * radial_sym_fac * length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec* length / 2/ node_volume_radial;// * radial_sym_fac
             }
             else if (abs(rx3 - 0.303) < eps && abs(rx1 - 0.303) < eps)
             {
@@ -1223,7 +1225,7 @@ namespace ProcessLib
                     neumann_vec[3] = neumn_h2;
                 }
                 localNeumann_tmp = neumann_vec * radial_sym_fac* length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec * length / 2/ node_volume_radial;//* radial_sym_fac
             }
             else if (abs(rx3 - 0.303) < eps && abs(rx2 - 0.303) < eps)
             {
@@ -1255,7 +1257,7 @@ namespace ProcessLib
                     neumann_vec[3] = neumn_h2;
                 }
                 localNeumann_tmp = neumann_vec * radial_sym_fac* length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec * length / 2/ node_volume_radial;//* radial_sym_fac
             }
             // for the second Neumann boundary condition
             if (std::abs(rx0 - 0.245)<0.0025 + eps && std::abs(rx1 - 0.245)<0.0025 + eps &&
@@ -1289,7 +1291,7 @@ namespace ProcessLib
                     neumann_vec[1] = neumn_h2;
                 }
                 localNeumann_tmp = neumann_vec* radial_sym_fac*length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec * length / 2/ node_volume_radial;//* radial_sym_fac
             }
             else if (std::abs(rx1 - 0.245)<0.0025 + eps && std::abs(rx2 - 0.245)<0.0025 + eps &&
                 ry1<0.795 + eps && ry1>0.088 - eps && ry2<0.795 + eps && ry2>0.088 - eps)
@@ -1321,7 +1323,7 @@ namespace ProcessLib
                     neumann_vec[2] = neumn_h2;
                 }
                 localNeumann_tmp = neumann_vec* radial_sym_fac*length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec * length / 2/ node_volume_radial;//* radial_sym_fac
             }
             else if (std::abs(rx2 - 0.245)<0.0025 + eps && std::abs(rx0 - 0.245)<0.0025 + eps &&
                 ry2<0.795 + eps && ry2>0.088 - eps && ry0<0.795 + eps && ry0>0.088 - eps)
@@ -1353,7 +1355,7 @@ namespace ProcessLib
                     neumann_vec[2] = neumn_h2;
                 }
                 localNeumann_tmp = neumann_vec* radial_sym_fac * length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec * length / 2/ node_volume_radial;//* radial_sym_fac
             }
             else if (std::abs(rx0 - 0.245)<0.0025 + eps && std::abs(rx3 - 0.245)<0.0025 + eps &&
                 ry0<0.795 + eps && ry3>0.088 - eps && ry0<0.795 + eps && ry3>0.088 - eps)
@@ -1386,7 +1388,7 @@ namespace ProcessLib
                     neumann_vec[3] = neumn_h2;
                 }
                 localNeumann_tmp = neumann_vec* radial_sym_fac * length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec * length / 2/ node_volume_radial;//* radial_sym_fac
             }
             else if (std::abs(rx2 - 0.245)<0.0025 + eps && std::abs(rx3 - 0.245)<0.0025 + eps &&
                 ry2<0.795 + eps && ry3>0.088 - eps && ry2<0.795 + eps && ry3>0.088 - eps)
@@ -1419,7 +1421,7 @@ namespace ProcessLib
                     neumann_vec[3] = neumn_h2;
                 }
                 localNeumann_tmp = neumann_vec* radial_sym_fac *length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec * length / 2/ node_volume_radial;//* radial_sym_fac
             }
             else if (std::abs(rx1 - 0.245)<0.0025 + eps && std::abs(rx3 - 0.245)<0.0025 + eps &&
                 ry1<0.795 + eps && ry3>0.088 - eps && ry1<0.795 + eps && ry3>0.088 - eps)
@@ -1452,7 +1454,7 @@ namespace ProcessLib
                     neumann_vec[3] = neumn_h2;
                 }
                 localNeumann_tmp = neumann_vec * radial_sym_fac* length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec* length / 2/ node_volume_radial;//* radial_sym_fac 
             }
             bool waste_matrix_sign = false;
             // for the third boundary condition
@@ -1468,7 +1470,7 @@ namespace ProcessLib
                 neumann_vec[0] = neumn_h2;
                 neumann_vec[1] = neumn_h2;
                 localNeumann_tmp = neumann_vec* radial_sym_fac * length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec * length / 2/ node_volume_radial;//* radial_sym_fac
                 waste_matrix_sign = true;
             }
             else if (std::abs(rx1 - 0.24)<0.0025 + eps && std::abs(rx2 - 0.24)<0.0025 + eps &&
@@ -1482,7 +1484,7 @@ namespace ProcessLib
                 neumann_vec[1] = neumn_h2;
                 neumann_vec[2] = neumn_h2;
                 localNeumann_tmp = neumann_vec* radial_sym_fac * length / 2;
-                _neumann_vec_output = neumann_vec * radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec * length / 2/ node_volume_radial;// * radial_sym_fac
                 waste_matrix_sign = true;
             }
             else if (std::abs(rx2 - 0.24)<0.0025 + eps && std::abs(rx0 - 0.24)<0.0025 + eps &&
@@ -1496,7 +1498,7 @@ namespace ProcessLib
                 neumann_vec[0] = neumn_h2;
                 neumann_vec[2] = neumn_h2;
                 localNeumann_tmp = neumann_vec* radial_sym_fac * length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec* length / 2/ node_volume_radial;//* radial_sym_fac 
                 waste_matrix_sign = true;
             }
             else if (std::abs(rx0 - 0.24)<0.0025 + eps && std::abs(rx3 - 0.24)<0.0025 + eps &&
@@ -1510,7 +1512,7 @@ namespace ProcessLib
                 neumann_vec[0] = neumn_h2;
                 neumann_vec[3] = neumn_h2;
                 localNeumann_tmp = neumann_vec* radial_sym_fac * length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec * length / 2/ node_volume_radial;//* radial_sym_fac
                 waste_matrix_sign = true;
             }
             else if (std::abs(rx2 - 0.24)<0.0025 + eps && std::abs(rx3 - 0.24)<0.0025 + eps &&
@@ -1524,7 +1526,7 @@ namespace ProcessLib
                 neumann_vec[2] = neumn_h2;
                 neumann_vec[3] = neumn_h2;
                 localNeumann_tmp = neumann_vec* radial_sym_fac * length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec* length / 2/ node_volume_radial;//* radial_sym_fac 
                 waste_matrix_sign = true;
             }
             else if (std::abs(rx1 - 0.24)<0.0025 + eps && std::abs(rx3 - 0.24)<0.0025 + eps &&
@@ -1540,7 +1542,7 @@ namespace ProcessLib
                 neumann_vec[3] = neumn_h2;
 
                 localNeumann_tmp = neumann_vec* radial_sym_fac * length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec* length / 2/ node_volume_radial;//* radial_sym_fac 
                 waste_matrix_sign = true;
             }
 
@@ -1556,7 +1558,7 @@ namespace ProcessLib
                 neumann_vec[0] = neumn_h2;
                 neumann_vec[1] = neumn_h2;
                 localNeumann_tmp = neumann_vec* radial_sym_fac * length / 2;
-                _neumann_vec_output = neumann_vec*  radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec* length / 2/ node_volume_radial;//*  radial_sym_fac 
             }
             else if (std::abs(ry1)<0.00 + eps && std::abs(ry2)<0.00 + eps)
             {
@@ -1569,7 +1571,7 @@ namespace ProcessLib
                 neumann_vec[1] = neumn_h2;
                 neumann_vec[2] = neumn_h2;
                 localNeumann_tmp = neumann_vec *radial_sym_fac *length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec* length / 2/ node_volume_radial;//* radial_sym_fac 
             }
             else if (std::abs(ry2)<0.00 + eps && std::abs(ry0)<0.00 + eps)
             {
@@ -1582,7 +1584,7 @@ namespace ProcessLib
                 neumann_vec[0] = neumn_h2;
                 neumann_vec[2] = neumn_h2;
                 localNeumann_tmp = neumann_vec* radial_sym_fac * length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec* length / 2/ node_volume_radial;//* radial_sym_fac 
             }
             else if (std::abs(ry0 )<0.00 + eps && std::abs(ry3)<0.00 + eps)
             {
@@ -1595,7 +1597,7 @@ namespace ProcessLib
                 neumann_vec[0] = neumn_h2;
                 neumann_vec[3] = neumn_h2;
                 localNeumann_tmp = neumann_vec * radial_sym_fac * length / 2;
-                _neumann_vec_output = neumann_vec*radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec * length / 2/ node_volume_radial;//*radial_sym_fac
             }
             else if (std::abs(ry2)<0.00 + eps && std::abs(ry3)<0.00 + eps)
             {
@@ -1608,7 +1610,7 @@ namespace ProcessLib
                 neumann_vec[2] = neumn_h2;
                 neumann_vec[3] = neumn_h2;
                 localNeumann_tmp = neumann_vec * radial_sym_fac * length / 2;
-                _neumann_vec_output = neumann_vec* radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec * length / 2/ node_volume_radial;//* radial_sym_fac
             }
             else if (std::abs(ry1)<0.00 + eps && std::abs(ry3)<0.00 + eps)
             {
@@ -1623,7 +1625,7 @@ namespace ProcessLib
                 neumann_vec[3] = neumn_h2;
 
                 localNeumann_tmp = neumann_vec * radial_sym_fac * length / 2;
-                _neumann_vec_output = neumann_vec * radial_sym_fac * length / 2/ node_volume_radial;
+                _neumann_vec_output = neumann_vec  * length / 2/ node_volume_radial;//* radial_sym_fac
             }
             local_b.block(n_nodes * 0, 0, n_nodes, 1).noalias() += localNeumann_tmp; // This is for hydrogen-> which is created
             local_b.block(n_nodes * 4, 0, n_nodes, 1).noalias() -= localNeumann_tmp; // This is for water-> which is consumed
