@@ -974,18 +974,18 @@ namespace ProcessLib
                         F_vec_coeff(2) -= rho_mol_co2_kinetic_rate_backfill;
                         // water source/sink term
                         double const fluid_change_volume
-                            = (fluid_volume_rate*rho_mol_water*_element.getContent() / 4);
-                        F_vec_coeff(4) +=(fluid_volume_rate*rho_mol_water*_element.getContent() / 4);//
+                            = (fluid_volume_rate*rho_mol_water);
+                        F_vec_coeff(4) +=(fluid_volume_rate*rho_mol_water);//
                         porosity2 = bi_interpolation(
                             rho_mol_sio2_wet_backfill,
                             rho_mol_co2_cumul_total_backfill,
                             _porosity_at_supp_pnts_backfill);  // porosity update
-                        //F_vec_coeff(4) +=
-                            //rho_mol_water*(_ip_data[ip].porosity_prev_backfill -porosity2)*(_saturation[ip]-0.2)/dt;
+                        F_vec_coeff(4) +=
+                            rho_mol_water*(_ip_data[ip].porosity_prev_backfill -porosity2)*(_saturation[ip]-0.2)/dt;
                         _h2o_consumed_rate[ip] =
-                            (fluid_volume_rate*rho_mol_water*_element.getContent() / 4)
-                            -rho_mol_water * (_ip_data[ip].porosity_prev_backfill - porosity2)*(_saturation[ip] - 0.2) / dt;
-                         ;
+                            (fluid_volume_rate*rho_mol_water);
+                            //-rho_mol_water * (_ip_data[ip].porosity_prev_backfill - porosity2)*(_saturation[ip] - 0.2) / dt;
+                         
 
                         // account for change in water content due to porosity change ...we loose mass if porosity gets smaller and saturation is assumed to be constant
                         // fluid_flux [m^3/a] = (porosity_value_old[ip]-porosity_value_new[ip])*saturation_value[i] / dt
