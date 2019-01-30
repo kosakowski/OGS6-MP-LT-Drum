@@ -130,19 +130,19 @@ namespace ProcessLib
             _gas_methane_velocity.clear();
             _gas_nitrogen_velocity.clear();
             _gas_vapor_velocity.clear();
-
+            //gas phase velocity,units in m/s
             auto cache_mat_gas_vel = MathLib::createZeroedMatrix<
                 Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
                     _overall_velocity_gas, GlobalDim, n_integration_points);
-
+            //liquid phase velocity unit in m/s
             auto cache_mat_liquid_vel = MathLib::createZeroedMatrix<
                 Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
                     _overall_velocity_liquid, GlobalDim, n_integration_points);
-
+            // co2 gas component transport velocity in m/s
             auto cache_mat_gas_co2_vel = MathLib::createZeroedMatrix<
                 Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
                     _gas_co2_velocity, GlobalDim, n_integration_points);
-
+            // H2 gas component transport velocity in m/s
             auto cache_mat_gas_hydrogen_vel = MathLib::createZeroedMatrix<
                 Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
                     _gas_hydrogen_velocity, GlobalDim, n_integration_points);
@@ -185,7 +185,7 @@ namespace ProcessLib
                 pos.getElementID().get() == 190 || pos.getElementID().get() == 191 ||
                 pos.getElementID().get() == 246 || pos.getElementID().get() == 236)
             {
-                accelerate_factor = 2.0;
+                accelerate_factor = 1.0;
             }
             if (t > 65)
             {
@@ -1021,8 +1021,8 @@ namespace ProcessLib
 
                         //store the gas h2 generation rate
                         //_gas_h2_generation_rate[ip] = F_vec_coeff(0);
-                        double test=
-                            (_ip_data[ip].porosity_prev_backfill - porosity2)*(1 - _saturation[ip]) / dt * rho_mol_nonwet* X1_int_pt;
+                        //double test=
+                            //(_ip_data[ip].porosity_prev_backfill - porosity2)*(1 - _saturation[ip]) / dt * rho_mol_nonwet* X1_int_pt;
                         _gas_h2_generation_rate[ip] =
                             (_ip_data[ip].porosity_prev_backfill - porosity2)*(1 - _saturation[ip]) / dt * rho_mol_nonwet* X1_int_pt;
                     }
