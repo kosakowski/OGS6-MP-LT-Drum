@@ -1787,7 +1787,6 @@ namespace ProcessLib
             Eigen::VectorXd ele_h2_gas_diffusive_volumetric_flux = Eigen::VectorXd::Zero(GlobalDim);
             Eigen::VectorXd ele_ch4_gas_darcy_volumetric_flux = Eigen::VectorXd::Zero(GlobalDim);
             Eigen::VectorXd ele_ch4_gas_diffusive_volumetric_flux = Eigen::VectorXd::Zero(GlobalDim);
-
             Eigen::VectorXd ele_h2o_vapor_gas_darcy_volumetric_flux = Eigen::VectorXd::Zero(GlobalDim);
             Eigen::VectorXd ele_h2o_vapor_gas_diffusive_volumetric_flux = Eigen::VectorXd::Zero(GlobalDim);
             for (unsigned ip = 0; ip < n_integration_points; ip++)
@@ -1803,6 +1802,16 @@ namespace ProcessLib
                 ele_h2o_vapor_gas_darcy_volumetric_flux += cache_mat_gas_water_vapor_darcy_volumetric_flux.col(ip);
                 ele_h2o_vapor_gas_diffusive_volumetric_flux += cache_mat_gas_water_vapor_diffusive_volumetric_flux.col(ip);
             }
+            ele_liquid_darcy_volumetric_flux /= static_cast<double>(n_integration_points);
+            ele_gas_darcy_volumetric_flux /= static_cast<double>(n_integration_points);
+            ele_co2_gas_darcy_volumetric_flux /= static_cast<double>(n_integration_points);
+            ele_co2_gas_diffusive_volumetric_flux /= static_cast<double>(n_integration_points);
+            ele_h2_gas_darcy_volumetric_flux /= static_cast<double>(n_integration_points);
+            ele_h2_gas_diffusive_volumetric_flux /= static_cast<double>(n_integration_points);
+            ele_ch4_gas_darcy_volumetric_flux /= static_cast<double>(n_integration_points);
+            ele_ch4_gas_diffusive_volumetric_flux /= static_cast<double>(n_integration_points);
+            ele_h2o_vapor_gas_darcy_volumetric_flux /= static_cast<double>(n_integration_points);
+            ele_h2o_vapor_gas_diffusive_volumetric_flux /= static_cast<double>(n_integration_points);
             for (unsigned i = 0; i < GlobalDim; i++) {
                 (*_process_data.mesh_prop_overall_liquid_darcy_volumetric_flux)[element_id * 3 + i] =
                     ele_liquid_darcy_volumetric_flux[i];
