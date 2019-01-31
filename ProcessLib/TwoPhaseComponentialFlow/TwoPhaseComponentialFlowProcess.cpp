@@ -412,7 +412,7 @@ namespace ProcessLib
             mesh_prop_gas_ch4_diffusive_volumetric_flux
                 ->resize(mesh.getNumberOfElements() * 3);
             _process_data.mesh_prop_gas_methane_diffusive_volumetric_flux
-                = mesh_prop_gas_ch4_darcy_volumetric_flux;
+                = mesh_prop_gas_ch4_diffusive_volumetric_flux;
 
             auto mesh_prop_gas_h2o_vapor_darcy_volumetric_flux
                 = MeshLib::getOrCreateMeshProperty<double>(
