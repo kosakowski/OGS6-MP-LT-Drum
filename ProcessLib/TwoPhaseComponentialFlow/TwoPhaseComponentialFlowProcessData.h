@@ -105,16 +105,18 @@ namespace ProcessLib
             MeshLib::PropertyVector<double>* mesh_prop_mol_frac_n2 = nullptr;
 
             //mesh properties for velocity output
-            MeshLib::PropertyVector<double>*  mesh_prop_overall_liquid_vel = nullptr;
-            MeshLib::PropertyVector<double>*  mesh_prop_overall_gas_vel = nullptr;
-            MeshLib::PropertyVector<double>*  mesh_prop_gas_co2_vel = nullptr;
-            MeshLib::PropertyVector<double>*  mesh_prop_gas_hydrogen_vel = nullptr;
-            MeshLib::PropertyVector<double>*  mesh_prop_gas_methane_vel = nullptr;
-            MeshLib::PropertyVector<double>*  mesh_prop_gas_water_vapor_vel = nullptr;
-
-
-
-
+            MeshLib::PropertyVector<double>*  mesh_prop_overall_liquid_darcy_volumetric_flux = nullptr;
+            MeshLib::PropertyVector<double>*  mesh_prop_overall_gas_darcy_volumetric_flux = nullptr;
+            MeshLib::PropertyVector<double>*  mesh_prop_gas_co2_darcy_volumetric_flux = nullptr;
+            MeshLib::PropertyVector<double>*  mesh_prop_gas_co2_diffusive_volumetric_flux = nullptr;
+            MeshLib::PropertyVector<double>*  mesh_prop_gas_hydrogen_darcy_volumetric_flux = nullptr;
+            MeshLib::PropertyVector<double>*  mesh_prop_gas_hydrogen_diffusive_volumetric_flux = nullptr;
+            MeshLib::PropertyVector<double>*  mesh_prop_gas_methane_darcy_volumetric_flux = nullptr;
+            MeshLib::PropertyVector<double>*  mesh_prop_gas_methane_diffusive_volumetric_flux = nullptr;
+            MeshLib::PropertyVector<double>*  mesh_prop_gas_water_vapor_darcy_volumetric_flux = nullptr;
+            MeshLib::PropertyVector<double>*  mesh_prop_gas_water_vapor_diffusive_volumetric_flux = nullptr;
+            MeshLib::PropertyVector<double>*  mesh_prop_gas_nitrogen_darcy_volumetric_flux = nullptr;
+            MeshLib::PropertyVector<double>*  mesh_prop_gas_nitrogen_diffusive_volumetric_flux = nullptr;
 
         };
 

@@ -444,13 +444,13 @@ namespace ProcessLib
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
-            virtual std::vector<double> const& getIntPtOverallVelocityGas(
+            virtual std::vector<double> const& getIntPtOverallDarcyVolumetricFluxGas(
                 const double t,
                 GlobalVector const& current_solution,
                 NumLib::LocalToGlobalIndexMap const& dof_table,
                 std::vector<double>& cache) const = 0;
 
-            virtual std::vector<double> const& getIntPtOverallVelocityLiquid(
+            virtual std::vector<double> const& getIntPtOverallDarcyVolumetricFluxLiquid(
                 const double t,
                 GlobalVector const& current_solution,
                 NumLib::LocalToGlobalIndexMap const& dof_table,
@@ -492,19 +492,37 @@ namespace ProcessLib
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
-            virtual std::vector<double> const& getIntPtGasCO2Velocity(
+            virtual std::vector<double> const& getIntPtGasCO2DarcyVolumetricFlux(
                 const double /*t*/,
                 GlobalVector const& /*current_solution*/,
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
-            virtual std::vector<double> const& getIntPtGasHydrogenVelocity(
+            virtual std::vector<double> const& getIntPtGasCO2DiffusiveVolumetricFlux(
                 const double /*t*/,
                 GlobalVector const& /*current_solution*/,
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
-            virtual std::vector<double> const& getIntPtGasMethaneVelocity(
+            virtual std::vector<double> const& getIntPtGasHydrogenDarcyVolumetricFlux(
+                const double /*t*/,
+                GlobalVector const& /*current_solution*/,
+                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<double>& /*cache*/) const = 0;
+
+            virtual std::vector<double> const& getIntPtGasHydrogenDiffusiveVolumetricFlux(
+                const double /*t*/,
+                GlobalVector const& /*current_solution*/,
+                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<double>& /*cache*/) const = 0;
+
+            virtual std::vector<double> const& getIntPtGasMethaneDarcyVolumetricFlux(
+                const double /*t*/,
+                GlobalVector const& /*current_solution*/,
+                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<double>& /*cache*/) const = 0;
+
+            virtual std::vector<double> const& getIntPtGasMethaneDiffusiveVolumetricFlux(
                 const double /*t*/,
                 GlobalVector const& /*current_solution*/,
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
@@ -516,13 +534,25 @@ namespace ProcessLib
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
-            virtual std::vector<double> const& getIntPtVaporVelocity(
+            virtual std::vector<double> const& getIntPtVaporDarcyVolumetricFlux(
                 const double /*t*/,
                 GlobalVector const& /*current_solution*/,
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
-            virtual std::vector<double> const& getIntPtGasNitrogenVelocity(
+            virtual std::vector<double> const& getIntPtVaporDiffusiveVolumetricFlux(
+                const double /*t*/,
+                GlobalVector const& /*current_solution*/,
+                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<double>& /*cache*/) const = 0;
+
+            virtual std::vector<double> const& getIntPtGasNitrogenDarcyVolumetricFlux(
+                const double /*t*/,
+                GlobalVector const& /*current_solution*/,
+                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<double>& /*cache*/) const = 0;
+
+            virtual std::vector<double> const& getIntPtGasNitrogenDiffusiveVolumetricFlux(
                 const double /*t*/,
                 GlobalVector const& /*current_solution*/,
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
@@ -616,15 +646,21 @@ namespace ProcessLib
                 _total_velocities_liquid(
                     GlobalDim,
                     std::vector<double>(_integration_method.getNumberOfPoints())),
-                _overall_velocity_gas(
+                _darcy_volumetric_flux_total_gas_phase(
                     std::vector<double>(GlobalDim *_integration_method.getNumberOfPoints())),
-                _overall_velocity_liquid(
+                _darcy_volumetric_flux_total_liquid_phase(
                     std::vector<double>(GlobalDim* _integration_method.getNumberOfPoints())),
-                _gas_co2_velocity(
+                _darcy_volumetric_flux_gas_co2(
                     std::vector<double>(GlobalDim* _integration_method.getNumberOfPoints())),
-                _gas_hydrogen_velocity(
+                _diffusive_volumetric_flux_gas_co2(
                     std::vector<double>(GlobalDim* _integration_method.getNumberOfPoints())),
-                _gas_methane_velocity(
+                _darcy_volumetric_flux_gas_hydrogen(
+                    std::vector<double>(GlobalDim* _integration_method.getNumberOfPoints())),
+                _diffusive_volumetric_flux_gas_hydrogen(
+                    std::vector<double>(GlobalDim* _integration_method.getNumberOfPoints())),
+                _darcy_volumetric_flux_gas_methane(
+                    std::vector<double>(GlobalDim* _integration_method.getNumberOfPoints())),
+                _diffusive_volumetric_flux_gas_methane(
                     std::vector<double>(GlobalDim* _integration_method.getNumberOfPoints())),
                 _gas_generation_rate(
                     std::vector<double>(_integration_method.getNumberOfPoints())),
@@ -644,10 +680,14 @@ namespace ProcessLib
                     std::vector<double>(_integration_method.getNumberOfPoints())),
                 _h2o_consumed_rate(
                     std::vector<double>(_integration_method.getNumberOfPoints())),
-                _gas_vapor_velocity(
-                    std::vector<double>(GlobalDim*_integration_method.getNumberOfPoints())),
-                _gas_nitrogen_velocity(
-                    std::vector<double>(GlobalDim*_integration_method.getNumberOfPoints())),
+                _darcy_volumetric_flux_gas_water_vapor(
+                    std::vector<double>(GlobalDim* _integration_method.getNumberOfPoints())),
+                _diffusive_volumetric_flux_gas_water_vapor(
+                    std::vector<double>(GlobalDim* _integration_method.getNumberOfPoints())),
+                _darcy_volumetric_flux_gas_nitrogen(
+                    std::vector<double>(GlobalDim* _integration_method.getNumberOfPoints())),
+                _diffusive_volumetric_flux_gas_nitrogen(
+                    std::vector<double>(GlobalDim* _integration_method.getNumberOfPoints())),
                 _rel_humidity(
                     std::vector<double>(_integration_method.getNumberOfPoints())),
                 _reactivity_bazant_power(
@@ -916,67 +956,104 @@ namespace ProcessLib
             /*
             * used to output overall velocity of the gas phase
             */
-            std::vector<double> const& getIntPtOverallVelocityGas(
+            std::vector<double> const& getIntPtOverallDarcyVolumetricFluxGas(
                 const double /*t*/,
                 GlobalVector const& /*current_solution*/,
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
-                assert(_overall_velocity_gas.size() > 0);
-                return _overall_velocity_gas;
+                assert(_darcy_volumetric_flux_total_gas_phase.size() > 0);
+                return _darcy_volumetric_flux_total_gas_phase;
             }
             /*
             * used to output overall velocity of the liquid phase
             */
-            std::vector<double> const& getIntPtOverallVelocityLiquid(
+            std::vector<double> const& getIntPtOverallDarcyVolumetricFluxLiquid(
                 const double /*t*/,
                 GlobalVector const& /*current_solution*/,
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
-                assert(_overall_velocity_liquid.size() > 0);
-                return _overall_velocity_liquid;
+                assert(_darcy_volumetric_flux_total_liquid_phase.size() > 0);
+                return _darcy_volumetric_flux_total_liquid_phase;
             }
 
             /*
             * used to output velocity of the gaseous co2
             */
-            std::vector<double> const& getIntPtGasCO2Velocity(
+            std::vector<double> const& getIntPtGasCO2DarcyVolumetricFlux(
                 const double /*t*/,
                 GlobalVector const& /*current_solution*/,
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
-                assert(_gas_co2_velocity.size() > 0);
-                return _gas_co2_velocity;
+                assert(_darcy_volumetric_flux_gas_co2.size() > 0);
+                return _darcy_volumetric_flux_gas_co2;
             }
 
             /*
-            * used to output velocity of the gaseous hydrogen
-            * Darcy velocity + diffusion velocity
+            * used to output velocity of the gaseous co2
             */
-            std::vector<double> const& getIntPtGasHydrogenVelocity(
+            std::vector<double> const& getIntPtGasCO2DiffusiveVolumetricFlux(
                 const double /*t*/,
                 GlobalVector const& /*current_solution*/,
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
-                assert(_gas_hydrogen_velocity.size() > 0);
-                return _gas_hydrogen_velocity;
+                assert(_diffusive_volumetric_flux_gas_co2.size() > 0);
+                return _diffusive_volumetric_flux_gas_co2;
+            }
+
+            /*
+            * used to output volumetric flux of the gaseous hydrogen
+            * Darcy flux (velocity)
+            */
+            std::vector<double> const& getIntPtGasHydrogenDarcyVolumetricFlux(
+                const double /*t*/,
+                GlobalVector const& /*current_solution*/,
+                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<double>& /*cache*/) const override
+            {
+                assert(_darcy_volumetric_flux_gas_hydrogen.size() > 0);
+                return _darcy_volumetric_flux_gas_hydrogen;
+            }
+
+            /*
+            * used to output volumetric flux of the gaseous hydrogen
+            * Diffusive flux
+            */
+            std::vector<double> const& getIntPtGasHydrogenDiffusiveVolumetricFlux(
+                const double /*t*/,
+                GlobalVector const& /*current_solution*/,
+                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<double>& /*cache*/) const override
+            {
+                assert(_diffusive_volumetric_flux_gas_hydrogen.size() > 0);
+                return _diffusive_volumetric_flux_gas_hydrogen;
             }
 
             /*
             * used to output velocity of the gaseous Methane
             * Darcy velocity + diffusion velocity
             */
-            std::vector<double> const& getIntPtGasMethaneVelocity(
+            std::vector<double> const& getIntPtGasMethaneDarcyVolumetricFlux(
                 const double /*t*/,
                 GlobalVector const& /*current_solution*/,
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
-                assert(_gas_methane_velocity.size() > 0);
-                return _gas_methane_velocity;
+                assert(_darcy_volumetric_flux_gas_methane.size() > 0);
+                return _darcy_volumetric_flux_gas_methane;
+            }
+
+            std::vector<double> const& getIntPtGasMethaneDiffusiveVolumetricFlux(
+                const double /*t*/,
+                GlobalVector const& /*current_solution*/,
+                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<double>& /*cache*/) const override
+            {
+                assert(_diffusive_volumetric_flux_gas_methane.size() > 0);
+                return _diffusive_volumetric_flux_gas_methane;
             }
 
             std::vector<double> const& getIntPtGasGenerationRate(
@@ -1048,24 +1125,44 @@ namespace ProcessLib
                 return _co2_consumed_current_step;
             }
 
-            std::vector<double> const& getIntPtVaporVelocity(
+            std::vector<double> const& getIntPtVaporDarcyVolumetricFlux(
                 const double /*t*/,
                 GlobalVector const& /*current_solution*/,
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
-                assert(_gas_vapor_velocity.size() > 0);
-                return _gas_vapor_velocity;
+                assert(_darcy_volumetric_flux_gas_water_vapor.size() > 0);
+                return _darcy_volumetric_flux_gas_water_vapor;
             }
 
-            std::vector<double> const& getIntPtGasNitrogenVelocity(
+            std::vector<double> const& getIntPtVaporDiffusiveVolumetricFlux(
                 const double /*t*/,
                 GlobalVector const& /*current_solution*/,
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
-                assert(_gas_nitrogen_velocity.size() > 0);
-                return _gas_nitrogen_velocity;
+                assert(_diffusive_volumetric_flux_gas_water_vapor.size() > 0);
+                return _diffusive_volumetric_flux_gas_water_vapor;
+            }
+
+            std::vector<double> const& getIntPtGasNitrogenDarcyVolumetricFlux(
+                const double /*t*/,
+                GlobalVector const& /*current_solution*/,
+                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<double>& /*cache*/) const override
+            {
+                assert(_darcy_volumetric_flux_gas_nitrogen.size() > 0);
+                return _darcy_volumetric_flux_gas_nitrogen;
+            }
+
+            std::vector<double> const& getIntPtGasNitrogenDiffusiveVolumetricFlux(
+                const double /*t*/,
+                GlobalVector const& /*current_solution*/,
+                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<double>& /*cache*/) const override
+            {
+                assert(_diffusive_volumetric_flux_gas_nitrogen.size() > 0);
+                return _diffusive_volumetric_flux_gas_nitrogen;
             }
 
             std::vector<double> const& getIntPtRelHumidity(
@@ -1176,13 +1273,26 @@ namespace ProcessLib
 
             //used for the integrated velocity
 
-            std::vector<double> _overall_velocity_gas;
-            std::vector<double> _overall_velocity_liquid;
-            std::vector<double> _gas_co2_velocity;
-            std::vector<double> _gas_hydrogen_velocity;
-            std::vector<double> _gas_methane_velocity;
-            std::vector<double> _gas_vapor_velocity;
-            std::vector<double> _gas_nitrogen_velocity;
+            //volumetric darcy flux(velocity) for gas phase
+            std::vector<double> _darcy_volumetric_flux_total_gas_phase;
+            //volumetric darcy flux(velocity) for liquid phase
+            std::vector<double> _darcy_volumetric_flux_total_liquid_phase;
+            //volumetric darcy flux(velocity) for co2 gas component
+            std::vector<double> _darcy_volumetric_flux_gas_co2;
+            std::vector<double> _diffusive_volumetric_flux_gas_co2;
+
+            std::vector<double> _darcy_volumetric_flux_gas_hydrogen;
+            std::vector<double> _diffusive_volumetric_flux_gas_hydrogen;
+
+            std::vector<double> _darcy_volumetric_flux_gas_methane;
+            std::vector<double> _diffusive_volumetric_flux_gas_methane;
+
+            std::vector<double> _darcy_volumetric_flux_gas_water_vapor;
+            std::vector<double> _diffusive_volumetric_flux_gas_water_vapor;
+
+            std::vector<double> _darcy_volumetric_flux_gas_nitrogen;
+            std::vector<double> _diffusive_volumetric_flux_gas_nitrogen;
+
             std::vector<double> _reactivity_bazant_power;
 
             static const int nonwet_pressure_coeff_index = 0;

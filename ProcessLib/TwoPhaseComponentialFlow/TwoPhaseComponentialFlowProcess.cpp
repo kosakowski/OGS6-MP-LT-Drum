@@ -177,14 +177,14 @@ namespace ProcessLib
 
 
             _secondary_variables.addSecondaryVariable(
-                "overall_velocity_gas_phase",
+                "darcy_volumetric_flux_total_gas_phase",
                 makeExtrapolator(mesh.getDimension(), getExtrapolator(), _local_assemblers,
-                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtOverallVelocityGas));
+                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtOverallDarcyVolumetricFluxGas));
 
             _secondary_variables.addSecondaryVariable(
-                "overall_velocity_liquid_phase",
+                "darcy_volumetric_flux_total_liquid_phase",
                 makeExtrapolator(mesh.getDimension(), getExtrapolator(), _local_assemblers,
-                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtOverallVelocityLiquid));
+                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtOverallDarcyVolumetricFluxLiquid));
 
             _secondary_variables.addSecondaryVariable(
                 "overall_gas_generation_rate",
@@ -217,19 +217,34 @@ namespace ProcessLib
                     &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtGasCarbonGenerateRate));
 
             _secondary_variables.addSecondaryVariable(
-                "gas_co2_transport_velocity",
+                "gas_co2_darcy_volumetric_flux",
                 makeExtrapolator(mesh.getDimension(), getExtrapolator(), _local_assemblers,
-                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtGasCO2Velocity));
+                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtGasCO2DarcyVolumetricFlux));
 
             _secondary_variables.addSecondaryVariable(
-                "gas_hydrogen_transport_velocity",
+                "gas_co2_diffusive_volumetric_flux",
                 makeExtrapolator(mesh.getDimension(), getExtrapolator(), _local_assemblers,
-                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtGasHydrogenVelocity));
+                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtGasCO2DiffusiveVolumetricFlux));
 
             _secondary_variables.addSecondaryVariable(
-                "gas_methane_transport_velocity",
+                "gas_hydrogen_darcy_volumetric_flux",
                 makeExtrapolator(mesh.getDimension(), getExtrapolator(), _local_assemblers,
-                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtGasMethaneVelocity));
+                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtGasHydrogenDarcyVolumetricFlux));
+
+            _secondary_variables.addSecondaryVariable(
+                "gas_hydrogen_diffusive_volumetric_flux",
+                makeExtrapolator(mesh.getDimension(), getExtrapolator(), _local_assemblers,
+                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtGasHydrogenDiffusiveVolumetricFlux));
+
+            _secondary_variables.addSecondaryVariable(
+                "gas_methane_darcy_volumetric_flux",
+                makeExtrapolator(mesh.getDimension(), getExtrapolator(), _local_assemblers,
+                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtGasMethaneDarcyVolumetricFlux));
+
+            _secondary_variables.addSecondaryVariable(
+                "gas_methane_diffusive_volumetric_flux",
+                makeExtrapolator(mesh.getDimension(), getExtrapolator(), _local_assemblers,
+                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtGasMethaneDiffusiveVolumetricFlux));
 
             _secondary_variables.addSecondaryVariable(
                 "CO2_Consumed_For_Current_Step",
@@ -237,14 +252,24 @@ namespace ProcessLib
                     &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtCO2ConsumedcurrentStep));
 
             _secondary_variables.addSecondaryVariable(
-                "gas_water_vapor_transport_velocity",
+                "gas_water_vapor_darcy_volumetric_flux",
                 makeExtrapolator(mesh.getDimension(), getExtrapolator(), _local_assemblers,
-                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtVaporVelocity));
+                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtVaporDarcyVolumetricFlux));
 
             _secondary_variables.addSecondaryVariable(
-                "gas_nitrogen_transport_velocity",
+                "gas_water_vapor_diffusive_volumetric_flux",
                 makeExtrapolator(mesh.getDimension(), getExtrapolator(), _local_assemblers,
-                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtGasNitrogenVelocity));
+                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtVaporDiffusiveVolumetricFlux));
+
+            _secondary_variables.addSecondaryVariable(
+                "gas_nitrogen_darcy_volumetric_flux",
+                makeExtrapolator(mesh.getDimension(), getExtrapolator(), _local_assemblers,
+                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtGasNitrogenDarcyVolumetricFlux));
+
+            _secondary_variables.addSecondaryVariable(
+                "gas_nitrogen_diffusive_volumetric_flux",
+                makeExtrapolator(mesh.getDimension(), getExtrapolator(), _local_assemblers,
+                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtGasNitrogenDiffusiveVolumetricFlux));
 
             _secondary_variables.addSecondaryVariable(
                 "relative_humidity",
@@ -316,53 +341,96 @@ namespace ProcessLib
             mesh_prop_sio2_cumulate_consume->resize(mesh.getNumberOfElements() * 1);
             _process_data.mesh_prop_sio2_cumulate_consume = mesh_prop_sio2_cumulate_consume;
 
-            auto mesh_prop_total_liquid_vel
+            auto mesh_prop_total_liquid_darcy_volumetric_flux
                 = MeshLib::getOrCreateMeshProperty<double>(
-                const_cast<MeshLib::Mesh&>(mesh), "liquid_velocity_cell",
+                const_cast<MeshLib::Mesh&>(mesh), "total_liquid_phase_darcy_volumetric_flux_cell",
                 MeshLib::MeshItemType::Cell, 3);
-            mesh_prop_total_liquid_vel
+            mesh_prop_total_liquid_darcy_volumetric_flux
                 ->resize(mesh.getNumberOfElements() * 3);
-            _process_data.mesh_prop_overall_liquid_vel = mesh_prop_total_liquid_vel;
+            _process_data.mesh_prop_overall_liquid_darcy_volumetric_flux
+                = mesh_prop_total_liquid_darcy_volumetric_flux;
 
-            auto mesh_prop_total_gas_vel
+            auto mesh_prop_total_gas_darcy_volumetric_flux
                 = MeshLib::getOrCreateMeshProperty<double>(
-                    const_cast<MeshLib::Mesh&>(mesh), "overall_gas_velocity_cell",
+                    const_cast<MeshLib::Mesh&>(mesh), "total_gas_phase_darcy_volumetric_flux_cell",
                     MeshLib::MeshItemType::Cell, 3);
-            mesh_prop_total_gas_vel
+            mesh_prop_total_gas_darcy_volumetric_flux
                 ->resize(mesh.getNumberOfElements() * 3);
-            _process_data.mesh_prop_overall_gas_vel = mesh_prop_total_gas_vel;
+            _process_data.mesh_prop_overall_gas_darcy_volumetric_flux
+                = mesh_prop_total_gas_darcy_volumetric_flux;
 
-            auto mesh_prop_gas_co2_vel
+            auto mesh_prop_gas_co2_darcy_volumetric_flux
                 = MeshLib::getOrCreateMeshProperty<double>(
-                    const_cast<MeshLib::Mesh&>(mesh), "co2_gas_velocity_cell",
+                    const_cast<MeshLib::Mesh&>(mesh), "co2_gas_darcy_volumetric_flux_cell",
                     MeshLib::MeshItemType::Cell, 3);
-            mesh_prop_gas_co2_vel
+            mesh_prop_gas_co2_darcy_volumetric_flux
                 ->resize(mesh.getNumberOfElements() * 3);
-            _process_data.mesh_prop_gas_co2_vel = mesh_prop_gas_co2_vel;
+            _process_data.mesh_prop_gas_co2_darcy_volumetric_flux
+                = mesh_prop_gas_co2_darcy_volumetric_flux;
 
-            auto mesh_prop_gas_h2_vel
+            auto mesh_prop_gas_co2_diffusive_volumetric_flux
                 = MeshLib::getOrCreateMeshProperty<double>(
-                    const_cast<MeshLib::Mesh&>(mesh), "hydrogen_gas_velocity_cell",
+                    const_cast<MeshLib::Mesh&>(mesh), "co2_gas_diffusive_volumetric_flux_cell",
                     MeshLib::MeshItemType::Cell, 3);
-            mesh_prop_gas_h2_vel
+            mesh_prop_gas_co2_diffusive_volumetric_flux
                 ->resize(mesh.getNumberOfElements() * 3);
-            _process_data.mesh_prop_gas_hydrogen_vel = mesh_prop_gas_h2_vel;
+            _process_data.mesh_prop_gas_co2_diffusive_volumetric_flux
+                = mesh_prop_gas_co2_diffusive_volumetric_flux;
 
-            auto mesh_prop_gas_ch4_vel
-                = MeshLib::getOrCreateMeshProperty<double>(
-                    const_cast<MeshLib::Mesh&>(mesh), "methane_gas_velocity_cell",
-                    MeshLib::MeshItemType::Cell, 3);
-            mesh_prop_gas_ch4_vel
-                ->resize(mesh.getNumberOfElements() * 3);
-            _process_data.mesh_prop_gas_methane_vel = mesh_prop_gas_ch4_vel;
 
-            auto mesh_prop_gas_h2o_vapor_vel
+            auto mesh_prop_gas_h2_darcy_volumetric_flux
                 = MeshLib::getOrCreateMeshProperty<double>(
-                    const_cast<MeshLib::Mesh&>(mesh), "water_vapor_gas_velocity_cell",
+                    const_cast<MeshLib::Mesh&>(mesh), "hydrogen_gas_darcy_volumetric_flux_cell",
                     MeshLib::MeshItemType::Cell, 3);
-            mesh_prop_gas_h2o_vapor_vel
+            mesh_prop_gas_h2_darcy_volumetric_flux
                 ->resize(mesh.getNumberOfElements() * 3);
-            _process_data.mesh_prop_gas_water_vapor_vel = mesh_prop_gas_h2o_vapor_vel;
+            _process_data.mesh_prop_gas_hydrogen_darcy_volumetric_flux
+                = mesh_prop_gas_h2_darcy_volumetric_flux;
+
+            auto mesh_prop_gas_h2_diffusive_volumetric_flux
+                = MeshLib::getOrCreateMeshProperty<double>(
+                    const_cast<MeshLib::Mesh&>(mesh), "hydrogen_gas_diffusive_volumetric_flux_cell",
+                    MeshLib::MeshItemType::Cell, 3);
+            mesh_prop_gas_h2_diffusive_volumetric_flux
+                ->resize(mesh.getNumberOfElements() * 3);
+            _process_data.mesh_prop_gas_hydrogen_diffusive_volumetric_flux
+                = mesh_prop_gas_h2_diffusive_volumetric_flux;
+
+            auto mesh_prop_gas_ch4_darcy_volumetric_flux
+                = MeshLib::getOrCreateMeshProperty<double>(
+                    const_cast<MeshLib::Mesh&>(mesh), "methane_gas_darcy_volumetric_flux_cell",
+                    MeshLib::MeshItemType::Cell, 3);
+            mesh_prop_gas_ch4_darcy_volumetric_flux
+                ->resize(mesh.getNumberOfElements() * 3);
+            _process_data.mesh_prop_gas_methane_darcy_volumetric_flux
+                = mesh_prop_gas_ch4_darcy_volumetric_flux;
+
+            auto mesh_prop_gas_ch4_diffusive_volumetric_flux
+                = MeshLib::getOrCreateMeshProperty<double>(
+                    const_cast<MeshLib::Mesh&>(mesh), "methane_gas_diffusive_volumetric_flux_cell",
+                    MeshLib::MeshItemType::Cell, 3);
+            mesh_prop_gas_ch4_diffusive_volumetric_flux
+                ->resize(mesh.getNumberOfElements() * 3);
+            _process_data.mesh_prop_gas_methane_diffusive_volumetric_flux
+                = mesh_prop_gas_ch4_darcy_volumetric_flux;
+
+            auto mesh_prop_gas_h2o_vapor_darcy_volumetric_flux
+                = MeshLib::getOrCreateMeshProperty<double>(
+                    const_cast<MeshLib::Mesh&>(mesh), "water_vapor_gas_darcy_volumetric_flux_cell",
+                    MeshLib::MeshItemType::Cell, 3);
+            mesh_prop_gas_h2o_vapor_darcy_volumetric_flux
+                ->resize(mesh.getNumberOfElements() * 3);
+            _process_data.mesh_prop_gas_water_vapor_darcy_volumetric_flux
+                = mesh_prop_gas_h2o_vapor_darcy_volumetric_flux;
+
+            auto mesh_prop_gas_h2o_vapor_diffusive_volumetric_flux
+                = MeshLib::getOrCreateMeshProperty<double>(
+                    const_cast<MeshLib::Mesh&>(mesh), "water_vapor_gas_diffusive_volumetric_flux_cell",
+                    MeshLib::MeshItemType::Cell, 3);
+            mesh_prop_gas_h2o_vapor_diffusive_volumetric_flux
+                ->resize(mesh.getNumberOfElements() * 3);
+            _process_data.mesh_prop_gas_water_vapor_diffusive_volumetric_flux
+                = mesh_prop_gas_h2o_vapor_diffusive_volumetric_flux;
 
             auto mesh_prop_mol_fraction_h2o_vaor
                 = MeshLib::getOrCreateMeshProperty<double>(

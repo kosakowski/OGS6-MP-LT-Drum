@@ -123,41 +123,68 @@ namespace ProcessLib
             MathLib::PiecewiseLinearInterpolation const& interpolated_kinetic_rate =
                 _process_data._interpolated_kinetic_rate;
 
-            _overall_velocity_gas.clear();
-            _overall_velocity_liquid.clear();
-            _gas_co2_velocity.clear();
-            _gas_hydrogen_velocity.clear();
-            _gas_methane_velocity.clear();
-            _gas_nitrogen_velocity.clear();
-            _gas_vapor_velocity.clear();
-            //gas phase velocity,units in m/s
-            auto cache_mat_gas_vel = MathLib::createZeroedMatrix<
-                Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
-                    _overall_velocity_gas, GlobalDim, n_integration_points);
-            //liquid phase velocity unit in m/s
-            auto cache_mat_liquid_vel = MathLib::createZeroedMatrix<
-                Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
-                    _overall_velocity_liquid, GlobalDim, n_integration_points);
-            // co2 gas component transport velocity in m/s
-            auto cache_mat_gas_co2_vel = MathLib::createZeroedMatrix<
-                Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
-                    _gas_co2_velocity, GlobalDim, n_integration_points);
-            // H2 gas component transport velocity in m/s
-            auto cache_mat_gas_hydrogen_vel = MathLib::createZeroedMatrix<
-                Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
-                    _gas_hydrogen_velocity, GlobalDim, n_integration_points);
+            _darcy_volumetric_flux_total_gas_phase.clear();
+            _darcy_volumetric_flux_total_liquid_phase.clear();
+            _darcy_volumetric_flux_gas_co2.clear();
+            _diffusive_volumetric_flux_gas_co2.clear();
 
-            auto cache_mat_gas_methane_vel = MathLib::createZeroedMatrix<
-                Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
-                    _gas_methane_velocity, GlobalDim, n_integration_points);
+            _darcy_volumetric_flux_gas_hydrogen.clear();
+            _diffusive_volumetric_flux_gas_hydrogen.clear();
+            _darcy_volumetric_flux_gas_methane.clear();
+            _diffusive_volumetric_flux_gas_methane.clear();
 
-            auto cache_mat_gas_nitrogen_vel = MathLib::createZeroedMatrix<
-                Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
-                    _gas_nitrogen_velocity, GlobalDim, n_integration_points);
+            _darcy_volumetric_flux_gas_water_vapor.clear();
+            _diffusive_volumetric_flux_gas_water_vapor.clear();
+            _darcy_volumetric_flux_gas_nitrogen.clear();
+            _diffusive_volumetric_flux_gas_nitrogen.clear();
 
-            auto cache_mat_gas_water_vapor_vel = MathLib::createZeroedMatrix<
+            //total gas phase darcy velocity(flux),units in m/s
+            auto cache_mat_gas_darcy_volumetric_flux = MathLib::createZeroedMatrix<
                 Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
-                    _gas_vapor_velocity, GlobalDim, n_integration_points);
+                    _darcy_volumetric_flux_total_gas_phase, GlobalDim, n_integration_points);
+            //liquid phase darcy velocity(flux) unit in m/s
+            auto cache_mat_liquid_darcy_volumetric_flux = MathLib::createZeroedMatrix<
+                Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
+                    _darcy_volumetric_flux_total_liquid_phase, GlobalDim, n_integration_points);
+            // co2 gas component transport darcy volumetric flux in m/s
+            auto cache_mat_gas_co2_darcy_volumetric_flux = MathLib::createZeroedMatrix<
+                Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
+                    _darcy_volumetric_flux_gas_co2, GlobalDim, n_integration_points);
+            // co2 gas component transport diffusive volumetric flux in m/s
+            auto cache_mat_gas_co2_diffusive_volumetric_flux = MathLib::createZeroedMatrix<
+                Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
+                    _diffusive_volumetric_flux_gas_co2, GlobalDim, n_integration_points);
+
+            // H2 gas component transport darcy volumetric flux in m/s
+            auto cache_mat_gas_hydrogen_darcy_volumetric_flux = MathLib::createZeroedMatrix<
+                Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
+                    _darcy_volumetric_flux_gas_hydrogen, GlobalDim, n_integration_points);
+            //h2 gas component transport diffusive volumetric flux in m/s
+            auto cache_mat_gas_hydrogen_diffusive_volumetric_flux = MathLib::createZeroedMatrix<
+                Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
+                    _diffusive_volumetric_flux_gas_hydrogen, GlobalDim, n_integration_points);
+            //methane gas component transport darcy volumetric flux in m/s
+            auto cache_mat_gas_methane_darcy_volumetric_flux = MathLib::createZeroedMatrix<
+                Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
+                    _darcy_volumetric_flux_gas_methane, GlobalDim, n_integration_points);
+            auto cache_mat_gas_methane_diffusive_volumetric_flux = MathLib::createZeroedMatrix<
+                Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
+                    _diffusive_volumetric_flux_gas_methane, GlobalDim, n_integration_points);
+            //nitrogen gas component transport darcy volumetric flux in m/s
+            auto cache_mat_gas_nitrogen_darcy_volumetric_flux = MathLib::createZeroedMatrix<
+                Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
+                    _darcy_volumetric_flux_gas_nitrogen, GlobalDim, n_integration_points);
+            //nitrogen gas component transport diffusive volumetric flux in m/s
+            auto cache_mat_gas_nitrogen_diffusive_volumetric_flux = MathLib::createZeroedMatrix<
+                Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
+                    _diffusive_volumetric_flux_gas_nitrogen, GlobalDim, n_integration_points);
+            //water vapor component transport 
+            auto cache_mat_gas_water_vapor_darcy_volumetric_flux = MathLib::createZeroedMatrix<
+                Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
+                    _darcy_volumetric_flux_gas_water_vapor, GlobalDim, n_integration_points);
+            auto cache_mat_gas_water_vapor_diffusive_volumetric_flux = MathLib::createZeroedMatrix<
+                Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
+                    _diffusive_volumetric_flux_gas_water_vapor, GlobalDim, n_integration_points);
 
             Eigen::VectorXd neumann_vector = Eigen::VectorXd::Zero(local_x.size());
             auto neumann_vec = neumann_vector.segment<ShapeFunction::NPOINTS>(
@@ -742,24 +769,24 @@ namespace ProcessLib
                 x5_nodal_values[nn] = 1 - x4_nodal_values[nn] - x3_nodal_values[nn]
                 - x2_nodal_values[nn] - x1_nodal_values[nn];
                 }*/
-                //calculate the velocity
-                GlobalDimVectorType darcy_velocity_gas_phase =
+                //calculate the darcy velocity
+                GlobalDimVectorType darcy_volumetric_flux_gas_phase =
                     -K_mat_coeff_gas * sm.dNdx * p_nodal_values;
-                GlobalDimVectorType darcy_velocity_liquid_phase =
+                GlobalDimVectorType darcy_volumetric_flux_liquid_phase =
                     -K_mat_coeff_liquid * sm.dNdx * (p_nodal_values - pc_nodal_values);
-                // for simplify only consider the gaseous specices diffusion velocity
-                GlobalDimVectorType diffuse_velocity_h2_gas = -porosity * D_G * (1 - Sw)*sm.dNdx*x1_nodal_values;
-                GlobalDimVectorType diffuse_velocity_ch4_gas = -porosity * D_G * (1 - Sw)*sm.dNdx*x2_nodal_values;
-                GlobalDimVectorType diffuse_velocity_co2_gas = -porosity * D_G_co2 * (1 - Sw)*sm.dNdx*x3_nodal_values;
+                // for simplify only consider the gaseous specices diffusion flux not velocity
+                GlobalDimVectorType diffuse_volumetric_flux_h2_gas = -porosity * D_G * (1 - Sw)*sm.dNdx*x1_nodal_values;
+                GlobalDimVectorType diffuse_volumetric_flux_ch4_gas = -porosity * D_G * (1 - Sw)*sm.dNdx*x2_nodal_values;
+                GlobalDimVectorType diffuse_volumetric_flux_co2_gas = -porosity * D_G_co2 * (1 - Sw)*sm.dNdx*x3_nodal_values;
 
-                GlobalDimVectorType diffuse_velocity_air_gas = -porosity * D_G * (1 - Sw)*sm.dNdx*(
+                GlobalDimVectorType diffuse_volumetric_flux_air_gas = -porosity * D_G * (1 - Sw)*sm.dNdx*(
                     p_nodal_values*d_x_nonwet_air_d_pg
                     + x1_nodal_values*d_x_nonwet_air_d_x1
                     + x2_nodal_values* d_x_nonwet_air_d_x2
                     + (D_G_co2 / D_G)*x3_nodal_values* d_x_nonwet_air_d_x3
                     + pc_nodal_values*d_x_nonwet_air_d_pc);
 
-                GlobalDimVectorType diffuse_velocity_vapor_gas = -porosity * D_G * (1 - Sw)*sm.dNdx*(
+                GlobalDimVectorType diffuse_volumetric_flux_vapor_gas = -porosity * D_G * (1 - Sw)*sm.dNdx*(
                     p_nodal_values*d_x_nonwet_h2o_d_pg
                     + x1_nodal_values*d_x_nonwet_h2o_d_x1
                     + x2_nodal_values* d_x_nonwet_h2o_d_x2
@@ -772,8 +799,8 @@ namespace ProcessLib
                     auto const& b = _process_data._specific_body_force;
                     NodalVectorType gravity_operator =
                         sm.dNdx.transpose() * permeability * b * integration_factor;
-                    darcy_velocity_gas_phase -= K_mat_coeff_gas * rho_mass_G_gp * b;
-                    darcy_velocity_liquid_phase -= K_mat_coeff_liquid*rho_mass_wet*b;
+                    darcy_volumetric_flux_gas_phase -= K_mat_coeff_gas * rho_mass_G_gp * b;
+                    darcy_volumetric_flux_liquid_phase -= K_mat_coeff_liquid*rho_mass_wet*b;
                     H_vec_coeff(0) =
                         (-lambda_G * rho_mol_nonwet * X1_int_pt * rho_mass_G_gp -
                             lambda_L * rho_mol_wet * X1_int_pt * pg_int_pt * rho_mass_wet /
@@ -793,30 +820,43 @@ namespace ProcessLib
                     H_vec_coeff(4) = (-lambda_G * rho_mol_nonwet *x_nonwet_h2o* rho_mass_G_gp -
                         lambda_L * rho_mol_water* rho_mass_wet);
 
-                    cache_mat_gas_vel.col(ip).noalias() = darcy_velocity_gas_phase;
+                    cache_mat_gas_darcy_volumetric_flux.col(ip).noalias()
+                        = darcy_volumetric_flux_gas_phase;
 
-                    cache_mat_liquid_vel.col(ip).noalias() = darcy_velocity_liquid_phase;
+                    cache_mat_liquid_darcy_volumetric_flux.col(ip).noalias()
+                        = darcy_volumetric_flux_liquid_phase;
+                    //seperate the darcy flux and diffusive flux for co2 gas
+                    cache_mat_gas_co2_darcy_volumetric_flux.col(ip).noalias() =
+                        X3_int_pt * darcy_volumetric_flux_gas_phase;
 
-                    cache_mat_gas_co2_vel.col(ip).noalias() =
-                        X3_int_pt * darcy_velocity_gas_phase + diffuse_velocity_co2_gas;
-
-                    cache_mat_gas_hydrogen_vel.col(ip).noalias() =
-                        X1_int_pt * darcy_velocity_gas_phase + diffuse_velocity_h2_gas;
-
-                    cache_mat_gas_methane_vel.col(ip).noalias() =
-                        X2_int_pt * darcy_velocity_gas_phase + diffuse_velocity_ch4_gas;
-
-                    cache_mat_gas_nitrogen_vel.col(ip).noalias() =
-                        x_nonwet_air*darcy_velocity_gas_phase + diffuse_velocity_air_gas;
-
-                    cache_mat_gas_water_vapor_vel.col(ip).noalias() =
-                        x_nonwet_h2o*darcy_velocity_gas_phase + diffuse_velocity_vapor_gas;
+                    cache_mat_gas_co2_diffusive_volumetric_flux.col(ip).noalias() =
+                        diffuse_volumetric_flux_co2_gas;
+                    //seperate the darcy flux and diffusive flux for hydrogen gas
+                    cache_mat_gas_hydrogen_darcy_volumetric_flux.col(ip).noalias() =
+                        X1_int_pt * darcy_volumetric_flux_gas_phase;
+                    cache_mat_gas_hydrogen_diffusive_volumetric_flux.col(ip).noalias() =
+                        diffuse_volumetric_flux_h2_gas;
+                    //seperate the darcy flux and diffusive flux for methane gas
+                    cache_mat_gas_methane_darcy_volumetric_flux.col(ip).noalias() =
+                        X2_int_pt * darcy_volumetric_flux_gas_phase;
+                    cache_mat_gas_methane_diffusive_volumetric_flux.col(ip).noalias() =
+                        diffuse_volumetric_flux_ch4_gas;
+                    //seperate the darcy flux and diffusive flux for nitrogen gas
+                    cache_mat_gas_nitrogen_darcy_volumetric_flux.col(ip).noalias() =
+                        x_nonwet_air * darcy_volumetric_flux_gas_phase;
+                    cache_mat_gas_nitrogen_diffusive_volumetric_flux.col(ip).noalias() =
+                        diffuse_volumetric_flux_air_gas;
+                    // seperate the darcy flux and diffusive flux for warer vapor gas
+                    cache_mat_gas_water_vapor_darcy_volumetric_flux.col(ip).noalias() =
+                        x_nonwet_h2o * darcy_volumetric_flux_gas_phase;
+                    cache_mat_gas_water_vapor_diffusive_volumetric_flux.col(ip).noalias() =
+                        diffuse_volumetric_flux_vapor_gas;
 
                     for (unsigned d = 0; d < GlobalDim; ++d)
                     {
-                        _total_velocities_gas[d][ip] = darcy_velocity_gas_phase[d];
+                        _total_velocities_gas[d][ip] = darcy_volumetric_flux_gas_phase[d];
 
-                        _total_velocities_liquid[d][ip] = darcy_velocity_liquid_phase[d];
+                        _total_velocities_liquid[d][ip] = darcy_volumetric_flux_liquid_phase[d];
                     }
 
                     for (int idx = 0; idx < NUM_NODAL_DOF; idx++)
@@ -1739,46 +1779,71 @@ namespace ProcessLib
                 = ele_mol_frac_n2_air;
             // store the velocity value on each cell
             //Eigen::Vector3d ele_liquid_velocity = Eigen::Vector3d::Zero();
-            Eigen::VectorXd ele_liquid_velocity = Eigen::VectorXd::Zero(GlobalDim);
-            Eigen::VectorXd ele_gas_velocity = Eigen::VectorXd::Zero(GlobalDim);
-            Eigen::VectorXd ele_co2_gas_velocity = Eigen::VectorXd::Zero(GlobalDim);
-            Eigen::VectorXd ele_h2_gas_velocity = Eigen::VectorXd::Zero(GlobalDim);
-            Eigen::VectorXd ele_CH4_gas_velocity = Eigen::VectorXd::Zero(GlobalDim);
-            Eigen::VectorXd ele_h2o_vapor_gas_velocity = Eigen::VectorXd::Zero(GlobalDim);
+            Eigen::VectorXd ele_liquid_darcy_volumetric_flux = Eigen::VectorXd::Zero(GlobalDim);
+            Eigen::VectorXd ele_gas_darcy_volumetric_flux = Eigen::VectorXd::Zero(GlobalDim);
+            Eigen::VectorXd ele_co2_gas_darcy_volumetric_flux = Eigen::VectorXd::Zero(GlobalDim);
+            Eigen::VectorXd ele_co2_gas_diffusive_volumetric_flux = Eigen::VectorXd::Zero(GlobalDim);
+            Eigen::VectorXd ele_h2_gas_darcy_volumetric_flux = Eigen::VectorXd::Zero(GlobalDim);
+            Eigen::VectorXd ele_h2_gas_diffusive_volumetric_flux = Eigen::VectorXd::Zero(GlobalDim);
+            Eigen::VectorXd ele_ch4_gas_darcy_volumetric_flux = Eigen::VectorXd::Zero(GlobalDim);
+            Eigen::VectorXd ele_ch4_gas_diffusive_volumetric_flux = Eigen::VectorXd::Zero(GlobalDim);
+
+            Eigen::VectorXd ele_h2o_vapor_gas_darcy_volumetric_flux = Eigen::VectorXd::Zero(GlobalDim);
+            Eigen::VectorXd ele_h2o_vapor_gas_diffusive_volumetric_flux = Eigen::VectorXd::Zero(GlobalDim);
             for (unsigned ip = 0; ip < n_integration_points; ip++)
             {
-                ele_liquid_velocity += cache_mat_liquid_vel.col(ip);
-                ele_gas_velocity += cache_mat_gas_vel.col(ip);
-                ele_co2_gas_velocity += cache_mat_gas_co2_vel.col(ip);
-                ele_h2_gas_velocity += cache_mat_gas_hydrogen_vel.col(ip);
-                ele_CH4_gas_velocity += cache_mat_gas_methane_vel.col(ip);
-                ele_h2o_vapor_gas_velocity += cache_mat_gas_water_vapor_vel.col(ip);
+                ele_liquid_darcy_volumetric_flux += cache_mat_liquid_darcy_volumetric_flux.col(ip);
+                ele_gas_darcy_volumetric_flux += cache_mat_gas_darcy_volumetric_flux.col(ip);
+                ele_co2_gas_darcy_volumetric_flux += cache_mat_gas_co2_darcy_volumetric_flux.col(ip);
+                ele_co2_gas_diffusive_volumetric_flux+=cache_mat_gas_co2_diffusive_volumetric_flux.col(ip);
+                ele_h2_gas_darcy_volumetric_flux += cache_mat_gas_hydrogen_darcy_volumetric_flux.col(ip);
+                ele_h2_gas_diffusive_volumetric_flux += cache_mat_gas_hydrogen_diffusive_volumetric_flux.col(ip);
+                ele_ch4_gas_darcy_volumetric_flux += cache_mat_gas_methane_darcy_volumetric_flux.col(ip);
+                ele_ch4_gas_diffusive_volumetric_flux += cache_mat_gas_methane_diffusive_volumetric_flux.col(ip);
+                ele_h2o_vapor_gas_darcy_volumetric_flux += cache_mat_gas_water_vapor_darcy_volumetric_flux.col(ip);
+                ele_h2o_vapor_gas_diffusive_volumetric_flux += cache_mat_gas_water_vapor_diffusive_volumetric_flux.col(ip);
             }
             for (unsigned i = 0; i < GlobalDim; i++) {
-                (*_process_data.mesh_prop_overall_liquid_vel)[element_id * 3 + i] =
-                    ele_liquid_velocity[i];
-                (*_process_data.mesh_prop_overall_gas_vel)[element_id * 3 + i] =
-                    ele_gas_velocity[i];
-                (*_process_data.mesh_prop_gas_co2_vel)[element_id * 3 + i] =
-                    ele_co2_gas_velocity[i];
-                (*_process_data.mesh_prop_gas_hydrogen_vel)[element_id * 3 + i] =
-                    ele_h2_gas_velocity[i];
-                (*_process_data.mesh_prop_gas_methane_vel)[element_id * 3 + i] =
-                    ele_CH4_gas_velocity[i];
-                (*_process_data.mesh_prop_gas_water_vapor_vel)[element_id * 3 + i] =
-                    ele_h2o_vapor_gas_velocity[i];
+                (*_process_data.mesh_prop_overall_liquid_darcy_volumetric_flux)[element_id * 3 + i] =
+                    ele_liquid_darcy_volumetric_flux[i];
+                (*_process_data.mesh_prop_overall_gas_darcy_volumetric_flux)[element_id * 3 + i] =
+                    ele_gas_darcy_volumetric_flux[i];
+                (*_process_data.mesh_prop_gas_co2_darcy_volumetric_flux)[element_id * 3 + i] =
+                    ele_co2_gas_darcy_volumetric_flux[i];
+                (*_process_data.mesh_prop_gas_co2_diffusive_volumetric_flux)[element_id * 3 + i]=
+                    ele_co2_gas_diffusive_volumetric_flux[i];
+                (*_process_data.mesh_prop_gas_hydrogen_darcy_volumetric_flux)[element_id * 3 + i] =
+                    ele_h2_gas_darcy_volumetric_flux[i];
+                (*_process_data.mesh_prop_gas_hydrogen_diffusive_volumetric_flux)[element_id * 3 + i] =
+                    ele_h2_gas_diffusive_volumetric_flux[i];
+                (*_process_data.mesh_prop_gas_methane_darcy_volumetric_flux)[element_id * 3 + i] =
+                    ele_ch4_gas_darcy_volumetric_flux[i];
+                (*_process_data.mesh_prop_gas_methane_diffusive_volumetric_flux)[element_id * 3 + i] =
+                    ele_ch4_gas_diffusive_volumetric_flux[i];
+                (*_process_data.mesh_prop_gas_water_vapor_darcy_volumetric_flux)[element_id * 3 + i] =
+                    ele_h2o_vapor_gas_darcy_volumetric_flux[i];
+                (*_process_data.mesh_prop_gas_water_vapor_diffusive_volumetric_flux)[element_id * 3 + i] =
+                    ele_h2o_vapor_gas_diffusive_volumetric_flux[i];
             }
-            (*_process_data.mesh_prop_overall_liquid_vel)[element_id * 3 + 2] =
+            (*_process_data.mesh_prop_overall_liquid_darcy_volumetric_flux)[element_id * 3 + 2] =
                 0.0;
-            (*_process_data.mesh_prop_overall_gas_vel)[element_id * 3 + 2] =
+            (*_process_data.mesh_prop_overall_gas_darcy_volumetric_flux)[element_id * 3 + 2] =
                 0.0;
-            (*_process_data.mesh_prop_gas_co2_vel)[element_id * 3 + 2] =
+            (*_process_data.mesh_prop_gas_co2_darcy_volumetric_flux)[element_id * 3 + 2] =
                 0.0;
-            (*_process_data.mesh_prop_gas_hydrogen_vel)[element_id * 3 + 2] =
+            (*_process_data.mesh_prop_gas_co2_diffusive_volumetric_flux)[element_id * 3 + 2] =
                 0.0;
-            (*_process_data.mesh_prop_gas_methane_vel)[element_id * 3 + 2] =
+            (*_process_data.mesh_prop_gas_hydrogen_darcy_volumetric_flux)[element_id * 3 + 2] =
                 0.0;
-            (*_process_data.mesh_prop_gas_water_vapor_vel)[element_id * 3 + 2] =
+            (*_process_data.mesh_prop_gas_hydrogen_diffusive_volumetric_flux)[element_id * 3 + 2] =
+                0.0;
+            (*_process_data.mesh_prop_gas_methane_darcy_volumetric_flux)[element_id * 3 + 2] =
+                0.0;
+            (*_process_data.mesh_prop_gas_methane_diffusive_volumetric_flux)[element_id * 3 + 2] =
+                0.0;
+            (*_process_data.mesh_prop_gas_water_vapor_darcy_volumetric_flux)[element_id * 3 + 2] =
+                0.0;
+            (*_process_data.mesh_prop_gas_water_vapor_diffusive_volumetric_flux)[element_id * 3 + 2] =
                 0.0;
             if (_process_data._has_mass_lumping)
             {
