@@ -56,6 +56,66 @@ namespace ProcessLib
             auto local_b = MathLib::createZeroedVector<LocalVectorType>(
                 local_b_data, local_matrix_size);
 
+            auto Kh2pg =
+                local_K.template block<nonwet_pressure_size, nonwet_pressure_size>(
+                    nonwet_pressure_matrix_index, nonwet_pressure_matrix_index);
+            auto Kh2x1 = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                nonwet_pressure_matrix_index, mol_fraction_h2_matrix_index);
+            auto Kh2x2 = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                nonwet_pressure_matrix_index, mol_fraction_ch4_matrix_index);
+            auto Kh2x3 = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                nonwet_pressure_matrix_index, mol_fraction_co2_matrix_index);
+            auto Kh2pc = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                nonwet_pressure_matrix_index, cap_pressure_matrix_index);
+
+            auto Kch4pg =
+                local_K.template block<nonwet_pressure_size, nonwet_pressure_size>(
+                    mol_fraction_h2_matrix_index, nonwet_pressure_matrix_index);
+            auto Kch4x1 = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                mol_fraction_h2_matrix_index, mol_fraction_h2_matrix_index);
+            auto Kch4x2 = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                mol_fraction_h2_matrix_index, mol_fraction_ch4_matrix_index);
+            auto Kch4x3 = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                mol_fraction_h2_matrix_index, mol_fraction_co2_matrix_index);
+            auto Kch4pc = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                mol_fraction_h2_matrix_index, cap_pressure_matrix_index);
+
+            auto Kco2pg =
+                local_K.template block<nonwet_pressure_size, nonwet_pressure_size>(
+                    mol_fraction_ch4_matrix_index, nonwet_pressure_matrix_index);
+            auto Kco2x1 = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                mol_fraction_ch4_matrix_index, mol_fraction_h2_matrix_index);
+            auto Kco2x2 = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                mol_fraction_ch4_matrix_index, mol_fraction_ch4_matrix_index);
+            auto Kco2x3 = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                mol_fraction_ch4_matrix_index, mol_fraction_co2_matrix_index);
+            auto Kco2pc = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                mol_fraction_ch4_matrix_index, cap_pressure_matrix_index);
+
+            auto Kairpg =
+                local_K.template block<nonwet_pressure_size, nonwet_pressure_size>(
+                    mol_fraction_co2_matrix_index, nonwet_pressure_matrix_index);
+            auto Kairx1 = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                mol_fraction_co2_matrix_index, mol_fraction_h2_matrix_index);
+            auto Kairx2 = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                mol_fraction_co2_matrix_index, mol_fraction_ch4_matrix_index);
+            auto Kairx3 = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                mol_fraction_co2_matrix_index, mol_fraction_co2_matrix_index);
+            auto Kairpc = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                mol_fraction_co2_matrix_index, cap_pressure_matrix_index);
+
+            auto Kh2opg =
+                local_K.template block<nonwet_pressure_size, nonwet_pressure_size>(
+                    cap_pressure_matrix_index, nonwet_pressure_matrix_index);
+            auto Kh2ox1 = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                cap_pressure_matrix_index, mol_fraction_h2_matrix_index);
+            auto Kh2ox2 = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                cap_pressure_matrix_index, mol_fraction_ch4_matrix_index);
+            auto Kh2ox3 = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                cap_pressure_matrix_index, mol_fraction_co2_matrix_index);
+            auto Kh2opc = local_K.template block<nonwet_pressure_size, cap_pressure_size>(
+                cap_pressure_matrix_index, cap_pressure_matrix_index);
+
             Eigen::MatrixXd mass_mat_coeff =
                 Eigen::MatrixXd::Zero(NUM_NODAL_DOF, NUM_NODAL_DOF);
             Eigen::MatrixXd K_mat_coeff =
@@ -625,7 +685,7 @@ namespace ProcessLib
                 }
                 double const k_rel_G =
                     _process_data._material->getNonwetRelativePermeability(
-                        t, pos, pg_int_pt, temperature, Sw);
+                        t, pos, pg_int_pt, temperature, 0.24);
                 double const mu_gas =
                     _process_data._material->getGasViscosity(pg_int_pt, temperature);
                 double const lambda_G = k_rel_G / mu_gas;
@@ -636,7 +696,7 @@ namespace ProcessLib
                 // wet
                 double k_rel_L =
                     _process_data._material->getWetRelativePermeability(
-                        t, pos, _pressure_wetting[ip], temperature, Sw);
+                        t, pos, _pressure_wetting[ip], temperature, 0.24);
                 if (atm_flag)
                     k_rel_L = 0;
                 double const mu_liquid = _process_data._material->getLiquidViscosity(
@@ -759,6 +819,7 @@ namespace ProcessLib
                             .noalias() += localDispersion_tmp;
                     }
                 }
+                
                 auto const K_mat_coeff_gas = permeability * (k_rel_G / mu_gas);
                 auto const K_mat_coeff_liquid = permeability * (k_rel_L / mu_liquid);
 
@@ -774,6 +835,7 @@ namespace ProcessLib
                     -K_mat_coeff_gas * sm.dNdx * p_nodal_values;
                 GlobalDimVectorType darcy_volumetric_flux_liquid_phase =
                     -K_mat_coeff_liquid * sm.dNdx * (p_nodal_values - pc_nodal_values);
+
                 // for simplify only consider the gaseous specices diffusion flux not velocity
                 GlobalDimVectorType diffuse_volumetric_flux_h2_gas = -porosity * D_G * (1 - Sw)*sm.dNdx*x1_nodal_values;
                 GlobalDimVectorType diffuse_volumetric_flux_ch4_gas = -porosity * D_G * (1 - Sw)*sm.dNdx*x2_nodal_values;
@@ -871,6 +933,75 @@ namespace ProcessLib
                             localGravity_tmp;
                     }
                 }  // end of hasGravityEffect
+
+                   //include advection term
+                Kh2pg.noalias() -=
+                    sm.dNdx.transpose()*(darcy_volumetric_flux_gas_phase
+                        *(X1_int_pt / R / temperature) + darcy_volumetric_flux_liquid_phase
+                        * rho_mol_wet*X1_int_pt / Hen_L_h)*integration_factor*sm.N;
+                Kh2x1.noalias() -=
+                    sm.dNdx.transpose()*(darcy_volumetric_flux_gas_phase
+                        *rho_mol_nonwet
+                        + darcy_volumetric_flux_liquid_phase * rho_mol_wet*pg_int_pt / Hen_L_h)
+                    *integration_factor*sm.N;
+
+                Kch4pg.noalias() -= sm.dNdx.transpose()*(darcy_volumetric_flux_gas_phase
+                    *(X2_int_pt / R / temperature)
+                    + darcy_volumetric_flux_liquid_phase * rho_mol_wet*X2_int_pt / Hen_L_c)
+                    *integration_factor*sm.N;
+                Kch4x2.noalias() -= sm.dNdx.transpose()*(darcy_volumetric_flux_gas_phase
+                    *(rho_mol_nonwet)
+                    +darcy_volumetric_flux_liquid_phase * rho_mol_wet*pg_int_pt / Hen_L_c)
+                    *integration_factor*sm.N;
+
+                Kco2pg.noalias() -= sm.dNdx.transpose()*(darcy_volumetric_flux_gas_phase
+                    *(X3_int_pt / R / temperature)
+                    + darcy_volumetric_flux_liquid_phase * rho_mol_wet*X3_int_pt / Hen_L_co2)
+                    *integration_factor*sm.N;
+                Kco2x3.noalias() -= sm.dNdx.transpose()*(darcy_volumetric_flux_gas_phase
+                    *(rho_mol_nonwet)
+                    +darcy_volumetric_flux_liquid_phase * rho_mol_wet*pg_int_pt / Hen_L_co2)
+                    *integration_factor*sm.N;
+
+                Kairpg.noalias() -= sm.dNdx.transpose()*(darcy_volumetric_flux_gas_phase
+                    *(x_nonwet_air / R / temperature
+                        + rho_mol_nonwet * d_x_nonwet_air_d_pg)
+                    + darcy_volumetric_flux_liquid_phase * rho_mol_wet*(x_nonwet_air
+                        + pg_int_pt * d_x_nonwet_air_d_pg) / Hen_L_air
+                    )*integration_factor*sm.N;
+                Kairx1.noalias() -= sm.dNdx.transpose()*(darcy_volumetric_flux_gas_phase
+                    *(rho_mol_nonwet*d_x_nonwet_air_d_x1)
+                    + darcy_volumetric_flux_liquid_phase
+                    * rho_mol_wet*pg_int_pt*d_x_nonwet_air_d_x1 / Hen_L_air)
+                    *integration_factor*sm.N;
+                Kairx2.noalias() -= sm.dNdx.transpose()*(darcy_volumetric_flux_gas_phase
+                    *(rho_mol_nonwet*d_x_nonwet_air_d_x2)
+                    + darcy_volumetric_flux_liquid_phase
+                    * rho_mol_wet*pg_int_pt*d_x_nonwet_air_d_x2 / Hen_L_air)
+                    *integration_factor*sm.N;
+                Kairx3.noalias() -= sm.dNdx.transpose()*(darcy_volumetric_flux_gas_phase
+                    *(rho_mol_nonwet*d_x_nonwet_air_d_x3)
+                    + darcy_volumetric_flux_liquid_phase
+                    * rho_mol_wet * pg_int_pt*d_x_nonwet_air_d_x3 / Hen_L_air)
+                    *integration_factor*sm.N;
+                Kairpc.noalias() -= sm.dNdx.transpose()*(darcy_volumetric_flux_gas_phase
+                    *(rho_mol_nonwet*d_x_nonwet_air_d_pc)
+                    + darcy_volumetric_flux_liquid_phase
+                    * rho_mol_wet*pg_int_pt*d_x_nonwet_air_d_pc / Hen_L_air)
+                    *integration_factor*sm.N;
+
+                Kh2opg.noalias() -= sm.dNdx.transpose()*darcy_volumetric_flux_gas_phase
+                    *(x_nonwet_h2o / R / temperature
+                        + rho_mol_nonwet * d_x_nonwet_h2o_d_pg)*integration_factor*sm.N;
+                Kh2ox1.noalias() -= sm.dNdx.transpose()*darcy_volumetric_flux_gas_phase
+                    *(rho_mol_nonwet*d_x_nonwet_h2o_d_x1)*integration_factor*sm.N;
+                Kh2ox2.noalias() -= sm.dNdx.transpose()*darcy_volumetric_flux_gas_phase
+                    *(rho_mol_nonwet*d_x_nonwet_h2o_d_x2)*integration_factor*sm.N;
+                Kh2ox3.noalias() -= sm.dNdx.transpose()*darcy_volumetric_flux_gas_phase
+                    *(rho_mol_nonwet*d_x_nonwet_h2o_d_x3)*integration_factor*sm.N;
+                Kh2opc.noalias() -= sm.dNdx.transpose()*darcy_volumetric_flux_gas_phase
+                    *(rho_mol_nonwet*d_x_nonwet_h2o_d_pc)*integration_factor*sm.N;
+
                    // load the source term
 
                 if (Sw > -1e-6 && dt > 0)
@@ -1854,6 +1985,7 @@ namespace ProcessLib
                 0.0;
             (*_process_data.mesh_prop_gas_water_vapor_diffusive_volumetric_flux)[element_id * 3 + 2] =
                 0.0;
+
             if (_process_data._has_mass_lumping)
             {
                 auto Mhpg =
