@@ -12,6 +12,7 @@
 #include <vector>
 #include "MaterialLib/PhysicalConstant.h"
 #include "MathLib/LinAlg/Eigen/EigenMapTools.h"
+#include "NumLib/DOF/DOFTableUtil.h"
 #include "NumLib/Extrapolation/ExtrapolatableElement.h"
 #include "NumLib/Fem/FiniteElement/TemplateIsoparametric.h"
 #include "NumLib/Fem/ShapeMatrixPolicy.h"
@@ -246,12 +247,15 @@ namespace ProcessLib
             0.99999999,  0.99999999,  0.99999999,  1,
             1,           1,           1,           1 };
 
-        template <typename NodalMatrixType>
+        template <typename NodalRowVectorType, typename GlobalDimNodalMatrixType, typename NodalMatrixType>
         struct IntegrationPointData final
         {
-            explicit IntegrationPointData(
+            explicit IntegrationPointData(NodalRowVectorType const& N_,
+                GlobalDimNodalMatrixType const& dNdx_,
+                double const& integration_weight_,
                 TwoPhaseComponentialFlowMaterialProperties& material_property_)
-                : mat_property(material_property_),
+                : N(N_), dNdx(dNdx_), integration_weight(integration_weight_),
+                mat_property(material_property_),
                 rho_mol_sio2_backfill(0.0),
                 rho_mol_sio2_prev_backfill(0.0),
                 porosity_backfill(0.095228012),
@@ -279,6 +283,9 @@ namespace ProcessLib
 
             {
             }
+            NodalRowVectorType const N;
+            GlobalDimNodalMatrixType const dNdx;
+            double const integration_weight;
             TwoPhaseComponentialFlowMaterialProperties& mat_property;
             double rho_mol_sio2_backfill;
             double rho_mol_sio2_prev_backfill;
@@ -294,7 +301,6 @@ namespace ProcessLib
             double rho_mol_co2_cumul_total_prev_waste;
             double fluid_volume_waste;
             double fluid_volume_prev_waste;
-            double integration_weight;
             double pressure_pre;
             double pressure_cur;
             double mol_frac_h2_pre;
@@ -600,7 +606,9 @@ namespace ProcessLib
             using GlobalDimVectorType = typename ShapeMatricesType::GlobalDimVectorType;
             using LocalMatrixType = typename LocalAssemblerTraits::LocalMatrix;
             using LocalVectorType = typename LocalAssemblerTraits::LocalVector;
-
+            using NodalRowVectorType = typename ShapeMatricesType::NodalRowVectorType;
+            using GlobalDimNodalMatrixType =
+                typename ShapeMatricesType::GlobalDimNodalMatrixType;
         public:
             TwoPhaseComponentialFlowLocalAssembler(
                 MeshLib::Element const& element,
@@ -700,11 +708,11 @@ namespace ProcessLib
                 _ip_data.reserve(n_integration_points);
                 for (unsigned ip = 0; ip < n_integration_points; ip++)
                 {
-                    _ip_data.emplace_back(*_process_data._material);
                     auto const& sm = _shape_matrices[ip];
-                    _ip_data[ip].integration_weight =
-                        sm.integralMeasure * sm.detJ *
-                        _integration_method.getWeightedPoint(ip).getWeight();
+                    _ip_data.emplace_back(sm.N, sm.dNdx,
+                        _integration_method.getWeightedPoint(ip).getWeight() *
+                        sm.integralMeasure *
+                        sm.detJ,*_process_data._material);
                     _ip_data[ip].massOperator.setZero(ShapeFunction::NPOINTS,
                         ShapeFunction::NPOINTS);
                     _ip_data[ip].massOperator.noalias() =
@@ -968,15 +976,6 @@ namespace ProcessLib
             /*
             * used to output overall velocity of the liquid phase
             */
-            std::vector<double> const& getIntPtOverallDarcyVolumetricFluxLiquid(
-                const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
-                std::vector<double>& /*cache*/) const override
-            {
-                assert(_darcy_volumetric_flux_total_liquid_phase.size() > 0);
-                return _darcy_volumetric_flux_total_liquid_phase;
-            }
 
             /*
             * used to output velocity of the gaseous co2
@@ -1236,8 +1235,10 @@ namespace ProcessLib
                 _shape_matrices;
 
             TwoPhaseComponentialFlowProcessData const& _process_data;
-            std::vector<IntegrationPointData<NodalMatrixType>,
-                Eigen::aligned_allocator<IntegrationPointData<NodalMatrixType>>>
+            std::vector<
+                IntegrationPointData<NodalRowVectorType, GlobalDimNodalMatrixType, NodalMatrixType>,
+                Eigen::aligned_allocator<
+                IntegrationPointData<NodalRowVectorType, GlobalDimNodalMatrixType, NodalMatrixType>>>
                 _ip_data;
 
             // used for secondary variable output
@@ -1438,30 +1439,54 @@ namespace ProcessLib
             }
 
 protected:
-    std::vector<double> const& getIntPtDarcyVelocityLocal(
-        const double t, std::vector<double> const& local_p,
-        std::vector<double> const& local_x1,
-        std::vector<double> const& local_x2,
-        std::vector<double> const& local_x3,
-        std::vector<double> const& local_pc,
-        std::vector<double>& cache) const
+    /*
+    * used to output overall velocity of the liquid phase
+    */
+    std::vector<double> const& getIntPtOverallDarcyVolumetricFluxLiquid(
+        const double t,
+        GlobalVector const& current_solution,
+        NumLib::LocalToGlobalIndexMap const& dof_table,
+        std::vector<double>& cache) const override
     {
         auto const n_integration_points =
             _integration_method.getNumberOfPoints();
+
+        auto const indices = NumLib::getIndices(
+            _element.getID(), dof_table);
+        assert(!indices.empty());
+        auto const local_x = current_solution.get(indices);
 
         cache.clear();
         auto cache_mat = MathLib::createZeroedMatrix<
             Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
                 cache, GlobalDim, n_integration_points);
 
-        ParameterLib::SpatialPosition pos;
+        SpatialPosition pos;
         pos.setElementID(_element.getID());
+        const int material_id =
+        _process_data._material->getMaterialID(_element.getID());
+
+        const Eigen::MatrixXd& perm = _process_data._material->getPermeability(
+            material_id, t, pos, _element.getDimension());
+        assert(perm.rows() == _element.getDimension() || perm.rows() == 1);
+        GlobalDimMatrixType permeability = GlobalDimMatrixType::Zero(
+            _element.getDimension(), _element.getDimension());
+
+        if (perm.rows() == _element.getDimension())
+            permeability = perm;
+        else if (perm.rows() == 1)
+            permeability.diagonal().setConstant(perm(0, 0));
 
         MaterialLib::Fluid::FluidProperty::ArrayType vars;
 
         auto const p_nodal_values = Eigen::Map<const NodalVectorType>(
-            &local_p[0], ShapeFunction::NPOINTS);
+            &local_x[0], ShapeFunction::NPOINTS);
 
+        auto const pc_nodal_values = Eigen::Map<const NodalVectorType>(
+            local_x.data() + cap_pressure_matrix_index, ShapeFunction::NPOINTS);
+
+        //std::cout << p_nodal_values << std::endl;
+        //std::cout << pc_nodal_values << std::endl;
         for (unsigned ip = 0; ip < n_integration_points; ++ip)
         {
             auto const& ip_data = _ip_data[ip];
@@ -1475,32 +1500,45 @@ protected:
             double x2_int_pt = 0.0;
             double x3_int_pt = 0.0;
             double pc_int_pt = 0.0;
-            NumLib::shapeFunctionInterpolate(local_p, N, p_int_pt);
-            NumLib::shapeFunctionInterpolate(local_T, N, T_int_pt);
-            vars[static_cast<int>(
+            NumLib::shapeFunctionInterpolate(local_x, N, p_int_pt, x1_int_pt,
+                x2_int_pt, x3_int_pt, pc_int_pt);
+            const double& temperature = _process_data._temperature(t, pos)[0];
+            /*vars[static_cast<int>(
                 MaterialLib::Fluid::PropertyVariableType::T)] = T_int_pt;
             vars[static_cast<int>(
-                MaterialLib::Fluid::PropertyVariableType::p)] = p_int_pt;
+                MaterialLib::Fluid::PropertyVariableType::p)] = p_int_pt;*/
+            double Sw = _process_data._material->getSaturation(
+                material_id, t, pos, p_int_pt, temperature, pc_int_pt);
+            // wet
+            double k_rel_L =
+                _process_data._material->getWetRelativePermeability(
+                    t, pos, _pressure_wetting[ip], temperature, Sw);
+            double const D_L =
+                _process_data._diffusion_coeff_component_b(t, pos)[0];
+            double const mu_liquid = _process_data._material->getLiquidViscosity(
+                _pressure_wetting[ip], temperature);
+            double const lambda_L = k_rel_L / mu_liquid;
+            GlobalDimMatrixType const K_mat_coeff_liquid
+                = permeability * (k_rel_L / mu_liquid);
 
-            auto const K = _material_properties.porous_media_properties
-                .getIntrinsicPermeability(t, pos)
-                .getValue(t, pos, 0.0, T_int_pt);
+            cache_mat.col(ip).noalias() = -K_mat_coeff_liquid * dNdx *
+                (p_nodal_values-pc_nodal_values);
 
-            auto const mu = _material_properties.fluid_properties->getValue(
-                MaterialLib::Fluid::FluidPropertyType::Viscosity, vars);
-            GlobalDimMatrixType const K_over_mu = K / mu;
-
-            cache_mat.col(ip).noalias() = -K_over_mu * dNdx * p_nodal_values;
-
-            if (_material_properties.has_gravity)
+            if (_process_data._has_gravity)
             {
-                auto const rho_w =
-                    _material_properties.fluid_properties->getValue(
-                        MaterialLib::Fluid::FluidPropertyType::Density, vars);
-                auto const b = _material_properties.specific_body_force;
+                auto const& body_force = _process_data._specific_body_force;
+                assert(body_force.size() == GlobalDim);
+
+                cache_mat.col(ip).noalias() -= K_mat_coeff_liquid * 1000 * body_force;
                 // here it is assumed that the vector b is directed 'downwards'
-                cache_mat.col(ip).noalias() += K_over_mu * rho_w * b;
+                //cache_mat.col(ip).noalias() -= K_mat_coeff_liquid * rho_w * b;
             }
+            /*GlobalDimVectorType diffuse_volumetrix_flux_liquid_water = -
+                porosity * D_L*Sw*sm.dNdx*(d_x_wet_h2o_d_pg*p_nodal_values
+                    + d_x_wet_h2o_d_x1 * x1_nodal_values
+                    + d_x_wet_h2o_d_x2 * x2_nodal_values
+                    + d_x_wet_h2o_d_x3 * x3_nodal_values
+                    + d_x_wet_h2o_d_pc * pc_nodal_values);*/
         }
 
         return cache;

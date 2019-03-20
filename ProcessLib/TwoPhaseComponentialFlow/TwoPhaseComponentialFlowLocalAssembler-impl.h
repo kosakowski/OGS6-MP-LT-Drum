@@ -685,7 +685,7 @@ namespace ProcessLib
                 }
                 double const k_rel_G =
                     _process_data._material->getNonwetRelativePermeability(
-                        t, pos, pg_int_pt, temperature, 0.24);
+                        t, pos, pg_int_pt, temperature, Sw);
                 double const mu_gas =
                     _process_data._material->getGasViscosity(pg_int_pt, temperature);
                 double const lambda_G = k_rel_G / mu_gas;
@@ -696,7 +696,7 @@ namespace ProcessLib
                 // wet
                 double k_rel_L =
                     _process_data._material->getWetRelativePermeability(
-                        t, pos, _pressure_wetting[ip], temperature, 0.24);
+                        t, pos, _pressure_wetting[ip], temperature, Sw);
                 if (atm_flag)
                     k_rel_L = 0;
                 double const mu_liquid = _process_data._material->getLiquidViscosity(
@@ -1146,16 +1146,16 @@ namespace ProcessLib
                         // water source/sink term
                         double const fluid_change_volume
                             = (fluid_volume_rate*rho_mol_water);
-                        F_vec_coeff(4) +=(fluid_volume_rate*rho_mol_water);//
+                        //F_vec_coeff(4) +=(fluid_volume_rate*rho_mol_water);//
                         porosity2 = bi_interpolation(
                             rho_mol_sio2_wet_backfill,
                             rho_mol_co2_cumul_total_backfill,
                             _porosity_at_supp_pnts_backfill);  // porosity update
                         F_vec_coeff(4) +=
-                            rho_mol_water*(_ip_data[ip].porosity_prev_backfill -porosity2)*(_saturation[ip]-0.2)/dt;
+                            rho_mol_water*(_ip_data[ip].porosity_prev_backfill -porosity2)*(_saturation[ip])/dt;
                         _h2o_consumed_rate[ip] =
-                            (fluid_volume_rate*rho_mol_water);
-                            //-rho_mol_water * (_ip_data[ip].porosity_prev_backfill - porosity2)*(_saturation[ip] - 0.2) / dt;
+                            (fluid_volume_rate*rho_mol_water)
+                            -rho_mol_water * (_ip_data[ip].porosity_prev_backfill - porosity2)*(_saturation[ip] - 0.2) / dt;
                          
 
                         // account for change in water content due to porosity change ...we loose mass if porosity gets smaller and saturation is assumed to be constant
@@ -1169,17 +1169,17 @@ namespace ProcessLib
                         // add the whole gas phase (includes all components and humidity)
                         // now add source/sinks for the gases: add volumes multiplied with molar density and with mol fraction
                         // first CH4
-                        //F_vec_coeff(1) += area / 4
-                        //    *(_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet* X2_int_pt;
+                        //F_vec_coeff(1) +=
+                            //(_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet* X2_int_pt;
                         // now CO2
-                        //F_vec_coeff(2) += area / 4
-                        //    *(_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet* X3_int_pt;
+                        //F_vec_coeff(2) +=
+                            //(_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet* X3_int_pt;
                         // N2
-                        //F_vec_coeff(3) += area / 4
-                        //    *(_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet*x_nonwet_air;
+                        //F_vec_coeff(3) +=
+                            //(_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet*x_nonwet_air;
                         // then hydrogen
-                        //F_vec_coeff(0) += area / 4
-                        //    *(_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet* X1_int_pt;
+                        //F_vec_coeff(0) +=
+                            //(_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet* X1_int_pt;
 
                         //store the h2o consumption/release rate due to asr&carbonation
                             //+ _element.getContent() / 4
