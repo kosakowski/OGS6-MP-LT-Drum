@@ -1369,19 +1369,15 @@ namespace ProcessLib
                 double const A = 1 - x1 - x2 - x3;
                 double const B =
                     1 - (x1 * pg / Hen_L_h + x2 * pg / Hen_L_c + x3 * pg / Hen_L_co2);
-                return (B / pg - A / Hen_L_air) / (kelvin_term / p_sat - 1 / Hen_L_air);
+                double result= (B / pg - A / Hen_L_air) / (kelvin_term / p_sat - 1 / Hen_L_air);
+                double altern
+                    = (1 - (x1 * pg / Hen_L_h + x2 * pg / Hen_L_c + x3 * pg / Hen_L_co2)
+                        - pg * (1 - x1 - x2 - x3) / Hen_L_air) /
+                        (pg*kelvin_term / p_sat - pg / Hen_L_air);
+                double error = result - altern;
+                return result;
             }
-            const double get_x_nonwet_co2(double const pg, double const x1,
-                double const x2, double const x3,
-                double const p_sat, double const kelvin_term)
-            {
-                double const molar_fraction_liquid_water = 0.999;
-                //x3*pg*kelvin_term / p_sat;
-                double const A = 1 - x1 - x2 - x3;
-                double const B =
-                    1 - (x1 * pg / Hen_L_h + x2 * pg / Hen_L_c + molar_fraction_liquid_water);
-                return (B / pg - A / Hen_L_air) / (1 / Hen_L_co2 - 1 / Hen_L_air);
-            }
+
             const double get_derivative_x_nonwet_h2o_d_pg(double const pg,
                 double const /*x1*/,
                 double const /*x2*/,
@@ -1534,7 +1530,8 @@ protected:
                 //cache_mat.col(ip).noalias() -= K_mat_coeff_liquid * rho_w * b;
             }
             /*GlobalDimVectorType diffuse_volumetrix_flux_liquid_water = -
-                porosity * D_L*Sw*sm.dNdx*(d_x_wet_h2o_d_pg*p_nodal_values
+                _ip_data[ip].porosity_prev_backfill * D_L*Sw*dNdx
+                *(d_x_wet_h2o_d_pg*p_nodal_values
                     + d_x_wet_h2o_d_x1 * x1_nodal_values
                     + d_x_wet_h2o_d_x2 * x2_nodal_values
                     + d_x_wet_h2o_d_x3 * x3_nodal_values

@@ -348,8 +348,13 @@ namespace ProcessLib
                 double const x_nonwet_air = (G - x_nonwet_h2o);
                 //store the secondary variable of nonwet air molar fraction
                 _mol_fraction_nonwet_air[ip] = x_nonwet_air;
+                double dLdPG =
+                    -X1_int_pt / Hen_L_h - X2_int_pt / Hen_L_c - X3_int_pt / Hen_L_co2;
                 double const x_wet_air = pg_int_pt * x_nonwet_air / Hen_L_air;
-                double const x_wet_h2o = pg_int_pt * x_nonwet_h2o* kelvin_term / P_sat_gp;// 1 - X_L_co2_gp - X_L_c_gp - X_L_h_gp - x_wet_air;
+                double const x_wet_h2o =
+                    pg_int_pt * x_nonwet_h2o* kelvin_term / P_sat_gp;
+                    //1 - X_L_co2_gp - X_L_c_gp - X_L_h_gp - x_wet_air;
+                    //
                 /*store the molar fraction of water in liquid phase*/
                 _x_wetting_water[ip] = x_wet_h2o;
                 //pg_int_pt * x_nonwet_h2o * kelvin_term / P_sat_gp;
@@ -376,35 +381,46 @@ namespace ProcessLib
                     (X1_int_pt * H2 + X2_int_pt * CH4 + X3_int_pt * CO2 +
                         x_nonwet_air * Air + x_nonwet_h2o * Water);
 
-                double dLdPG =
-                    -X1_int_pt / Hen_L_h - X2_int_pt / Hen_L_c - X3_int_pt / Hen_L_co2;
-
-                double d_x_nonwet_h2o_d_pg = deriv_flag*get_derivative_x_nonwet_h2o_d_pg(
-                    pg_int_pt, X1_int_pt, X2_int_pt, X3_int_pt, P_sat_gp, kelvin_term);
+                /*double d_x_nonwet_h2o_d_pg = deriv_flag*get_derivative_x_nonwet_h2o_d_pg(
+                    pg_int_pt, X1_int_pt, X2_int_pt, X3_int_pt, P_sat_gp, kelvin_term);*/
+                double d_x_nonwet_h2o_d_pg = (-X1_int_pt / Hen_L_h - X2_int_pt / Hen_L_c
+                    - X3_int_pt / Hen_L_co2
+                    - x_nonwet_air / Hen_L_air - x_nonwet_h2o * kelvin_term / P_sat_gp) /
+                    (pg_int_pt*kelvin_term / P_sat_gp - pg_int_pt / Hen_L_air);
                 /*double d_x_nonwet_h2o_d_pg_test = (get_x_nonwet_h2o(
                 pg_int_pt + 1e-6, X1_int_pt, X2_int_pt, X3_int_pt, P_sat_gp,
                 kelvin_term) - get_x_nonwet_h2o(
                 pg_int_pt - 1e-6, X1_int_pt, X2_int_pt, X3_int_pt, P_sat_gp,
-                kelvin_term)) / 2 / 1e-6;*/
+                kelvin_term)) / 2 / 1e-6;
+                double TEST = std::abs(d_x_nonwet_h2o_d_pg - d_x_nonwet_h2o_d_pg_test)
+                    / d_x_nonwet_h2o_d_pg;*/
 
-                double const d_x_nonwet_h2o_d_x1 = deriv_flag* get_derivative_x_nonwet_h2o_d_x1(
-                    pg_int_pt, X1_int_pt, X2_int_pt, X3_int_pt, P_sat_gp, kelvin_term);
+                /*double const d_x_nonwet_h2o_d_x1 = deriv_flag* get_derivative_x_nonwet_h2o_d_x1(
+                    pg_int_pt, X1_int_pt, X2_int_pt, X3_int_pt, P_sat_gp, kelvin_term);*/
+                double const d_x_nonwet_h2o_d_x1 =(-pg_int_pt/Hen_L_h+pg_int_pt/Hen_L_air)/
+                    (pg_int_pt* kelvin_term / P_sat_gp - pg_int_pt / Hen_L_air);
                 /*double d_x_nonwet_h2o_d_x1_test = (get_x_nonwet_h2o(
                 pg_int_pt, X1_int_pt + 1e-6, X2_int_pt, X3_int_pt, P_sat_gp,
                 kelvin_term) - get_x_nonwet_h2o(
                 pg_int_pt, X1_int_pt - 1e-6, X2_int_pt, X3_int_pt, P_sat_gp,
-                kelvin_term)) / 2 / 1e-6;*/
-
-                double d_x_nonwet_h2o_d_x2 = deriv_flag * get_derivative_x_nonwet_h2o_d_x2(
-                    pg_int_pt, X1_int_pt, X2_int_pt, X3_int_pt, P_sat_gp, kelvin_term);
+                kelvin_term)) / 2 / 1e-6;
+                double TEST1 = std::abs(d_x_nonwet_h2o_d_x1 - d_x_nonwet_h2o_d_x1_test)
+                    / d_x_nonwet_h2o_d_x1_test;*/
+                /*double d_x_nonwet_h2o_d_x2 = deriv_flag * get_derivative_x_nonwet_h2o_d_x2(
+                    pg_int_pt, X1_int_pt, X2_int_pt, X3_int_pt, P_sat_gp, kelvin_term);*/
+                double const d_x_nonwet_h2o_d_x2 = (-pg_int_pt / Hen_L_c + pg_int_pt / Hen_L_air) /
+                    (pg_int_pt* kelvin_term / P_sat_gp - pg_int_pt / Hen_L_air);
                 /*double d_x_nonwet_h2o_d_x2_test = (get_x_nonwet_h2o(
                 pg_int_pt, X1_int_pt, X2_int_pt + 1e-6, X3_int_pt, P_sat_gp,
                 kelvin_term) - get_x_nonwet_h2o(
                 pg_int_pt, X1_int_pt, X2_int_pt - 1e-6, X3_int_pt, P_sat_gp,
-                kelvin_term)) / 2 / 1e-6;*/
-
-                double d_x_nonwet_h2o_d_x3 = deriv_flag*get_derivative_x_nonwet_h2o_d_x3(
-                    pg_int_pt, X1_int_pt, X2_int_pt, X3_int_pt, P_sat_gp, kelvin_term);
+                kelvin_term)) / 2 / 1e-6;
+                double TEST2 = std::abs(d_x_nonwet_h2o_d_x2 - d_x_nonwet_h2o_d_x2_test)
+                    / d_x_nonwet_h2o_d_x2_test;*/
+                /*double const d_x_nonwet_h2o_d_x3 = deriv_flag*get_derivative_x_nonwet_h2o_d_x3(
+                    pg_int_pt, X1_int_pt, X2_int_pt, X3_int_pt, P_sat_gp, kelvin_term);*/
+                double const d_x_nonwet_h2o_d_x3 = (-pg_int_pt / Hen_L_co2 + pg_int_pt / Hen_L_air) /
+                    (pg_int_pt* kelvin_term / P_sat_gp - pg_int_pt / Hen_L_air);
                 /*double d_x_nonwet_h2o_d_x3_test = (get_x_nonwet_h2o(
                 pg_int_pt, X1_int_pt, X2_int_pt, X3_int_pt + 1e-6, P_sat_gp,
                 kelvin_term) - get_x_nonwet_h2o(
@@ -418,9 +434,13 @@ namespace ProcessLib
                 pg_int_pt, X1_int_pt, X2_int_pt, X3_int_pt, P_sat_gp, kelvin_term +
                 1e-6) - get_x_nonwet_h2o(
                 pg_int_pt, X1_int_pt, X2_int_pt, X3_int_pt, P_sat_gp,
-                kelvin_term - 1e-6)) / 2 / 1e-6;*/
-                double const d_x_nonwet_h2o_d_pc = deriv_flag*
-                    d_x_nonwet_h2o_d_kelvin * d_kelvin_term_d_pc;
+                kelvin_term - 1e-6)) / 2 / 1e-6;
+                double TESTpc = std::abs(d_x_nonwet_h2o_d_kelvin - d_x_nonwet_h2o_d_kelvin_test)
+                    / d_x_nonwet_h2o_d_kelvin_test;*/
+                /*double const d_x_nonwet_h2o_d_pc = deriv_flag*
+                    d_x_nonwet_h2o_d_kelvin * d_kelvin_term_d_pc;*/
+                double const d_x_nonwet_h2o_d_pc =(-pg_int_pt* d_kelvin_term_d_pc/P_sat_gp)/
+                    (pg_int_pt* kelvin_term / P_sat_gp - pg_int_pt / Hen_L_air);
 
                 double const d_x_nonwet_air_d_pg = -d_x_nonwet_h2o_d_pg;
                 double const d_x_nonwet_air_d_x1 = -1 - d_x_nonwet_h2o_d_x1;
@@ -433,8 +453,6 @@ namespace ProcessLib
                 /// X3_int_pt, P_sat_gp);
                 double porosity = _process_data._material->getPorosity(
                     material_id, t, pos, pg_int_pt, temperature, 0);
-                if (atm_flag)
-                    porosity = 0.5;
 
                 // Assemble M matrix
                 // nonwetting
@@ -444,28 +462,36 @@ namespace ProcessLib
                 const double rho_mass_wet =
                     rho_mol_wet * (X_L_h_gp * H2 + X_L_c_gp * CH4 + X_L_co2_gp * CO2 +
                         x_wet_air * Air + x_wet_h2o * Water);
-                double const d_rho_mol_wet_d_pg =
+                double const d_rho_mol_wet_d_pg = 
                     -rho_mol_water * kelvin_term *
                     (x_nonwet_h2o / P_sat_gp +
                         pg_int_pt * d_x_nonwet_h2o_d_pg / P_sat_gp) /
                     x_wet_h2o / x_wet_h2o;
+                /*-rho_mol_water * (dx_wet_h2o_dpg) /
+                    x_wet_h2o / x_wet_h2o;*/
 
                 double const d_rho_mol_wet_d_x1 =
                     -rho_mol_water * kelvin_term *
                     (pg_int_pt * d_x_nonwet_h2o_d_x1 / P_sat_gp) / x_wet_h2o /
                     x_wet_h2o;
+                    /*-rho_mol_water * (dx_wet_h2o_dx1) /
+                    x_wet_h2o / x_wet_h2o;*/
 
                 double const d_rho_mol_wet_d_x2 =
                     -rho_mol_water * kelvin_term *
                     (pg_int_pt * d_x_nonwet_h2o_d_x2 / P_sat_gp) / x_wet_h2o /
                     x_wet_h2o;
+                    /*-rho_mol_water * (dx_wet_h2o_dx2) /
+                    x_wet_h2o / x_wet_h2o;*/
 
                 double const d_rho_mol_wet_d_x3 =
                     -rho_mol_water * kelvin_term *
                     (pg_int_pt * d_x_nonwet_h2o_d_x3 / P_sat_gp) / x_wet_h2o /
                     x_wet_h2o;
+                    /*-rho_mol_water * (dx_wet_h2o_dx3) /
+                    x_wet_h2o / x_wet_h2o;*/
 
-                double const d_rho_mol_wet_d_pc =
+                double const d_rho_mol_wet_d_pc = 
                     -rho_mol_water *
                     (pg_int_pt * d_x_nonwet_h2o_d_pc * kelvin_term / P_sat_gp +
                         pg_int_pt * x_nonwet_h2o * d_kelvin_term_d_pc / P_sat_gp) /
@@ -751,23 +777,23 @@ namespace ProcessLib
                     (lambda_G * rho_mol_nonwet * x_nonwet_air +
                         lambda_L * rho_mol_wet * x_wet_air) *
                     permeability(0, 0) +
-                    (porosity * D_G * (1 - Sw) * rho_mol_nonwet * d_x_nonwet_air_d_pg +
+                    (porosity * 0 * (1 - Sw) * rho_mol_nonwet * d_x_nonwet_air_d_pg +
                         porosity * D_L * Sw * rho_mol_wet * d_x_nonwet_air_d_pg * K_G_air +
                         porosity * D_L * Sw * rho_mol_wet * x_nonwet_air / Hen_L_air);
                 K_mat_coeff(3, 1) =
-                    (porosity * D_G * (1 - Sw) * rho_mol_nonwet * d_x_nonwet_air_d_x1 +
+                    (-porosity * D_G * (1 - Sw) * rho_mol_nonwet +
                         porosity * D_L * Sw * rho_mol_wet * d_x_nonwet_air_d_x1 * K_G_air);
                 K_mat_coeff(3, 2) =
-                    (porosity * D_G * (1 - Sw) * rho_mol_nonwet * d_x_nonwet_air_d_x2 +
+                    (-porosity * D_G * (1 - Sw) * rho_mol_nonwet +
                         porosity * D_L * Sw * rho_mol_wet * d_x_nonwet_air_d_x2 * K_G_air);
                 K_mat_coeff(3, 3) =
-                    (porosity * D_G * S_G_gp * rho_mol_nonwet * d_x_nonwet_air_d_x3 +
-                        porosity * D_L * (1 - S_G_gp) * rho_mol_wet * d_x_nonwet_air_d_x3 *
+                    (-porosity * D_G * (1 - Sw) * rho_mol_nonwet  +
+                        porosity * D_L * Sw * rho_mol_wet * d_x_nonwet_air_d_x3 *
                         K_G_air);
                 K_mat_coeff(3, 4) =
                     (-lambda_L * rho_mol_wet * K_G_air * x_nonwet_air) *
                     permeability(0, 0) +
-                    porosity * D_G * S_G_gp * rho_mol_nonwet * d_x_nonwet_air_d_pc +
+                    porosity * 0.0 * S_G_gp * rho_mol_nonwet * d_x_nonwet_air_d_pc +
                     porosity * D_L * (1 - S_G_gp) * rho_mol_wet * K_G_air *
                     d_x_nonwet_air_d_pc;
                 // h2o
@@ -777,29 +803,29 @@ namespace ProcessLib
                     - (porosity * D_L * Sw * rho_mol_wet * X1_int_pt / Hen_L_h)
                     - (porosity * D_L * Sw * rho_mol_wet * X2_int_pt / Hen_L_h)
                     - (porosity * D_L * Sw * rho_mol_wet * X3_int_pt / Hen_L_co2)
-                    - (porosity * D_G * (1 - Sw) * rho_mol_nonwet * d_x_nonwet_air_d_pg +
+                    - (porosity * 0 * (1 - Sw) * rho_mol_nonwet * d_x_nonwet_air_d_pg +
                         porosity * D_L * Sw * rho_mol_wet * d_x_nonwet_air_d_pg * K_G_air +
                         porosity * D_L * Sw * rho_mol_wet * x_nonwet_air / Hen_L_air);
 
                 K_mat_coeff(4, 1) =
-                    -(porosity * D_G * (1 - Sw) * rho_mol_nonwet +
+                    -(porosity * 0 * (1 - Sw) * rho_mol_nonwet +
                         porosity * D_L * Sw * rho_mol_wet * pg_int_pt / Hen_L_h)
-                    - (porosity * D_G * (1 - Sw) * rho_mol_nonwet * d_x_nonwet_air_d_x1 +
+                    - (porosity * 0 * (1 - Sw) * rho_mol_nonwet * d_x_nonwet_air_d_x1 +
                         porosity * D_L * Sw * rho_mol_wet * d_x_nonwet_air_d_x1 * K_G_air);
                 K_mat_coeff(4, 2) =
-                    -(porosity * D_G * (1 - Sw) * rho_mol_nonwet +
+                    -(porosity * 0 * (1 - Sw) * rho_mol_nonwet +
                         porosity * D_L * Sw * rho_mol_wet * pg_int_pt / Hen_L_c)
-                    - (porosity * D_G * (1 - Sw) * rho_mol_nonwet * d_x_nonwet_air_d_x2 +
+                    - (porosity * 0 * (1 - Sw) * rho_mol_nonwet * d_x_nonwet_air_d_x2 +
                         porosity * D_L * Sw * rho_mol_wet * d_x_nonwet_air_d_x2 * K_G_air);
                 K_mat_coeff(4, 3) =
-                    -(porosity * D_G_co2 * (1 - Sw) * rho_mol_nonwet +
+                    -(porosity * 0 * (1 - Sw) * rho_mol_nonwet +
                         porosity * D_L * Sw * rho_mol_wet * pg_int_pt / Hen_L_co2)
-                    - (porosity * D_G * S_G_gp * rho_mol_nonwet * d_x_nonwet_air_d_x3 +
-                        porosity * D_L * (1 - S_G_gp) * rho_mol_wet * d_x_nonwet_air_d_x3 *
+                    - (porosity * 0 * S_G_gp * rho_mol_nonwet * d_x_nonwet_air_d_x3 +
+                        porosity * D_L * Sw * rho_mol_wet * d_x_nonwet_air_d_x3 *
                         K_G_air);
                 K_mat_coeff(4, 4) = (-lambda_L * rho_mol_water) * permeability(0, 0)
-                    - (porosity * D_G * S_G_gp * rho_mol_nonwet * d_x_nonwet_air_d_pc +
-                    porosity * D_L * (1 - S_G_gp) * rho_mol_wet * K_G_air *
+                    - (porosity * 0 * S_G_gp * rho_mol_nonwet * d_x_nonwet_air_d_pc +
+                    porosity * D_L * Sw * rho_mol_wet * K_G_air *
                     d_x_nonwet_air_d_pc);
 
                 //-------------debugging------------------------
@@ -841,18 +867,22 @@ namespace ProcessLib
                 GlobalDimVectorType diffuse_volumetric_flux_ch4_gas = -porosity * D_G * (1 - Sw)*sm.dNdx*x2_nodal_values;
                 GlobalDimVectorType diffuse_volumetric_flux_co2_gas = -porosity * D_G_co2 * (1 - Sw)*sm.dNdx*x3_nodal_values;
 
-                GlobalDimVectorType diffuse_volumetric_flux_air_gas = -porosity * D_G * (1 - Sw)*sm.dNdx*(
-                    p_nodal_values*d_x_nonwet_air_d_pg
-                    + x1_nodal_values*d_x_nonwet_air_d_x1
-                    + x2_nodal_values* d_x_nonwet_air_d_x2
-                    + (D_G_co2 / D_G)*x3_nodal_values* d_x_nonwet_air_d_x3
-                    + pc_nodal_values*d_x_nonwet_air_d_pc);
+                GlobalDimVectorType diffuse_volumetric_flux_air_gas =
+                    porosity * D_G * (1 - Sw)*sm.dNdx*x1_nodal_values
+                    + porosity * D_G * (1 - Sw)*sm.dNdx*x2_nodal_values
+                    + porosity * D_G * (1 - Sw)*sm.dNdx*x3_nodal_values
+                    + porosity * 0 * (1 - Sw)*sm.dNdx*(
+                        p_nodal_values*d_x_nonwet_h2o_d_pg
+                        + x1_nodal_values * d_x_nonwet_h2o_d_x1
+                        + x2_nodal_values * d_x_nonwet_h2o_d_x2
+                        + x3_nodal_values* d_x_nonwet_h2o_d_x3
+                        + pc_nodal_values * d_x_nonwet_h2o_d_pc);
 
                 GlobalDimVectorType diffuse_volumetric_flux_vapor_gas = -porosity * D_G * (1 - Sw)*sm.dNdx*(
                     p_nodal_values*d_x_nonwet_h2o_d_pg
                     + x1_nodal_values*d_x_nonwet_h2o_d_x1
                     + x2_nodal_values* d_x_nonwet_h2o_d_x2
-                    + (D_G_co2 / D_G)*x3_nodal_values* d_x_nonwet_h2o_d_x3
+                    + x3_nodal_values* d_x_nonwet_h2o_d_x3
                     + pc_nodal_values*d_x_nonwet_h2o_d_pc);
 
                 double co2_degradation_rate = 0;
@@ -935,7 +965,42 @@ namespace ProcessLib
                 }  // end of hasGravityEffect
 
                    //include advection term
-                Kh2pg.noalias() -=
+                Kairpg.noalias() += sm.N.transpose()*(darcy_volumetric_flux_gas_phase.transpose()
+                    *(x_nonwet_air / R / temperature
+                        + rho_mol_nonwet * d_x_nonwet_air_d_pg)
+                    + darcy_volumetric_flux_liquid_phase.transpose() * rho_mol_wet*(x_nonwet_air
+                        + pg_int_pt * d_x_nonwet_air_d_pg) / Hen_L_air
+                    + darcy_volumetric_flux_liquid_phase.transpose() * x_wet_air*d_rho_mol_wet_d_pg
+                    )*integration_factor*sm.dNdx;
+                Kairx1.noalias() += sm.N.transpose()*(darcy_volumetric_flux_gas_phase.transpose()
+                    *(rho_mol_nonwet*d_x_nonwet_air_d_x1)
+                    + darcy_volumetric_flux_liquid_phase.transpose()
+                    * rho_mol_wet*pg_int_pt*d_x_nonwet_air_d_x1 / Hen_L_air
+                    + darcy_volumetric_flux_liquid_phase.transpose()
+                    * x_wet_air*d_rho_mol_wet_d_x1
+                    )*integration_factor*sm.dNdx;
+                Kairx2.noalias() += sm.N.transpose()*(darcy_volumetric_flux_gas_phase.transpose()
+                    *(rho_mol_nonwet*d_x_nonwet_air_d_x2)
+                    + darcy_volumetric_flux_liquid_phase.transpose()
+                    * rho_mol_wet*pg_int_pt*d_x_nonwet_air_d_x2 / Hen_L_air
+                    + darcy_volumetric_flux_liquid_phase.transpose()
+                    * x_wet_air*d_rho_mol_wet_d_x2)
+                    *integration_factor*sm.dNdx;
+                Kairx3.noalias() += sm.N.transpose()*(darcy_volumetric_flux_gas_phase.transpose()
+                    *(rho_mol_nonwet*d_x_nonwet_air_d_x3)
+                    + darcy_volumetric_flux_liquid_phase.transpose()
+                    * rho_mol_wet * pg_int_pt*d_x_nonwet_air_d_x3 / Hen_L_air
+                    + darcy_volumetric_flux_liquid_phase.transpose()
+                    * x_wet_air*d_rho_mol_wet_d_x3)
+                    *integration_factor*sm.dNdx;
+                Kairpc.noalias() += sm.N.transpose()*(darcy_volumetric_flux_gas_phase.transpose()
+                    *(rho_mol_nonwet*d_x_nonwet_air_d_pc)
+                    + darcy_volumetric_flux_liquid_phase.transpose()
+                    * rho_mol_wet*pg_int_pt*d_x_nonwet_air_d_pc / Hen_L_air
+                    + darcy_volumetric_flux_liquid_phase.transpose()
+                    * x_wet_air*d_rho_mol_wet_d_pc)
+                    *integration_factor*sm.dNdx;
+                /*Kh2pg.noalias() -=
                     sm.dNdx.transpose()*(darcy_volumetric_flux_gas_phase
                         *(X1_int_pt / R / temperature) + darcy_volumetric_flux_liquid_phase
                         * rho_mol_wet*X1_int_pt / Hen_L_h)*integration_factor*sm.N;
@@ -968,26 +1033,31 @@ namespace ProcessLib
                         + rho_mol_nonwet * d_x_nonwet_air_d_pg)
                     + darcy_volumetric_flux_liquid_phase * rho_mol_wet*(x_nonwet_air
                         + pg_int_pt * d_x_nonwet_air_d_pg) / Hen_L_air
+                        +darcy_volumetric_flux_liquid_phase*x_nonwet_air*d_rho_mol_wet_d_pg
                     )*integration_factor*sm.N;
                 Kairx1.noalias() -= sm.dNdx.transpose()*(darcy_volumetric_flux_gas_phase
                     *(rho_mol_nonwet*d_x_nonwet_air_d_x1)
                     + darcy_volumetric_flux_liquid_phase
-                    * rho_mol_wet*pg_int_pt*d_x_nonwet_air_d_x1 / Hen_L_air)
-                    *integration_factor*sm.N;
+                    * rho_mol_wet*pg_int_pt*d_x_nonwet_air_d_x1 / Hen_L_air
+                    +darcy_volumetric_flux_liquid_phase*x_nonwet_air*d_rho_mol_wet_d_x1
+                    )*integration_factor*sm.N;
                 Kairx2.noalias() -= sm.dNdx.transpose()*(darcy_volumetric_flux_gas_phase
                     *(rho_mol_nonwet*d_x_nonwet_air_d_x2)
                     + darcy_volumetric_flux_liquid_phase
-                    * rho_mol_wet*pg_int_pt*d_x_nonwet_air_d_x2 / Hen_L_air)
+                    * rho_mol_wet*pg_int_pt*d_x_nonwet_air_d_x2 / Hen_L_air
+                     +darcy_volumetric_flux_liquid_phase*x_nonwet_air*d_rho_mol_wet_d_x2)
                     *integration_factor*sm.N;
                 Kairx3.noalias() -= sm.dNdx.transpose()*(darcy_volumetric_flux_gas_phase
                     *(rho_mol_nonwet*d_x_nonwet_air_d_x3)
                     + darcy_volumetric_flux_liquid_phase
-                    * rho_mol_wet * pg_int_pt*d_x_nonwet_air_d_x3 / Hen_L_air)
+                    * rho_mol_wet * pg_int_pt*d_x_nonwet_air_d_x3 / Hen_L_air
+                     +darcy_volumetric_flux_liquid_phase*x_nonwet_air*d_rho_mol_wet_d_x3)
                     *integration_factor*sm.N;
                 Kairpc.noalias() -= sm.dNdx.transpose()*(darcy_volumetric_flux_gas_phase
                     *(rho_mol_nonwet*d_x_nonwet_air_d_pc)
                     + darcy_volumetric_flux_liquid_phase
-                    * rho_mol_wet*pg_int_pt*d_x_nonwet_air_d_pc / Hen_L_air)
+                    * rho_mol_wet*pg_int_pt*d_x_nonwet_air_d_pc / Hen_L_air
+                     +darcy_volumetric_flux_liquid_phase*x_nonwet_air*d_rho_mol_wet_d_pc)
                     *integration_factor*sm.N;
 
                 Kh2opg.noalias() -= sm.dNdx.transpose()*darcy_volumetric_flux_gas_phase
@@ -1001,6 +1071,7 @@ namespace ProcessLib
                     *(rho_mol_nonwet*d_x_nonwet_h2o_d_x3)*integration_factor*sm.N;
                 Kh2opc.noalias() -= sm.dNdx.transpose()*darcy_volumetric_flux_gas_phase
                     *(rho_mol_nonwet*d_x_nonwet_h2o_d_pc)*integration_factor*sm.N;
+                    */
 
                    // load the source term
 
@@ -1146,7 +1217,7 @@ namespace ProcessLib
                         // water source/sink term
                         double const fluid_change_volume
                             = (fluid_volume_rate*rho_mol_water);
-                        //F_vec_coeff(4) +=(fluid_volume_rate*rho_mol_water);//
+                        F_vec_coeff(4) +=(fluid_volume_rate*rho_mol_water);//
                         porosity2 = bi_interpolation(
                             rho_mol_sio2_wet_backfill,
                             rho_mol_co2_cumul_total_backfill,
@@ -1154,8 +1225,8 @@ namespace ProcessLib
                         F_vec_coeff(4) +=
                             rho_mol_water*(_ip_data[ip].porosity_prev_backfill -porosity2)*(_saturation[ip])/dt;
                         _h2o_consumed_rate[ip] =
-                            (fluid_volume_rate*rho_mol_water)
-                            -rho_mol_water * (_ip_data[ip].porosity_prev_backfill - porosity2)*(_saturation[ip] - 0.2) / dt;
+                            (fluid_volume_rate*rho_mol_water);
+                            //-rho_mol_water * (_ip_data[ip].porosity_prev_backfill - porosity2)*(_saturation[ip] - 0.2) / dt;
                          
 
                         // account for change in water content due to porosity change ...we loose mass if porosity gets smaller and saturation is assumed to be constant
@@ -1176,7 +1247,8 @@ namespace ProcessLib
                             //(_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet* X3_int_pt;
                         // N2
                         //F_vec_coeff(3) +=
-                            //(_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet*x_nonwet_air;
+                            //(_ip_data[ip].porosity_prev_backfill - porosity2)
+                            //*(1-_saturation[ip])/dt*rho_mol_nonwet*x_nonwet_air;
                         // then hydrogen
                         //F_vec_coeff(0) +=
                             //(_porosity_value[ip] -porosity2)*(1-_saturation[ip])/dt*rho_mol_nonwet* X1_int_pt;
@@ -1220,7 +1292,9 @@ namespace ProcessLib
                             localSource_tmp;
                     }
                 } // end of loading the source and sink term
+                //_porosity_value[ip] = porosity;
                   //_gas_h2_generation_rate[ip] = gas_h2_generation_rate;
+               // _porosity_value[ip] = porosity;
             }  // end of GP asm
                //for the outer drum
                //apply the neumann boundary condition on the line element
