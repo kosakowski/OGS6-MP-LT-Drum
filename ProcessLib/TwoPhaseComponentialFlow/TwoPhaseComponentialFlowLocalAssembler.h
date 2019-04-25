@@ -587,6 +587,11 @@ namespace ProcessLib
                 GlobalVector const& /*current_solution*/,
                 NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
+            virtual std::vector<double> const& getIntPtGasN2VariationPorosity(
+                const double /*t*/,
+                GlobalVector const& /*current_solution*/,
+                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<double>& /*cache*/) const = 0;
         };
 
         template <typename ShapeFunction, typename IntegrationMethod,
@@ -623,6 +628,8 @@ namespace ProcessLib
                         element, is_axially_symmetric, _integration_method)),
                 _process_data(process_data),
                 _saturation(
+                    std::vector<double>(_integration_method.getNumberOfPoints())),
+                _local_water(
                     std::vector<double>(_integration_method.getNumberOfPoints())),
                 _pressure_wetting(
                     std::vector<double>(_integration_method.getNumberOfPoints())),
@@ -701,6 +708,8 @@ namespace ProcessLib
                 _reactivity_bazant_power(
                     std::vector<double>(_integration_method.getNumberOfPoints())),
                 _x_wetting_water(
+                    std::vector<double>(_integration_method.getNumberOfPoints())),
+                _gas_air_variation_rate_porosity(
                     std::vector<double>(_integration_method.getNumberOfPoints()))
             {
                 unsigned const n_integration_points =
@@ -1205,6 +1214,16 @@ namespace ProcessLib
                 return _x_wetting_water;
             }
 
+            /*used to store the molar fraction of water in liquid phase */
+            std::vector<double> const& getIntPtGasN2VariationPorosity(
+                const double /*t*/,
+                GlobalVector const& /*current_solution*/,
+                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<double>& /*cache*/) const override
+            {
+                assert(_gas_air_variation_rate_porosity.size() > 0);
+                return _gas_air_variation_rate_porosity;
+            }
 
 
 
@@ -1262,12 +1281,13 @@ namespace ProcessLib
             std::vector<double> _gas_ch4_generation_rate;
             std::vector<double> _gas_co2_generation_rate;
             std::vector<double> _gas_co2_degradation_rate;
+            std::vector<double> _gas_air_variation_rate_porosity;
             std::vector<double> _co2_consumed_current_step;
             std::vector<double> _h2o_consumed_rate;
             std::vector<double> _x_wetting_water;
 
             std::vector<double> _rel_humidity;
-
+            std::vector<double> _local_water;
             // used for velocity in x y z direction
             std::vector<std::vector<double>> _total_velocities_gas;
             std::vector<std::vector<double>> _total_velocities_liquid;
@@ -1312,10 +1332,10 @@ namespace ProcessLib
             static const int cap_pressure_size = ShapeFunction::NPOINTS;
 
         private:
-            const double Hen_L_h = 7.26e+9;     // Henry constant in [Pa]
-            const double Hen_L_c = 4.13e+9;     // Henry constant in [Pa] kg44: I guess this is for CH4 methane
-            const double Hen_L_air = 9.077e+9;  // Henry constant in [Pa]
-            const double Hen_L_co2 = 0.163e+9;  // Henry constant in [Pa]
+            const double Hen_L_h = 7.26e+19;     // Henry constant in [Pa]
+            const double Hen_L_c = 4.13e+19;     // Henry constant in [Pa] kg44: I guess this is for CH4 methane
+            const double Hen_L_air = 9.077e+19;  // Henry constant in [Pa]
+            const double Hen_L_co2 = 0.163e+19;  // Henry constant in [Pa]
             const double rho_l_std = 1000.0;
             const double& R = MaterialLib::PhysicalConstant::IdealGasConstant;
             double Q_steel_waste_matrix = 0.0;// 5.903876 * 4 / 3;  // generate H2 -> value assigned in TwoPhaseComponentialFlowLocalAssembler.h

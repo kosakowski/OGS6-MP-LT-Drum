@@ -287,6 +287,11 @@ namespace ProcessLib
                     &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtWaterConsumpRate));
 
             _secondary_variables.addSecondaryVariable(
+                "gas_n2_variation_rate_porosity",
+                makeExtrapolator(1, getExtrapolator(), _local_assemblers,
+                    &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtGasN2VariationPorosity));
+
+            _secondary_variables.addSecondaryVariable(
                 "molar_fraction_water_in_liquid_phase",
                 makeExtrapolator(1, getExtrapolator(), _local_assemblers,
                     &TwoPhaseComponentialFlowLocalAssemblerInterface::getIntPtmolfracwaterinliquid));
