@@ -15,6 +15,10 @@ namespace BaseLib
 {
     class ConfigTree;
 }
+namespace ParameterLib
+{
+    struct ParameterBase;
+}
 
 namespace ProcessLib
 {
@@ -24,7 +28,7 @@ namespace ProcessLib
             createTwoPhaseComponentialFlowMaterialProperties(
                 BaseLib::ConfigTree const& config,
                 boost::optional<MeshLib::PropertyVector<int> const&> material_ids,
-                std::vector<std::unique_ptr<ParameterBase>> const& parameters);
+                std::vector<std::unique_ptr<ParameterLib::ParameterBase>> const& parameters);
 
     }  // end namespace
 }  // end namespace

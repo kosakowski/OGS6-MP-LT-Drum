@@ -6,21 +6,56 @@
 *              http://www.opengeosys.org/project/license
 *
 */
-
 #pragma once
 
+#include <map>
 #include <memory>
-#include "ProcessLib/Process.h"
+#include <string>
+#include <vector>
+
+namespace BaseLib
+{
+class ConfigTree;
+}
+namespace MaterialPropertyLib
+{
+class Medium;
+}
+namespace MathLib
+{
+class PiecewiseLinearInterpolation;
+}
+namespace MeshLib
+{
+class Mesh;
+}
+namespace ParameterLib
+{
+struct ParameterBase;
+}
+namespace ProcessLib
+{
+class AbstractJacobianAssembler;
+}
+namespace ProcessLib
+{
+class Process;
+}
+namespace ProcessLib
+{
+class ProcessVariable;
+}
 
 namespace ProcessLib
 {
     namespace TwoPhaseComponentialFlow
     {
         std::unique_ptr<Process> createTwoPhaseComponentialFlowProcess(
+            std::string name,
             MeshLib::Mesh& mesh,
             std::unique_ptr<ProcessLib::AbstractJacobianAssembler>&& jacobian_assembler,
             std::vector<ProcessVariable> const& variables,
-            std::vector<std::unique_ptr<ParameterBase>> const& parameters,
+            std::vector<std::unique_ptr<ParameterLib::ParameterBase>> const& parameters,
             unsigned const integration_order,
             BaseLib::ConfigTree const& config,
             std::map<std::string,

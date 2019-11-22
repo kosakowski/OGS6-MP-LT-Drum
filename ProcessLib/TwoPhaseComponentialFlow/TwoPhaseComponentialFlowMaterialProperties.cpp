@@ -9,7 +9,7 @@
 
 #include "TwoPhaseComponentialFlowMaterialProperties.h"
 #include <logog/include/logog.hpp>
-#include "BaseLib/reorderVector.h"
+
 #include "MaterialLib/Fluid/FluidProperty.h"
 #include "MaterialLib/PorousMedium/Porosity/Porosity.h"
 #include "MaterialLib/PorousMedium/Storage/Storage.h"
@@ -21,8 +21,8 @@
 #include "MeshLib/Mesh.h"
 #include "MeshLib/PropertyVector.h"
 #include "NumLib/NewtonRaphson.h"
-#include "ProcessLib/Parameter/Parameter.h"
-#include "ProcessLib/Parameter/SpatialPosition.h"
+#include "ParameterLib/Parameter.h"
+#include "ParameterLib/SpatialPosition.h"
 
 using MaterialLib::PhysicalConstant::MolarMass::H2;
 using MaterialLib::PhysicalConstant::IdealGasConstant;
@@ -127,7 +127,7 @@ namespace ProcessLib
 
         Eigen::MatrixXd const& TwoPhaseComponentialFlowMaterialProperties::getPermeability(
             const int material_id, const double t,
-            const ProcessLib::SpatialPosition& pos, const int /*dim*/) const
+            const ParameterLib::SpatialPosition& pos, const int /*dim*/) const
         {
             return _intrinsic_permeability_models[material_id]->getValue(t, pos, 0.0,
                 0.0);
@@ -135,7 +135,7 @@ namespace ProcessLib
 
         double TwoPhaseComponentialFlowMaterialProperties::getPorosity(
             const int material_id, const double t,
-            const ProcessLib::SpatialPosition& pos, const double /*p*/,
+            const ParameterLib::SpatialPosition& pos, const double /*p*/,
             const double T, const double porosity_variable) const
         {
             return _porosity_models[material_id]->getValue(t, pos, porosity_variable,
@@ -143,14 +143,14 @@ namespace ProcessLib
         }
 
         double TwoPhaseComponentialFlowMaterialProperties::getNonwetRelativePermeability(
-            const double /*t*/, const ProcessLib::SpatialPosition& /*pos*/,
+            const double /*t*/, const ParameterLib::SpatialPosition& /*pos*/,
             const double /*p*/, const double /*T*/, const double saturation) const
         {
             return _relative_permeability_models[0]->getValue(saturation);
         }
 
         double TwoPhaseComponentialFlowMaterialProperties::getWetRelativePermeability(
-            const double /*t*/, const ProcessLib::SpatialPosition& /*pos*/,
+            const double /*t*/, const ParameterLib::SpatialPosition& /*pos*/,
             const double /*p*/, const double /*T*/, const double saturation) const
         {
             return _relative_permeability_models[1]->getValue(saturation);
@@ -158,7 +158,7 @@ namespace ProcessLib
 
         double TwoPhaseComponentialFlowMaterialProperties::getCapillaryPressure(
             const int material_id, const double /*t*/,
-            const ProcessLib::SpatialPosition& /*pos*/, const double /*p*/,
+            const ParameterLib::SpatialPosition& /*pos*/, const double /*p*/,
             const double /*T*/, const double saturation) const
         {
             return _capillary_pressure_models[material_id]->getCapillaryPressure(
@@ -167,14 +167,14 @@ namespace ProcessLib
 
         double TwoPhaseComponentialFlowMaterialProperties::getCapillaryPressureDerivative(
             const int material_id, const double /*t*/,
-            const ProcessLib::SpatialPosition& /*pos*/, const double /*p*/,
+            const ParameterLib::SpatialPosition& /*pos*/, const double /*p*/,
             const double /*T*/, const double saturation) const
         {
             return _capillary_pressure_models[material_id]->getdPcdS(saturation);
         }
 
         double TwoPhaseComponentialFlowMaterialProperties::getSaturation(const int material_id,
-            const double /*t*/, const ProcessLib::SpatialPosition& /*pos*/,
+            const double /*t*/, const ParameterLib::SpatialPosition& /*pos*/,
             const double /*p*/, const double /*T*/, const double pc) const
         {
             const double saturation =
@@ -183,7 +183,7 @@ namespace ProcessLib
         }
 
         double TwoPhaseComponentialFlowMaterialProperties::getDerivSaturation(const int material_id,
-            const double /*t*/, const ProcessLib::SpatialPosition& /*pos*/,
+            const double /*t*/, const ParameterLib::SpatialPosition& /*pos*/,
             const double /*p*/, const double /*T*/, const double saturation) const
         {
             const double dpcdsw =

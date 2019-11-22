@@ -67,35 +67,35 @@ namespace ProcessLib
             Eigen::MatrixXd const& getPermeability(
                 const int material_id,
                 const double t,
-                const ProcessLib::SpatialPosition& pos,
+                const ParameterLib::SpatialPosition& pos,
                 const int dim) const;
 
             double getPorosity(const int material_id, const double t,
-                const ProcessLib::SpatialPosition& pos, const double p,
+                const ParameterLib::SpatialPosition& pos, const double p,
                 const double T, const double porosity_variable) const;
 
             double getNonwetRelativePermeability(const double t,
-                const ProcessLib::SpatialPosition& pos,
+                const ParameterLib::SpatialPosition& pos,
                 const double p, const double T,
                 const double saturation) const;
             double getWetRelativePermeability(const double t,
-                const ProcessLib::SpatialPosition& pos,
+                const ParameterLib::SpatialPosition& pos,
                 const double p, const double T,
                 const double saturation) const;
             double getCapillaryPressure(const int material_id, const double t,
-                const ProcessLib::SpatialPosition& pos,
+                const ParameterLib::SpatialPosition& pos,
                 const double p, const double T,
                 const double saturation) const;
             double getCapillaryPressureDerivative(
                 const int material_id, const double t,
-                const ProcessLib::SpatialPosition& pos, const double p, const double T,
+                const ParameterLib::SpatialPosition& pos, const double p, const double T,
                 const double saturation) const;
             double getSaturation(const int material_id, const double t,
-                const ProcessLib::SpatialPosition& pos,
+                const ParameterLib::SpatialPosition& pos,
                 const double p, const double T,
                 const double pc) const;
             double getDerivSaturation(const int material_id, const double t,
-                const ProcessLib::SpatialPosition& pos,
+                const ParameterLib::SpatialPosition& pos,
                 const double p, const double T,
                 const double pc) const;
             double getLiquidDensity(const double p, const double T) const;

@@ -9,7 +9,7 @@
 
 #include "CreateTwoPhaseComponentialFlowMaterialProperties.h"
 #include <logog/include/logog.hpp>
-#include "BaseLib/reorderVector.h"
+
 #include "MaterialLib/Fluid/FluidProperty.h"
 #include "MaterialLib/PorousMedium/Porosity/Porosity.h"
 #include "MaterialLib/PorousMedium/Storage/Storage.h"
@@ -20,8 +20,8 @@
 #include "MathLib/InterpolationAlgorithms/PiecewiseLinearInterpolation.h"
 #include "MeshLib/Mesh.h"
 #include "MeshLib/PropertyVector.h"
-#include "ProcessLib/Parameter/Parameter.h"
-#include "ProcessLib/Parameter/SpatialPosition.h"
+#include "ParameterLib/Parameter.h"
+#include "ParameterLib/SpatialPosition.h"
 #include "TwoPhaseComponentialFlowMaterialProperties.h"
 
 namespace ProcessLib
@@ -32,7 +32,7 @@ namespace ProcessLib
             createTwoPhaseComponentialFlowMaterialProperties(
                 BaseLib::ConfigTree const& config,
                 boost::optional<MeshLib::PropertyVector<int> const&> material_ids, 
-                std::vector<std::unique_ptr<ParameterBase>> const& parameters)
+                std::vector<std::unique_ptr<ParameterLib::ParameterBase>> const& parameters)
         {
             DBUG("Reading material properties of two-phase flow process.");
 

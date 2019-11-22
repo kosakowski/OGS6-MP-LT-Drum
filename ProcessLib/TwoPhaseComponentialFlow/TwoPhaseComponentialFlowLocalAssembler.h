@@ -19,7 +19,7 @@
 #include "NumLib/Function/Interpolation.h"
 #include "ProcessLib/LocalAssemblerInterface.h"
 #include "ProcessLib/LocalAssemblerTraits.h"
-#include "ProcessLib/Parameter/Parameter.h"
+#include "ParameterLib/Parameter.h"
 #include "ProcessLib/Utils/InitShapeMatrices.h"
 #include "NumLib/Function/Interpolation.h"
 #include "TwoPhaseComponentialFlowProcessData.h"
@@ -339,259 +339,260 @@ namespace ProcessLib
         public:
             virtual std::vector<double> const& getIntPtSaturation(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtWettingPressure(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtpHValue(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtPorosityValue(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtMolFracNonwetVapor(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtMolFracNonwetAir(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtCO2Concentration(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtRhoMolCo2CumulTotalPrev(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtMolAmountWastePoly(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtMolAmountWasteCell(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtMolRhoSiO2CumulPrev(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtMolDensityGasPhase(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtMolDensityLiquidPhase(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtTotalVelocityGasX(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtTotalVelocityGasY(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtTotalVelocityGasZ(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtTotalVelocityLiquidX(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtTotalVelocityLiquidY(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtTotalVelocityLiquidZ(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtOverallDarcyVolumetricFluxGas(
                 const double t,
-                GlobalVector const& current_solution,
-                NumLib::LocalToGlobalIndexMap const& dof_table,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& cache) const = 0;
 
             virtual std::vector<double> const& getIntPtOverallDarcyVolumetricFluxLiquid(
                 const double t,
-                GlobalVector const& current_solution,
-                NumLib::LocalToGlobalIndexMap const& dof_table,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& cache) const = 0;
+
             //output secondary variable of gas generation rate
             virtual std::vector<double> const& getIntPtGasGenerationRate(
                 const double t,
-                GlobalVector const& current_solution,
-                NumLib::LocalToGlobalIndexMap const& dof_table,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& cache) const = 0;
 
             virtual std::vector<double> const& getIntPtGasHydrogenGenerateRate(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtGasHydrogenGenerateSourceRate(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtGasMethaneGenerateRate(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtGasCarbonDegradationRate(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtGasCarbonGenerateRate(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtGasCO2DarcyVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtGasCO2DiffusiveVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtGasHydrogenDarcyVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtGasHydrogenDiffusiveVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtGasMethaneDarcyVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtGasMethaneDiffusiveVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtCO2ConsumedcurrentStep(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtVaporDarcyVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtVaporDiffusiveVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtGasNitrogenDarcyVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtGasNitrogenDiffusiveVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtRelHumidity(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtReactivity(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtWaterConsumpRate(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
 
             virtual std::vector<double> const& getIntPtmolfracwaterinliquid(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
             virtual std::vector<double> const& getIntPtGasN2VariationPorosity(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const = 0;
         };
 
@@ -763,8 +764,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtSaturation(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_saturation.size() > 0);
@@ -773,8 +774,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtWettingPressure(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_pressure_wetting.size() > 0);
@@ -783,8 +784,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtpHValue(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_pH_value.size() > 0);
@@ -792,8 +793,8 @@ namespace ProcessLib
             }
             std::vector<double> const& getIntPtPorosityValue(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_porosity_value.size() > 0);
@@ -802,8 +803,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtMolFracNonwetVapor(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_mol_fraction_nonwet_vapor.size() > 0);
@@ -812,8 +813,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtMolFracNonwetAir(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_mol_fraction_nonwet_air.size() > 0);
@@ -822,8 +823,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtCO2Concentration(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_co2_concentration.size() > 0);
@@ -834,8 +835,8 @@ namespace ProcessLib
             */
             std::vector<double> const& getIntPtRhoMolCo2CumulTotalPrev(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_rho_mol_co2_cumulated_prev.size() > 0);
@@ -846,8 +847,8 @@ namespace ProcessLib
             */
             std::vector<double> const& getIntPtMolAmountWasteCell(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_amount_organic_waste_cellulose.size() > 0);
@@ -858,8 +859,8 @@ namespace ProcessLib
             */
             std::vector<double> const& getIntPtMolAmountWastePoly(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_amount_organic_waste_polystyrene.size() > 0);
@@ -872,8 +873,8 @@ namespace ProcessLib
             */
             std::vector<double> const& getIntPtMolRhoSiO2CumulPrev(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_rho_mol_sio2_cumulated_prev.size() > 0);
@@ -885,8 +886,8 @@ namespace ProcessLib
             */
             std::vector<double> const& getIntPtMolDensityGasPhase(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_rho_mol_gas_phase.size() > 0);
@@ -898,8 +899,8 @@ namespace ProcessLib
             */
             std::vector<double> const& getIntPtMolDensityLiquidPhase(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_rho_mol_liquid_phase.size() > 0);
@@ -910,8 +911,8 @@ namespace ProcessLib
             */
             std::vector<double> const& getIntPtTotalVelocityGasX(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(!_total_velocities_gas.empty());
@@ -920,8 +921,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtTotalVelocityGasY(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_total_velocities_gas.size() > 1);
@@ -930,8 +931,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtTotalVelocityGasZ(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_total_velocities_gas.size() > 2);
@@ -943,8 +944,8 @@ namespace ProcessLib
             */
             std::vector<double> const& getIntPtTotalVelocityLiquidX(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(!_total_velocities_liquid.empty());
@@ -953,8 +954,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtTotalVelocityLiquidY(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_total_velocities_liquid.size() > 1);
@@ -963,8 +964,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtTotalVelocityLiquidZ(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_total_velocities_liquid.size() > 2);
@@ -976,8 +977,8 @@ namespace ProcessLib
             */
             std::vector<double> const& getIntPtOverallDarcyVolumetricFluxGas(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_darcy_volumetric_flux_total_gas_phase.size() > 0);
@@ -992,8 +993,8 @@ namespace ProcessLib
             */
             std::vector<double> const& getIntPtGasCO2DarcyVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_darcy_volumetric_flux_gas_co2.size() > 0);
@@ -1005,8 +1006,8 @@ namespace ProcessLib
             */
             std::vector<double> const& getIntPtGasCO2DiffusiveVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_diffusive_volumetric_flux_gas_co2.size() > 0);
@@ -1019,8 +1020,8 @@ namespace ProcessLib
             */
             std::vector<double> const& getIntPtGasHydrogenDarcyVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_darcy_volumetric_flux_gas_hydrogen.size() > 0);
@@ -1033,8 +1034,8 @@ namespace ProcessLib
             */
             std::vector<double> const& getIntPtGasHydrogenDiffusiveVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_diffusive_volumetric_flux_gas_hydrogen.size() > 0);
@@ -1047,8 +1048,8 @@ namespace ProcessLib
             */
             std::vector<double> const& getIntPtGasMethaneDarcyVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_darcy_volumetric_flux_gas_methane.size() > 0);
@@ -1057,8 +1058,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtGasMethaneDiffusiveVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_diffusive_volumetric_flux_gas_methane.size() > 0);
@@ -1067,8 +1068,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtGasGenerationRate(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_gas_generation_rate.size() > 0);
@@ -1077,8 +1078,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtGasHydrogenGenerateRate(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_gas_h2_overall_generation_rate.size() > 0);
@@ -1087,8 +1088,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtGasHydrogenGenerateSourceRate(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_gas_h2_generation_rate.size() > 0);
@@ -1097,8 +1098,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtGasMethaneGenerateRate(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_gas_ch4_generation_rate.size() > 0);
@@ -1107,8 +1108,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtGasCarbonGenerateRate(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_gas_co2_generation_rate.size() > 0);
@@ -1117,8 +1118,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtGasCarbonDegradationRate(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_gas_co2_degradation_rate.size() > 0);
@@ -1126,8 +1127,8 @@ namespace ProcessLib
             }
             std::vector<double> const& getIntPtCO2ConsumedcurrentStep(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_co2_consumed_current_step.size() > 0);
@@ -1136,8 +1137,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtVaporDarcyVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_darcy_volumetric_flux_gas_water_vapor.size() > 0);
@@ -1146,8 +1147,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtVaporDiffusiveVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_diffusive_volumetric_flux_gas_water_vapor.size() > 0);
@@ -1156,8 +1157,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtGasNitrogenDarcyVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_darcy_volumetric_flux_gas_nitrogen.size() > 0);
@@ -1166,8 +1167,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtGasNitrogenDiffusiveVolumetricFlux(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_diffusive_volumetric_flux_gas_nitrogen.size() > 0);
@@ -1176,8 +1177,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtRelHumidity(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_rel_humidity.size() > 0);
@@ -1186,8 +1187,8 @@ namespace ProcessLib
 
             std::vector<double> const& getIntPtReactivity(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_reactivity_bazant_power.size() > 0);
@@ -1196,8 +1197,8 @@ namespace ProcessLib
             /*used to store the water consumption rate*/
             std::vector<double> const& getIntPtWaterConsumpRate(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_h2o_consumed_rate.size() > 0);
@@ -1207,8 +1208,8 @@ namespace ProcessLib
             /*used to store the molar fraction of water in liquid phase */
             std::vector<double> const& getIntPtmolfracwaterinliquid(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_x_wetting_water.size() > 0);
@@ -1218,8 +1219,8 @@ namespace ProcessLib
             /*used to store the molar fraction of water in liquid phase */
             std::vector<double> const& getIntPtGasN2VariationPorosity(
                 const double /*t*/,
-                GlobalVector const& /*current_solution*/,
-                NumLib::LocalToGlobalIndexMap const& /*dof_table*/,
+                std::vector<GlobalVector*> const& /*x*/,
+                std::vector<NumLib::LocalToGlobalIndexMap const*> const& /*dof_table*/,
                 std::vector<double>& /*cache*/) const override
             {
                 assert(_gas_air_variation_rate_porosity.size() > 0);
@@ -1461,24 +1462,24 @@ protected:
     */
     std::vector<double> const& getIntPtOverallDarcyVolumetricFluxLiquid(
         const double t,
-        GlobalVector const& current_solution,
-        NumLib::LocalToGlobalIndexMap const& dof_table,
+        std::vector<GlobalVector*> const& x,
+        std::vector<NumLib::LocalToGlobalIndexMap const*> const& dof_table,
         std::vector<double>& cache) const override
     {
         auto const n_integration_points =
             _integration_method.getNumberOfPoints();
 
         auto const indices = NumLib::getIndices(
-            _element.getID(), dof_table);
+            _element.getID(), *dof_table[0]);
         assert(!indices.empty());
-        auto const local_x = current_solution.get(indices);
+        auto const local_x = x[0]->get(indices);
 
         cache.clear();
         auto cache_mat = MathLib::createZeroedMatrix<
             Eigen::Matrix<double, GlobalDim, Eigen::Dynamic, Eigen::RowMajor>>(
                 cache, GlobalDim, n_integration_points);
 
-        SpatialPosition pos;
+        ParameterLib::SpatialPosition pos;
         pos.setElementID(_element.getID());
         const int material_id =
         _process_data._material->getMaterialID(_element.getID());
@@ -1550,13 +1551,6 @@ protected:
                 // here it is assumed that the vector b is directed 'downwards'
                 //cache_mat.col(ip).noalias() -= K_mat_coeff_liquid * rho_w * b;
             }
-            /*GlobalDimVectorType diffuse_volumetrix_flux_liquid_water = -
-                _ip_data[ip].porosity_prev_backfill * D_L*Sw*dNdx
-                *(d_x_wet_h2o_d_pg*p_nodal_values
-                    + d_x_wet_h2o_d_x1 * x1_nodal_values
-                    + d_x_wet_h2o_d_x2 * x2_nodal_values
-                    + d_x_wet_h2o_d_x3 * x3_nodal_values
-                    + d_x_wet_h2o_d_pc * pc_nodal_values);*/
         }
 
         return cache;

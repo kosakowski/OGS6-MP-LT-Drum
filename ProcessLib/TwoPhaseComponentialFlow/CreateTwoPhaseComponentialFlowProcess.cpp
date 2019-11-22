@@ -8,10 +8,11 @@
 */
 #include "CreateTwoPhaseComponentialFlowProcess.h"
 #include <cassert>
-#include "BaseLib/Functional.h"
+#include <functional>
+#include "ParameterLib/Utils.h"
 #include "MeshLib/MeshGenerators/MeshGenerator.h"
 #include "ProcessLib/Output/CreateSecondaryVariables.h"
-#include "ProcessLib/Parameter/ConstantParameter.h"
+#include "ParameterLib/ConstantParameter.h"
 #include "ProcessLib/Utils/ProcessUtils.h"
 
 #include "CreateTwoPhaseComponentialFlowMaterialProperties.h"
@@ -24,10 +25,11 @@ namespace ProcessLib
     namespace TwoPhaseComponentialFlow
     {
         std::unique_ptr<Process> createTwoPhaseComponentialFlowProcess(
+            std::string name,
             MeshLib::Mesh& mesh,
             std::unique_ptr<ProcessLib::AbstractJacobianAssembler>&& jacobian_assembler,
             std::vector<ProcessVariable> const& variables,
-            std::vector<std::unique_ptr<ParameterBase>> const& parameters,
+            std::vector<std::unique_ptr<ParameterLib::ParameterBase>> const& parameters,
             unsigned const integration_order,
             BaseLib::ConfigTree const& config,
             std::map<std::string,
@@ -60,11 +62,11 @@ namespace ProcessLib
 
             SecondaryVariableCollection secondary_variables;
 
-            NumLib::NamedFunctionCaller named_function_caller(
-            { "TwoPhaseFlow_pressure" });
+            /*NumLib::NamedFunctionCaller named_function_caller(
+            { "TwoPhaseFlow_pressure" });*/
 
-            ProcessLib::createSecondaryVariables(config, secondary_variables,
-                named_function_caller);
+            ProcessLib::createSecondaryVariables(config, secondary_variables
+                );
             // Specific body force
             std::vector<double> const b =
                 //! \ogs_file_param{prj__processes__process__TWOPHASE_FLOW_PRHO__specific_body_force}
@@ -78,22 +80,22 @@ namespace ProcessLib
             //! \ogs_file_param{prj__processes__process__TWOPHASE_FLOW_PRHO__mass_lumping}
             auto const mass_lumping = config.getConfigParameter<bool>("mass_lumping");
             // diffusion coeff
-            auto& diff_coeff_b = findParameter<double>(
+            auto& diff_coeff_b = ParameterLib::findParameter<double>(
                 config,
                 //! \ogs_file_param{prj__processes__process__TWOPHASE_FLOW_PRHO__diffusion_coeff_component_b}
-                "diffusion_coeff_component_b", parameters, 1);
-            auto& diff_coeff_a = findParameter<double>(
+                "diffusion_coeff_component_b", parameters, 1, &mesh);
+            auto& diff_coeff_a = ParameterLib::findParameter<double>(
                 config,
                 //! \ogs_file_param{prj__processes__process__TWOPHASE_FLOW_PRHO__diffusion_coeff_component_a}
-                "diffusion_coeff_component_a", parameters, 1);
-            auto& diff_coeff_c = findParameter<double>(
+                "diffusion_coeff_component_a", parameters, 1, &mesh);
+            auto& diff_coeff_c = ParameterLib::findParameter<double>(
                 config,
                 //! \ogs_file_param{prj__processes__process__TWOPHASE_FLOW_PRHO__diffusion_coeff_component_c}
-                "diffusion_coeff_component_c", parameters, 1);
-            auto& temperature = findParameter<double>(
+                "diffusion_coeff_component_c", parameters, 1, &mesh);
+            auto& temperature = ParameterLib::findParameter<double>(
                 config,
                 //! \ogs_file_param{prj__processes__process__TWOPHASE_FLOW_PRHO__temperature}
-                "temperature", parameters, 1);
+                "temperature", parameters, 1, &mesh);
 
             //! \ogs_file_param{prj__processes__process__TWOPHASE_FLOW_PRHO__material_property}
             auto const& mat_config = config.getConfigSubtree("material_property");
@@ -123,12 +125,11 @@ namespace ProcessLib
                 diff_coeff_a, diff_coeff_c, temperature, std::move(material), *curves.at("curveA"),
                 *curves.at("curveB"),*curves.at("curveC") };
 
-
             return std::unique_ptr<Process>{new TwoPhaseComponentialFlowProcess{
+                std::move(name),
                 mesh, std::move(jacobian_assembler), parameters, integration_order,
                 std::move(process_variables), std::move(process_data),
-                std::move(secondary_variables), std::move(named_function_caller),
-                mat_config, curves }};
+                std::move(secondary_variables), mat_config, curves }};
         }
 
     }  // end of namespace
