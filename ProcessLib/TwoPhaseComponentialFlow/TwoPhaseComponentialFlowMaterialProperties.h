@@ -64,7 +64,7 @@ namespace ProcessLib
 
             int getMaterialID(const std::size_t element_id);
 
-            Eigen::MatrixXd const& getPermeability(
+            Eigen::MatrixXd const getPermeability(
                 const int material_id,
                 const double t,
                 const ParameterLib::SpatialPosition& pos,

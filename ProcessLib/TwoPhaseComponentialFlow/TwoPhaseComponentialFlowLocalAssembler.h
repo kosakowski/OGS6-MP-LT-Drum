@@ -735,7 +735,8 @@ namespace ProcessLib
                 }
             }
 
-            void assemble(double const t, std::vector<double> const& local_x,
+            void assemble(double const t, double const /*dt*/,
+                          std::vector<double> const& local_x,
                 std::vector<double>& local_M_data,
                 std::vector<double>& local_K_data,
                 std::vector<double>& local_b_data) override;
@@ -1484,8 +1485,9 @@ protected:
         const int material_id =
         _process_data._material->getMaterialID(_element.getID());
 
-        const Eigen::MatrixXd& perm = _process_data._material->getPermeability(
+        const Eigen::MatrixXd perm = _process_data._material->getPermeability(
             material_id, t, pos, _element.getDimension());
+        auto test = perm.rows();
         assert(perm.rows() == _element.getDimension() || perm.rows() == 1);
         GlobalDimMatrixType permeability = GlobalDimMatrixType::Zero(
             _element.getDimension(), _element.getDimension());

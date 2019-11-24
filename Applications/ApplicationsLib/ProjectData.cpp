@@ -918,6 +918,7 @@ void ProjectData::parseProcesses(BaseLib::ConfigTree const& processes_config,
                     _process_variables, _parameters, integration_order,
                     process_config, _curves);
         }
+        else
 #endif
 #ifdef OGS_BUILD_PROCESS_TWOPHASECOMPONENTIALFLOW
             if (type == "TWOPHASE_COMPONENTIAL_FLOW")
@@ -929,8 +930,8 @@ void ProjectData::parseProcesses(BaseLib::ConfigTree const& processes_config,
                     _process_variables, _parameters, integration_order,
                     process_config, _curves);
         }
-#endif
         else
+#endif
 
         {
             OGS_FATAL("Unknown process type: %s", type.c_str());
