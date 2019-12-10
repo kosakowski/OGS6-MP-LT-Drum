@@ -1197,7 +1197,11 @@ namespace ProcessLib
                             +(_ip_data[ip].porosity_prev_backfill - porosity2)
                             * (_saturation[ip] *rho_mol_wet*x_wet_air
                             + (1 - _saturation[ip])*rho_mol_nonwet*x_nonwet_air)/ dt;
-                        F_vec_coeff(3) += gas_nitrogen_variation_rate_porosity;
+                        F_vec_coeff(3) += gas_nitrogen_variation_rate_porosity +
+                                          gas_hydrogen_variation_rate_porosity +
+                                          gas_methane_variation_rate_porosity +
+                                          gas_co2_variation_rate_porosity
+                            ;
                         //water consume rate
                         _h2o_consumed_rate[ip] =
                             (fluid_volume_rate*rho_mol_water);
@@ -1829,8 +1833,8 @@ namespace ProcessLib
                 localNeumann_tmp = neumann_vec * radial_sym_fac * length / 2;
                 _neumann_vec_output = neumann_vec  * length / 2/ node_volume_radial;//* radial_sym_fac
             }
-            //local_b.block(n_nodes * 0, 0, n_nodes, 1).noalias() += localNeumann_tmp; // This is for hydrogen-> which is created
-            //local_b.block(n_nodes * 4, 0, n_nodes, 1).noalias() -= localNeumann_tmp; // This is for water-> which is consumed
+            local_b.block(n_nodes * 0, 0, n_nodes, 1).noalias() += localNeumann_tmp; // This is for hydrogen-> which is created
+            local_b.block(n_nodes * 4, 0, n_nodes, 1).noalias() -= localNeumann_tmp; // This is for water-> which is consumed
 
             //output secondary variable of h2
             for (unsigned ip = 0; ip < n_integration_points; ip++)
